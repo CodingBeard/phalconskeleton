@@ -1,0 +1,4 @@
+logs
+.sass-cache
+app/cache/*.php
+app/config/config.php
