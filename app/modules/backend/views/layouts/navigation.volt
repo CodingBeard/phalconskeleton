@@ -13,15 +13,18 @@ SET navigation = [
 %}
 <nav role="navigation">
   <div class="container">
-	<a id="logo-container" href="/" class="brand-logo">Phalcon</a>
-	<ul id="nav-mobile" class="side-nav hide-on-large-only">
+	<a href="{{ url('admin') }}" class="brand-logo hide-on-large-only">Phalcon</a>
+	<ul id="nav-mobile" class="side-nav fixed">
+	  <li class="logo hide-on-med-and-down">
+		<a href="{{ url('admin') }}" class="brand-logo">Phalcon</a>
+	  </li>
 	  {% for one in navigation %}
 		  {% if one[1] is iterable %}
 			  <li class="no-padding">
 				<ul class="collapsible">
-				  <li>
-					<a class="collapsible-header bold" data-activates="collapse1">{{ one[0] }}</a>
-					<div id="collapse1" class="collapsible-body">
+				  <li class="bold">
+					<a class="collapsible-header" data-activates="collapse">{{ one[0] }}</a>
+					<div id="collapse" class="collapsible-body">
 					  <ul>
 						{% for two in one[1] %}
 							<li>
@@ -35,15 +38,15 @@ SET navigation = [
 			  </li>
 		  {% else %}
 			  <li>
-				<a class="bold" href="{{ url(one[1]) }}">{{ one[0] }}</a>
+				<a href="{{ url(one[1]) }}">{{ one[0] }}</a>
 			  </li>
 		  {% endif %}
 	  {% endfor %}
-	  <li class="no-padding">
+	  <li class="no-padding hide-on-med-and-up">
 		<ul class="collapsible">
-		  <li>
-			<a class="collapsible-header bold" data-activates="collapse1">Site</a>
-			<div id="collapse1" class="collapsible-body">
+		  <li class="bold">
+			<a class="collapsible-header" data-activates="collapse">Site</a>
+			<div id="collapse" class="collapsible-body">
 			  <ul>
 				<li><a href="{{ url('site/terms') }}">Terms</a></li>
 				<li><a href="{{ url('site/privacy') }}">Privacy</a></li>
@@ -53,27 +56,6 @@ SET navigation = [
 		  </li>
 		</ul>
 	  </li>
-	</ul>
-
-	<ul class="right hide-on-med-and-down">
-	  {% for one in navigation %}
-		  {% if one[1] is iterable %}
-			  <li class="no-padding">
-				<a class="dropdown-button" href="#" data-activates="dropdown">{{ one[0] }}</a>
-				<ul id="dropdown" class="dropdown-content">
-				  {% for two in one[1] %}
-					  <li>
-						<a href="{{ url(two[1]) }}">{{ two[0] }}</a>
-					  </li>
-				  {% endfor %}
-				</ul>
-			  </li>
-		  {% else %}
-			  <li>
-				<a class="bold" href="{{ url(one[1]) }}">{{ one[0] }}</a>
-			  </li>
-		  {% endif %}
-	  {% endfor %}
 	</ul>
 	<a href="#" data-activates="nav-mobile" class="button-collapse white-text"><i class="mdi-navigation-menu"></i></a>
   </div>

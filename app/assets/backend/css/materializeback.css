@@ -1981,6 +1981,12 @@ td,
 th {
   padding: 0; }
 
+header, main, footer {
+  padding-left: 240px; }
+
+@media only screen and (max-width: 992px) {
+  header, main, footer {
+    padding-left: 0; } }
 html {
   box-sizing: border-box;
   height: 100%; }
@@ -5207,6 +5213,9 @@ small {
 .light, footer.page-footer .footer-copyright {
   font-weight: 300; }
 
+.bold > a {
+  font-weight: bold; }
+
 .flow-text {
   font-weight: 300; }
   @media only screen and (min-width: 360px) {
@@ -6795,6 +6804,15 @@ ul.side-nav.fixed a {
 ul.side-nav.fixed {
   left: 0;
   position: fixed; }
+  ul.side-nav.fixed .logo {
+    height: 70px;
+    text-align: center;
+    padding-top: 10px;
+    border-bottom: 1px solid #ddd; }
+    ul.side-nav.fixed .logo .brand-logo {
+      position: relative; }
+    ul.side-nav.fixed .logo:hover {
+      background-color: #fff; }
   ul.side-nav.fixed.right-aligned {
     right: 0;
     left: auto; }

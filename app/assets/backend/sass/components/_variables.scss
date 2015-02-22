@@ -42,10 +42,6 @@ $collapsible-border-color: #ddd !default;
 
 /*** Dropdown ***/
 $dropdown-color: color("grey", "darken-4");
-$supernav-background-color: color("grey", "darken-3");
-$supernav-text-color: color("grey", "lighten-2");
-$supernav-height: 20px;
-$supernav-font-size: 0.8rem;
 
 /*** Fonts ***/
 $roboto-font-path: "/css/font/roboto/" !default;
@@ -90,6 +86,10 @@ $element-bottom-margin: ($gutter-width*2)/3 !default;
 $navbar-height: 50px !default;
 $navbar-height-mobile: 50px !default;
 $navbar-link-color: color("grey", "darken-4") !default;
+$supernav-background-color: color("grey", "darken-3");
+$supernav-text-color: color("grey", "lighten-2");
+$supernav-height: 20px;
+$supernav-font-size: 0.8rem;
 
 
 /*** SideNav ***/
