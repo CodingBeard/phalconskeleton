@@ -12,7 +12,7 @@ copyright (c) 2015, Tim Marshall
 		{{ errorMessage }}
 	  </div>
   {% endif %}
-  <label class="{{ error|escape_attr }}">
+  <label class="{{ error|escape_attr }}" for="{{ key }}">
 	{{ label }} 
 	{% if required is true %}
 		<strong style="color: red;">*</strong>
@@ -21,12 +21,5 @@ copyright (c) 2015, Tim Marshall
 	  {{ sublabel }}
 	</span>
   </label>
-  {% if options is iterable %}
-	  {% for option in options %}
-		  <div>
-			<input id="{{ option.key|escape_attr }}" name="{{ option.key|escape_attr }}" class="{{ class|escape_attr }}" type="checkbox" {{ option.default }}> 
-			<label for="{{ option.key|escape_attr }}">{{ option.label }}</label>
-		  </div>
-	  {% endfor %}
-  {% endif %}
+  <input {{ requiredAttribute }} name="{{ key|escape_attr }}" class="{{ error|escape_attr }} {{ class|escape_attr }}" type="password" autocomplete="off" value="{{ default|escape_attr }}">
 </div>

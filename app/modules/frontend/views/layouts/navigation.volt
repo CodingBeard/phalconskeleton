@@ -19,8 +19,8 @@ SET navigation = [
 		  {% if one[1] is iterable %}
 			  <li class="no-padding">
 				<ul class="collapsible">
-				  <li>
-					<a class="collapsible-header bold" data-activates="collapse1">{{ one[0] }}</a>
+				  <li class="bold">
+					<a class="collapsible-header" data-activates="collapse1">{{ one[0] }}</a>
 					<div id="collapse1" class="collapsible-body">
 					  <ul>
 						{% for two in one[1] %}
@@ -34,15 +34,15 @@ SET navigation = [
 				</ul>
 			  </li>
 		  {% else %}
-			  <li>
-				<a class="bold" href="{{ url(one[1]) }}">{{ one[0] }}</a>
+			  <li class="bold">
+				<a href="{{ url(one[1]) }}">{{ one[0] }}</a>
 			  </li>
 		  {% endif %}
 	  {% endfor %}
 	  <li class="no-padding">
 		<ul class="collapsible">
-		  <li>
-			<a class="collapsible-header bold" data-activates="collapse1">Site</a>
+		  <li class="bold">
+			<a class="collapsible-header" data-activates="collapse1">Site</a>
 			<div id="collapse1" class="collapsible-body">
 			  <ul>
 				<li><a href="{{ url('site/terms') }}">Terms</a></li>
@@ -70,7 +70,7 @@ SET navigation = [
 			  </li>
 		  {% else %}
 			  <li>
-				<a class="bold" href="{{ url(one[1]) }}">{{ one[0] }}</a>
+				<a href="{{ url(one[1]) }}">{{ one[0] }}</a>
 			  </li>
 		  {% endif %}
 	  {% endfor %}

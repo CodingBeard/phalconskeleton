@@ -1,24 +1,27 @@
 <?php
 
 /**
- * Cookie tokens
- * 
-CREATE TABLE `cookietokens` (
+ * Authtokens
+ *
+  CREATE TABLE `authtokens` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
+  `issued` datetime DEFAULT NULL,
+  `expires` datetime DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
   `token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `cookietokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB
- *
+  CONSTRAINT `authtokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  ) ENGINE=InnoDB
+ * 
  * @category 
  * @package phalconskeleton
  * @author Tim Marshall
  * @copyright (c) 2015, Tim Marshall
  * @version 
  */
-class Cookietokens extends \Phalcon\Mvc\Model
+class Authtokens extends \Phalcon\Mvc\Model
 {
 
     /**
@@ -37,6 +40,24 @@ class Cookietokens extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    public $issued;
+
+    /**
+     *
+     * @var string
+     */
+    public $expires;
+
+    /**
+     *
+     * @var string
+     */
+    public $type;
+
+    /**
+     *
+     * @var string
+     */
     public $token;
 
     /**
@@ -44,10 +65,7 @@ class Cookietokens extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
-        $this->useDynamicUpdate(true);
-        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
+        $this->belongsTo("user_id", "\Models\Users", "id", array('alias' => 'Users'));
     }
 
     /**
@@ -55,11 +73,14 @@ class Cookietokens extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return [
+        return array(
             'id' => 'id',
             'user_id' => 'user_id',
+            'issued' => 'issued',
+            'expires' => 'expires',
+            'type' => 'type',
             'token' => 'token'
-        ];
+        );
     }
 
 }

@@ -9,7 +9,7 @@ copyright (c) 2015, Tim Marshall
 	  {% if auth.id %}
 		  <a href="{{ url('#') }}">Logout</a>
 	  {% else %}
-		  <a href="{{ url('#') }}">Login/Register</a>
+		  <a href="{{ url('account/login') }}">Login/Register</a>
 	  {% endif %}
 	</div>
   </div>

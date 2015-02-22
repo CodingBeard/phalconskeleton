@@ -1,7 +1,7 @@
 {# 
-QUKsite
+phalconskeleton
 author Tim Marshall
-copyright (c) 2014, Tim Marshall
+copyright (c) 2015, Tim Marshall
 #}
 <form autocomplete="off" method="POST" action="" enctype="application/x-www-form-urlencoded">
   {{ auth.getSecurityField() }}
@@ -18,13 +18,20 @@ copyright (c) 2014, Tim Marshall
 	  <div id="flash-container">
 		{{ notifications }}
 	  </div>
-	  <div class="row">
-		{% if fields is iterable %}
-			{% for field in fields %}
-				{{ field }}
-			{% endfor %}
-		{% endif %}
-	  </div>
+	  {% set gridcount = 0 %}
+	  {% if fields is iterable %}
+		  {% for field in fields %}
+			  {% if gridcount == 0 %}
+				  <div class="row">
+				  {% endif %}
+				  {{ form.renderField(field) }}
+				  {% set gridcount = gridcount + field.size %}
+				  {% if gridcount >= 12 %}
+				  </div>
+				  {% set gridcount = 0 %}
+			  {% endif %}
+		  {% endfor %}
+	  {% endif %}
 	  <div class="row">
 		<button id="submit" class="btn green" type="submit">{{ submitButton }}</button>
 		<a class="btn white black-text right" href="{{ cancelHref }}">Cancel</a>

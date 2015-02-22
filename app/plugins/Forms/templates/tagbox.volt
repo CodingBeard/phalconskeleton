@@ -1,11 +1,19 @@
 {# 
-QUKsite
+phalconskeleton
 author Tim Marshall
-copyright (c) 2014, Tim Marshall
+copyright (c) 2015, Tim Marshall
 #}
 <div class="col l{{ size }} m12 s12">
+  {% if errorMessage %}
+	  <div class="alert alert-danger alert-dismissible">
+		{{ errorMessage }}
+	  </div>
+  {% endif %}
   <label class="{{ error|escape_attr }}" for="{{ key }}">
-	{{ label }}
+	{{ label }} 
+	{% if required is true %}
+		<strong style="color: red;">*</strong>
+	{% endif %}
 	<span class="light">
 	  {{ sublabel }}
 	</span>

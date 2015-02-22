@@ -1,12 +1,15 @@
 {# 
-QUKsite
+phalconskeleton
 author Tim Marshall
-copyright (c) 2014, Tim Marshall
+copyright (c) 2015, Tim Marshall
 #}
-{% if captcha is true %}
+{% if guestsOnly is false or auth.id is false %}
 	<div class="col l12 m12 s12">
-	  <div class="section">
-		{{ captcha.getHtml() }}
-	  </div>
+	  {% if errorMessage %}
+		  <div class="alert alert-danger alert-dismissible">
+			{{ errorMessage }}
+		  </div>
+	  {% endif %}
+	  {{ captcha.getHtml() }}
 	</div>
 {% endif %}

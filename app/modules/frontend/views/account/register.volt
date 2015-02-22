@@ -19,13 +19,14 @@ copyright (c) 2015, Tim Marshall
 	  <div id="flash-container">
 		{{ flashSession.output() }}
 	  </div>
+	  {{ form }}
 	</div>
 {% endblock %}
 
 {% block javascripts %}
 	<script type="text/javascript">
 		$(function () {
-			
+			{{ formjs }}
 		});
 	</script>
 {% endblock %}

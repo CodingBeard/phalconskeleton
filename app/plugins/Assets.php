@@ -162,11 +162,18 @@ class Assets extends Phalcon\Mvc\User\Plugin
             file_put_contents($this->revisionPath, json_encode(['css' => $revision->css, 'js' => ++$revision->js]));
         }
 
+        if ($this->minify) {
+            $filter = new \Phalcon\Assets\Filters\Jsmin();
+        }
+        else {
+            $filter = new \Phalcon\Assets\Filters\None();
+        }
+        
         $this->assets->collection('js')
         ->join(true)
         ->setTargetPath($this->jsPath)
         ->setTargetUri($this->addRevision($this->jsPath, $revision->js))
-        ->addFilter(new \Phalcon\Assets\Filters\Jsmin());
+        ->addFilter($filter);
 
         if ($jsNeedsRefreshing) {
             $this->assets->outputJs();

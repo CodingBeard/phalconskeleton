@@ -10,7 +10,6 @@ CREATE TABLE `users` (
   `DoB` date DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `card` tinyint(4) DEFAULT NULL,
   `active` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB
@@ -178,14 +177,15 @@ class Users extends \Phalcon\Mvc\Model
      */
     public function createCookieToken()
     {
-        \Cookietokens::find([
-            'user_id = :a:',
+        \Usertokens::find([
+            'type = "cookie" AND user_id = :a:',
             'bind' => ['a' => $this->id]
         ])->delete();
 
         $token = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 20);
 
-        $cookie = new Cookietokens();
+        $cookie = new Usertokens();
+        $cookie->type = 'cookie';
         $cookie->user_id = $this->id;
         $cookie->token = password_hash($token, PASSWORD_DEFAULT);
         $cookie->save();

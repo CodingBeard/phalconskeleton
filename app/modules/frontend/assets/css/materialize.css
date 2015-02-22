@@ -5207,6 +5207,9 @@ small {
 .light, footer.page-footer .footer-copyright {
   font-weight: 300; }
 
+.bold > a {
+  font-weight: bold; }
+
 .flow-text {
   font-weight: 300; }
   @media only screen and (min-width: 360px) {
@@ -6527,6 +6530,10 @@ select {
 
 select.browser-default {
   display: block; }
+
+.inline-selects select {
+  display: inline-block;
+  width: auto; }
 
 select:disabled {
   color: rgba(0, 0, 0, 0.3); }

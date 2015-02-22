@@ -90,7 +90,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
      * @param array $variables
      * @return string
      */
-    public function render($file, $variables)
+    public function renderFile($file, $variables)
     {
         $view = clone $this->view;
         $view->setViewsDir(__DIR__);
@@ -101,8 +101,22 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
         $view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);
         $view->render('templates', $file);
         $view->finish();
-        $content = $view->getContent();
+        return $view->getContent();
+    }
 
+    /**
+     * Renders a field class
+     * @param object $field
+     * @return string
+     */
+    public function renderField($field)
+    {
+        $properties = [];
+        foreach ($field as $key => $value) {
+            $properties[$key] = $value;
+        }
+
+        $content = $this->renderFile($field->template, $properties);
         $matches = [];
         preg_match("#\<script type=\"text/javascript\">(.*?)\</script\>#is", $content, $matches);
         if (count($matches)) {
@@ -113,11 +127,105 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
     }
 
     /**
-     * Saves post data to a supplied model, a translation array can be supplied for post key -> model key
+     * Add a field to the form
+     * @param array $field
+     * @return \Forms\FormBuilder $this
+     */
+    public function addField($field)
+    {
+        $this->fields[] = $field;
+        if ($field->repeat) {
+            $repeat = clone $field;
+            $repeat->key = 'repeat' . $repeat->key;
+            $repeat->label = 'Repeat ' . $repeat->label;
+            $repeat->repeat = false;
+            $repeat->isRepeat = true;
+            $this->fields[] = $repeat;
+        }
+        return $this;
+    }
+
+    /**
+     * Generate the full form's html
+     * @return string
+     */
+    public function getForm()
+    {
+        $fields = [];
+        foreach ($this->fields as $field) {
+            if ($this->request->isPost()) {
+                if ($field->template == 'checkboxgroup') {
+                    foreach ($field->options as $option) {
+                        if ($this->request->getPost($option->key)) {
+                            $field->setDefault($option->key, $this->request->getPost($option->key));
+                        }
+                    }
+                }
+                else {
+                    if ($this->request->getPost($field->key)) {
+                        $field->setDefault($this->request->getPost($field->key));
+                    }
+                }
+            }
+            $fields[] = $field;
+        }
+        $variables = [
+            'securityToken' => $this->auth->getSecurityField(),
+            'title' => $this->title,
+            'subtitle' => $this->subtitle,
+            'description' => $this->description,
+            'outerRatio' => $this->outerRatio,
+            'innerRatio' => $this->innerRatio,
+            'submitButton' => $this->submitButton,
+            'cancelHref' => $this->cancelHref,
+            'fields' => $fields
+        ];
+        return $this->renderFile('base', $variables);
+    }
+
+    /**
+     * Concat all the js with newlines
+     * @return string
+     */
+    public function getJS()
+    {
+        $string = '';
+        foreach ($this->js as $js) {
+            $string .= $js . PHP_EOL;
+        }
+        return $string;
+    }
+
+    /**
+     * Validates the required fields, prints out POST data if $test = true
+     * @return boolean
+     */
+    public function validate()
+    {
+        if (!$this->request->isPost())
+            return;
+        $result = true;
+        foreach ($this->fields as $field) {
+            if (!$field->validate($_POST)) {
+                $result = false;
+                $field->class .= ' invalid';
+            }
+            if ($field->template == 'captcha') {
+                if (!$this->captcha->verify()) {
+                    $field->errorMessage = 'Invalid Captcha';
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Adds post data to a supplied model, a translation array can be supplied for post key -> model key
      * @param \Phalcon\Mvc\Model $model
      * @param array $translation
+     * @returns \Phalcon\Mvc\Model $model
      */
-    public function saveToModel($model, $translation = false)
+    public function addToModel($model, $translation = false)
     {
         if ($translation) {
             foreach ($translation as $postKey => $modelKey) {
@@ -131,7 +239,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
                 $model->$key = $this->request->getPost($key, 'trim');
             }
         }
-        $model->save();
+        return $model;
     }
 
     /**
@@ -155,7 +263,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
             $form->save();
 
             foreach ($this->fields as $field) {
-                if ($field['type'] == 'captcha')
+                if ($field->template == 'captcha')
                     continue;
 
                 $fieldModel = new \Formfields();
@@ -187,448 +295,6 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
         }
 
         return $form;
-    }
-
-    /**
-     * Validates the required fields, prints out POST data if $test = true
-     * TODO: optional regex matching
-     * @param bool $test
-     * @return boolean
-     */
-    public function validate($test = false)
-    {
-        if (!$this->request->isPost())
-            return;
-        if ($test) {
-            echo '<pre>';
-            print_r($_POST);
-            die;
-        }
-        $result = true;
-        if ($this->hasCaptcha) {
-            if (!$this->captcha->verify()) {
-                $this->flashSession->error("Invalid Captcha.");
-                $result = false;
-            }
-        }
-        foreach ($this->fields as $key => $field) {
-            if ($field['variables']['required']) {
-                if (!strlen($this->request->getPost($field['variables']['key'], 'trim'))) {
-                    $this->fields[$key]['validate'] = false;
-                    $result = false;
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Generate the full form's html
-     * @return string
-     */
-    public function getForm()
-    {
-        $fields = [];
-        foreach ($this->fields as $field) {
-            if ($this->request->getPost($field['variables']['key'])) {
-                $field = $this->setDefaultValue($field, $this->request->getPost($field['variables']['key']));
-            }
-            if ($field['validate'] === false) {
-                $field['variables']['error'] = 'has-error';
-            }
-            if ($field['variables']['required']) {
-                $field['variables']['required'] = 'required';
-                $field['variables']['label'] .= ' <strong style="color: red;">*</strong>';
-            }
-            $fields[] = $this->render($field['type'], $field['variables']);
-        }
-        $variables = [
-            'securityToken' => "<input type='hidden' name='{$this->auth->tokenKey}' value='{$this->auth->token}'/>",
-            'title' => $this->title,
-            'subtitle' => $this->subtitle,
-            'description' => $this->description,
-            'outerRatio' => $this->outerRatio,
-            'innerRatio' => $this->innerRatio,
-            'submitButton' => $this->submitButton,
-            'cancelHref' => $this->cancelHref,
-            'fields' => $fields
-        ];
-        return $this->render('base', $variables);
-    }
-
-    /**
-     * Concat all the js with newlines
-     * @return string
-     */
-    public function getJS()
-    {
-        $string = '';
-        foreach ($this->js as $js) {
-            $string .= $js . PHP_EOL;
-        }
-        return $string;
-    }
-
-    /**
-     * Sets the default value of a field to be pre-populated
-     * @param array $field
-     * @param mixed $value
-     * @return array
-     */
-    public function setDefaultValue($field, $value)
-    {
-        switch ($field['type']) {
-            case 'textbox':
-            case 'textarea':
-            case 'email':
-            case 'password':
-            case 'number':
-                $field['variables']['defaultValue'] = $value;
-                break;
-            case 'switchbox':
-                if ($value)
-                    $field['variables']['defaultValue'] = 'checked';
-                break;
-            case 'radio':
-                foreach ($field['variables']['options'] as $key => $option) {
-                    if ($option->value == $value) {
-                        $field['variables']['options'][$key]->default = 'checked';
-                    }
-                }
-                break;
-            case 'select':
-                foreach ($field['variables']['options'] as $key => $option) {
-                    if ($option->value == $value) {
-                        $field['variables']['options'][$key]->default = 'selected';
-                    }
-                }
-            case 'tagbox':
-                foreach ($field['variables']['options'] as $key => $option) {
-                    foreach ($value as $tagValue) {
-                        if ($option->value == $tagValue) {
-                            $field['variables']['options'][$key]->default = true;
-                        }
-                    }
-                }
-                break;
-        }
-        return $field;
-    }
-
-    /**
-     * Add a field to the form
-     * @param array $field
-     */
-    public function addField($field)
-    {
-        $this->fields[] = $field;
-    }
-
-    /**
-     * Return an array of Volt template and variables for a text box
-      $variables = [
-      'key' => '',
-      'label' => '',
-      'sublabel' => '',
-      'required' => false,
-      'class' => '',
-      'size' => 12,
-      'defaultValue' => ''
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function textbox($variables = [
-        'key' => '',
-        'label' => '',
-        'sublabel' => '',
-        'required' => false,
-        'class' => '',
-        'size' => 12,
-        'defaultValue' => ''
-    ])
-    {
-        if (is_callable($variables['defaultValue']))
-            $variables['defaultValue'] = $variables['defaultValue']();
-
-        return ['type' => 'textbox', 'variables' => $variables];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a textarea
-      $variables = [
-      'key' => '',
-      'label' => '',
-      'sublabel' => '',
-      'required' => false,
-      'class' => '',
-      'size' => 12,
-      'defaultValue' => ''
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function textarea($variables = [
-        'key' => '',
-        'label' => '',
-        'sublabel' => '',
-        'required' => false,
-        'class' => '',
-        'size' => 12,
-        'defaultValue' => ''
-    ])
-    {
-        if (is_callable($variables['defaultValue']))
-            $variables['defaultValue'] = $variables['defaultValue']();
-
-        return ['type' => 'textarea', 'variables' => $variables];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a set of radio buttons
-      $variables = [
-      'key' => '',
-      'label' => '',
-      'sublabel' => '',
-      'required' => false,
-      'class' => '',
-      'size' => 12,
-      'options' => [
-      ['value' => '', 'label' => '', 'default' => false],
-      ]
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function radio($variables = [
-        'key' => '',
-        'label' => '',
-        'sublabel' => '',
-        'required' => false,
-        'class' => '',
-        'size' => 12,
-        'options' => [
-            ['value' => '', 'label' => '', 'default' => false],
-        ]
-    ])
-    {
-        if (is_callable($variables['options']))
-            $variables['options'] = $variables['options']();
-
-        foreach ($variables['options'] as $key => $value) {
-            if ($value['default'])
-                $value['default'] = 'checked';
-
-            $variables['options'][$key] = (object) $value;
-        }
-
-        return ['type' => 'radio', 'variables' => $variables];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a single checkbox
-      $variables = [
-      'key' => '',
-      'label' => '',
-      'sublabel' => '',
-      'class' => '',
-      'size' => 12,
-      'defaultValue' => ''
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function checkbox($variables = [
-        'key' => '',
-        'label' => '',
-        'sublabel' => '',
-        'class' => '',
-        'size' => 12,
-        'defaultValue' => ''
-    ])
-    {
-        if ($variables['defaultValue'])
-            $variables['defaultValue'] = 'checked';
-
-        return ['type' => 'checkbox', 'variables' => $variables];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a group of checkboxes
-      $variables = [
-      'label' => '',
-      'sublabel' => '',
-      'class' => '',
-      'size' => 12,
-      'options' => [
-      ['key' => '', 'label' => '', 'default' => false],
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function checkboxgroup($variables = [
-        'label' => '',
-        'sublabel' => '',
-        'class' => '',
-        'size' => 12,
-        'options' => [
-            ['key' => '', 'label' => '', 'default' => false],
-        ]
-    ])
-    {
-        if (is_callable($variables['options']))
-            $variables['options'] = $variables['options']();
-
-        foreach ($variables['options'] as $key => $value) {
-            if ($value['default'])
-                $value['default'] = 'checked';
-
-            $variables['options'][$key] = (object) $value;
-        }
-
-        return ['type' => 'checkboxgroup', 'variables' => $variables];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a select dropdown
-      $variables = [
-      'key' => '',
-      'label' => '',
-      'sublabel' => '',
-      'required' => false,
-      'class' => '',
-      'size' => 12,
-      'options' => [
-      ['value' => '', 'label' => '', 'default' => false],
-      ]
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function select($variables = [
-        'key' => '',
-        'label' => '',
-        'sublabel' => '',
-        'required' => false,
-        'class' => '',
-        'size' => 12,
-        'options' => [
-            ['value' => '', 'label' => '', 'default' => false],
-        ]
-    ])
-    {
-        if (is_callable($variables['options']))
-            $variables['options'] = $variables['options']();
-
-        foreach ($variables['options'] as $key => $value) {
-            if ($value['default'])
-                $value['default'] = 'checked';
-
-            $variables['options'][$key] = (object) $value;
-        }
-
-        return ['type' => 'select', 'variables' => $variables];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a Captcha
-     * $guestsOnly causes it to only show for guests
-     * @param bool $guestsOnly
-     * @return array
-     */
-    public function captcha($guestsOnly = false)
-    {
-        if ($guestsOnly && $this->auth->id) {
-            $captcha = false;
-        }
-        else {
-            $captcha = true;
-            $this->hasCaptcha = true;
-        }
-        return ['type' => 'captcha', 'variables' => ['captcha' => $captcha]];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a switch
-      $variables = [
-      'key' => '',
-      'label' => '',
-      'sublabel' => '',
-      'class' => '',
-      'onText' => '',
-      'offText' => '',
-      'size' => 12,
-      'defaultValue' => ''
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function switchbox($variables = [
-        'key' => '',
-        'label' => '',
-        'sublabel' => '',
-        'class' => '',
-        'onText' => '',
-        'offText' => '',
-        'size' => 12,
-        'defaultValue' => ''
-    ])
-    {
-        if (is_callable($variables['defaultValue']))
-            $variables['defaultValue'] = $variables['defaultValue']();
-
-        if ($variables['defaultValue'])
-            $variables['defaultValue'] = 'checked';
-
-        if (!$variables['onText'])
-            $variables['onText'] = 'Yes';
-        if (!$variables['offText'])
-            $variables['offText'] = 'No';
-
-        return ['type' => 'switchbox', 'variables' => $variables];
-    }
-
-    /**
-     * Return an array of Volt template and variables for a tag box
-      $variables = [
-      'key' => '',
-      'label' => '',
-      'sublabel' => '',
-      'required' => false,
-      'class' => '',
-      'tagLimit' => 'null',
-      'options' => [
-      ['id' => '', 'label' => '', 'default' => false],
-      ]
-     * @param array $variables
-     * @return array
-     */
-    public function tagbox($variables = [
-        'key' => '',
-        'label' => '',
-        'sublabel' => '',
-        'required' => false,
-        'class' => '',
-        'tagLimit' => 'null',
-        'options' => [
-            ['id' => '', 'label' => '', 'default' => false],
-        ]
-    ])
-    {
-        if (is_callable($variables['options']))
-            $variables['options'] = $variables['options']();
-
-        if (!$variables['tagLimit'])
-            $variables['tagLimit'] = 'null';
-
-        foreach ($variables['options'] as $key => $value) {
-            $variables['tagValues'][$value['label']] = $value['value'];
-            $variables['tagLabels'][] = $value['label'];
-
-            $variables['options'][$key] = (object) $value;
-        }
-
-        return ['type' => 'tagbox', 'variables' => $variables];
     }
 
 }

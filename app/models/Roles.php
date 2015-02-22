@@ -6,11 +6,8 @@ CREATE TABLE `roles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `image_id` int(11) DEFAULT NULL,
   `level` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `image_id` (`image_id`),
-  CONSTRAINT `roles_ibfk_1` FOREIGN KEY (`image_id`) REFERENCES `images` (`id`)
 ) ENGINE=InnoDB
  *
  * @category 

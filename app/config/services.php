@@ -138,6 +138,11 @@ $di->set('security', function()
     return $security;
 }, true);
 
+$di->set('filter', function()
+{
+    return new \Phalcon\Filter();
+}, true);
+
 $di->set('mandrill', function() use ($config)
 {
     return new \Tartan\Mandrill($config->mail->mandrillKey);
@@ -145,7 +150,14 @@ $di->set('mandrill', function() use ($config)
 
 $di->set('auth', function() use ($di)
 {
-    return $di->getSession()->has('auth') ? $di->getSession()->get('auth') : new \Auth();
+    if ($di->getSession()->has('auth')) {
+        return $di->getSession()->get('auth');
+    }
+    else {
+        $auth = new \Auth();
+        $di->getSession()->set('auth', $auth);
+        return $auth;
+    }
 }, true);
 
 $di->set('showErrors', function() use ($config)
@@ -153,7 +165,7 @@ $di->set('showErrors', function() use ($config)
     return $config->application->showErrors;
 }, true);
 
-$di->set('formBuilder', function() use ($di)
+$di->set('form', function() use ($di)
 {
     return new \Forms\FormBuilder($di);
 }, true);

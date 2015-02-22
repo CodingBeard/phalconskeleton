@@ -2278,8 +2278,8 @@ $(document).ready(function(){
 		  object.attr('placeholder', 'Required Field');
 		}
 		else {
-		  object.siblings('label, i').removeClass('invalid').addClass('valid');
-		  object.removeClass('invalid').addClass('valid');
+		  object.siblings('label, i').removeClass('invalid');
+		  object.removeClass('invalid');
 		  object.attr('placeholder', '');
 		}
 	  }

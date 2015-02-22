@@ -470,6 +470,13 @@ input[type=checkbox]:first-child:not(:disabled) ~ .lever:active:after {
 select { display: none; }
 select.browser-default { display: block; }
 
+.inline-selects {
+	select {
+		display: inline-block;
+		width: auto;
+	}
+}
+
 
 // Disabled styles
 select:disabled {

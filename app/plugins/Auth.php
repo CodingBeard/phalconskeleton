@@ -148,8 +148,8 @@ class Auth
             if ($cookies->has("RMT_" . $di->getShared('config')->application->name)) {
                 $token = $cookies->get("RMT_" . $di->getShared('config')->application->name)->getValue();
                 $key = $cookies->get("RMK_" . $di->getShared('config')->application->name)->getValue();
-                $cookietoken = \Cookietokens::findFirst([
-                    'user_id = :a:',
+                $cookietoken = \Usertokens::findFirst([
+                    'type = "cookie" AND user_id = :a:',
                     'bind' => ['a' => $key]
                 ]);
                 if ($cookietoken) {
@@ -173,8 +173,8 @@ class Auth
         if ($cookies) {
             if ($cookies->has("RMT_" . $di->getShared('config')->application->name)) {
                 $key = $cookies->get("RMK_" . $di->getShared('config')->application->name)->getValue();
-                \Cookietokens::findFirst([
-                    'user_id = :a:',
+                \Usertokens::findFirst([
+                    'type = "cookie" AND user_id = :a:',
                     'bind' => ['a' => $key]
                 ])->delete();
                 $cookies->set("RMT_" . $di->getShared('config')->application->name, null, time() - 604800, '/', true, $_SERVER['SERVER_NAME'], true);

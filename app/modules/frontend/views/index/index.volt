@@ -15,7 +15,7 @@ copyright (c) 2015, Tim Marshall
 {% endblock %}
 
 {% block content %}
-	<div style="height: 100%;border: black;" class="container">
+	<div class="container">
 	  <div id="flash-container">
 		{{ flashSession.output() }}
 	  </div>
