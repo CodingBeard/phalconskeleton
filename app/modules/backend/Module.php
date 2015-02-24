@@ -69,12 +69,12 @@ class Module implements ModuleDefinitionInterface
             $eventsManager->attach('dispatch', $errors);
 
             /*
-             * Filter and standardize controller/action names to make case insensitive and allow for hyphens etc
+             * Filter and standardize controller/action names to make case insensitive and allow for hyphens
              */
             $eventsManager->attach("dispatch:beforeDispatchLoop", function($event, $dispatcher) use ($di)
             {
-                $controller = strtolower($di->getShared('filter')->sanitize($dispatcher->getControllerName(), 'alphanum'));
-                $action = strtolower($di->getShared('filter')->sanitize($dispatcher->getActionName(), 'alphanum'));
+                $controller = strtolower(str_replace('-', '', $dispatcher->getControllerName()));
+                $action = strtolower(str_replace('-', '', $dispatcher->getActionName()));
                 $dispatcher->setControllerName($controller);
                 $dispatcher->setActionName($action);
             });

@@ -13,6 +13,8 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 try {
 
     $config = include __DIR__ . "/../app/config/config.php";
+    
+    $routes = include __DIR__ . "/../app/config/routes.php";
 
     $loader = new \Phalcon\Loader();
     $loader->registerDirs($config->loader->dirs->toArray());
@@ -28,7 +30,7 @@ try {
     $application = new \Phalcon\Mvc\Application($di);
 
     $modules = [];
-    foreach ($config->application->modules as $name => $path) {
+    foreach ($config->modules->files as $name => $path) {
         $modules[$name] = [
             'className' => "{$name}\Module",
             'path' => $path

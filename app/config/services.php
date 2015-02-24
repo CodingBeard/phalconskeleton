@@ -16,7 +16,9 @@ use Phalcon\DI\FactoryDefault,
     Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter,
     Phalcon\Session\Adapter\Files as SessionAdapter;
 
-$di = new FactoryDefault();
+$di = new Phalcon\Di();
+
+$di->setDefault(new FactoryDefault());
 
 $di->set('config', $config);
 
@@ -37,53 +39,55 @@ $di->set('cookies', function()
 /**
  * Set up multi-module routing
  */
-$di->set('router', function ()
+$di->set('router', function () use ($config, $routes)
 {
     $router = new Router(false);
     $router->setDefaultModule("frontend");
-    $router->add('(/)?', [
-        'module' => "frontend",
-        'action' => "index",
-        'params' => "index"
-    ]);
-    $router->add('/:controller(/)?', [
-        'module' => "frontend",
-        'controller' => 1,
-        'action' => "index"
-    ]);
-    $router->add('/:controller/:action(/)?', [
-        'module' => "frontend",
-        'controller' => 1,
-        'action' => 2
-    ]);
-    $router->add('/:controller/:action/:params(/)?', [
-        'module' => "frontend",
-        'controller' => 1,
-        'action' => 2,
-        'params' => 3
-    ]);
-    $router->add('/(admin(/)?)', [
-        'module' => "backend",
-        'action' => "index",
-        'params' => "index"
-    ]);
-    $router->add('/admin/:controller(/)?', [
-        'module' => "backend",
-        'controller' => 1,
-        'action' => "index"
-    ]);
-    $router->add('/admin/:controller/:action(/)?', [
-        'module' => "backend",
-        'controller' => 1,
-        'action' => 2
-    ]);
-    $router->add('/admin/:controller/:action/:params(/)?', [
-        'module' => "backend",
-        'controller' => 1,
-        'action' => 2,
-        'params' => 3
-    ]);
 
+    /**
+     * Add variable routing for multiple modules and custom url prefixes
+     */
+    foreach ($config->modules->uriPrefixes as $module => $prefix) {
+        $router->add("{$prefix}(/)?", [
+            'module' => $module,
+            'controller' => 'index',
+            'action' => 'index'
+        ]);
+        $router->add("{$prefix}/:controller(/)?", [
+            'module' => $module,
+            'controller' => 1,
+            'action' => 'index'
+        ]);
+        $router->add("{$prefix}/:controller/:action(/)?", [
+            'module' => $module,
+            'controller' => 1,
+            'action' => 2
+        ]);
+        $router->add("{$prefix}/:controller/:action/:params(/)?", [
+            'module' => $module,
+            'controller' => 1,
+            'action' => 2,
+            'params' => 3
+        ]);
+    }
+
+    /**
+     * Allow for hyphens and case insensitivity in static routes
+     * Short syntax doesn't work for params, so we add that on top
+     * Static routes come after variable ones as router has reverese priority
+     */
+    foreach ($routes as $uri => $route) {
+        $router->add('#^/' . implode('-?', str_split($uri)) . '$#i', $route);
+        
+        $split = explode('::', $route);
+        $router->add('#^/' . implode('-?', str_split($uri)) . '(/.*)*$#i', [
+            'module' => $split[0],
+            'controller' => $split[1],
+            'action' => $split[2],
+            'params' => 1
+        ]);
+    }
+    //print_r($router->getRoutes()); die;
     return $router;
 });
 

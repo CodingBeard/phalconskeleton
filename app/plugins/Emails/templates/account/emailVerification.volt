@@ -29,7 +29,7 @@ copyright (c) 2015, Tim Marshall
 	  </tr>
 	  <tr>
 		<td class="content-block aligncenter" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
-		  <a href="http://{{ config.mail.domain }}/account/verify-email/{{ token }}" class="btn-primary" itemprop="url">Confirm email address</a>
+		  <a href="http://{{ config.mail.domain }}/verify-email/{{ token }}" class="btn-primary" itemprop="url">Confirm email address</a>
 		</td>
 	  </tr>
 	  <tr>

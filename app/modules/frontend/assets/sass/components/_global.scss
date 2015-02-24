@@ -36,6 +36,11 @@ ul {
 a {
 	color: $link-color;
 	text-decoration: none;
+	
+	&:hover {
+		color: $link-hover-color;
+		@include transition(color .2s);
+	}
 }
 
 
@@ -273,12 +278,22 @@ footer.page-footer {
 		@extend .light;
 
 		a {
-			color: $footer-link-color;
+			color: $footer-text-color;
+		}
+
+		a:hover {
+			color: $footer-link-hover-color;
+			@include transition(color .2s);
 		}
 	}
 
 	a {
-		color: $footer-link-color;
+		color: $footer-text-color;
+	}
+
+	a:hover {
+		color: $footer-link-hover-color;
+		@include transition(color .2s);
 	}
 }
 

@@ -114,9 +114,15 @@ nav {
 	background-color: $supernav-background-color;
 	height: $supernav-height;
 	font-size: $supernav-font-size;
+	color: $supernav-text-color;
 
 	a {
 		color: $supernav-text-color;
+	}
+	
+	a:hover {
+		color: $supernav-text-hover-color;
+		@include transition(color .2s);
 	}
 }
 

@@ -13,6 +13,7 @@ $secondary-color: color("teal", "lighten-1") !default;
 $success-color: color("green", "base") !default;
 $error-color: color("red", "base") !default;
 $link-color: color("light-blue", "darken-1") !default;
+$link-hover-color: color("light-blue", "lighten-1") !default;
 $background-color: color("blue", "lighten-5");
 
 /*** Badges ***/
@@ -42,10 +43,6 @@ $collapsible-border-color: #ddd !default;
 
 /*** Dropdown ***/
 $dropdown-color: color("grey", "darken-4");
-$supernav-background-color: color("grey", "darken-3");
-$supernav-text-color: color("grey", "lighten-2");
-$supernav-height: 20px;
-$supernav-font-size: 0.8rem;
 
 /*** Fonts ***/
 $roboto-font-path: "/css/font/roboto/" !default;
@@ -53,10 +50,12 @@ $icons-font-path: "/css/font/material-design-icons/" !default;
 
 /*** Forms ***/
 // Text Inputs + Textarea
-$input-border-color: color("grey", "darken-4") !default;
-$input-error-color: $error-color !default;
+$input-label-color: color("grey", "darken-4") !default;
+$input-border-color: color("blue-grey", "lighten-3") !default;
+$input-background-color: color("grey", "lighten-4") !default;
+$input-error-color: color("red", "darken-2") !default;
 $input-success-color: $success-color !default;
-$input-focus-color: $secondary-color !default;
+$input-focus-color: color("grey", "base") !default;
 $label-font-size: 1rem !default;
 $input-disabled-color: rgba(0,0,0, .26) !default;
 
@@ -91,6 +90,12 @@ $navbar-height: 50px !default;
 $navbar-height-mobile: 50px !default;
 $navbar-link-color: color("grey", "darken-4") !default;
 
+$supernav-background-color: color("grey", "darken-3");
+$supernav-text-color: color("grey", "lighten-2");
+$supernav-height: 20px;
+$supernav-font-size: 0.8rem;
+$supernav-text-hover-color: color("blue", "lighten-2") !default;
+
 
 /*** SideNav ***/
 
@@ -122,7 +127,7 @@ $h6-fontsize: 1rem !default;
 // Footer
 $footer-bg-color: $primary-color;
 $footer-text-color: color("grey", "lighten-3");
-$footer-link-color: color("grey", "lighten-3");
+$footer-link-hover-color: color("grey", "darken-4");
 $footer-height: 50px;
 
 // Flowtext

@@ -4,7 +4,8 @@
  * Authentication
  * 
  * User/Role functions require models: User, Userroles, Roles
- * Cookie functions require models: Cookietokens
+ * Login functions require models: Logins
+ * Cookie functions require models: Authtokens
  *
  * @category 
  * @package phalconskeleton
@@ -81,6 +82,9 @@ class Auth extends \Phalcon\Mvc\User\Component
         $auth = $this->session->get('auth');
         foreach ($auth as $key => $value) {
             $this->$key = $value;
+        }
+        if ($this->user_id) {
+            $this->setRoles();
         }
     }
 
@@ -219,7 +223,7 @@ class Auth extends \Phalcon\Mvc\User\Component
     public function setRoles()
     {
         foreach ($this->getUser()->roles as $role) {
-            if ($role->name == 'Root Admin')
+            if ($role->id == 1)
                 $this->isAdmin = true;
             $roles[] = $role->name;
         }
@@ -279,6 +283,7 @@ class Auth extends \Phalcon\Mvc\User\Component
                     return true;
                 }
                 else {
+                    $this->removeAuthCookie();
                     $cookietoken->delete();
                 }
             }
@@ -303,8 +308,8 @@ class Auth extends \Phalcon\Mvc\User\Component
             }
             $domain = $this->config->application->domain;
             $https = $this->config->application->https;
-            $this->cookies->set("RMT", null, time() - 604800, '/', $domain, $https, $https);
-            $this->cookies->set("RMK", null, time() - 604800, '/', $domain, $https, $https);
+            $this->cookies->set("RMT", null, time() - 3600, '/', $domain, $https, $https);
+            $this->cookies->set("RMK", null, time() - 3600, '/', $domain, $https, $https);
         }
     }
 

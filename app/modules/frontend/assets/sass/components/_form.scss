@@ -9,7 +9,7 @@ button:focus {
 
 label {
 	font-size: $label-font-size;
-	color: $input-border-color;
+	color: $input-label-color;
 }
 
 /***************************
@@ -34,21 +34,19 @@ label {
 		@include transform(translateY(-140%));
 	}
 
-	input[type=text]:focus + label,
-		input[type=password]:focus + label,
-		input[type=email]:focus + label,
-		input[type=url]:focus + label,
-		input[type=date]:focus + label,
-		input[type=tel]:focus + label,
-		input[type=number]:focus + label,
-		input[type=search]:focus + label,
-		textarea:focus.materialize-textarea + label {
-		color: $input-focus-color;
-	}
-
 }
 
-
+input[type=text]:focus + label,
+input[type=password]:focus + label,
+input[type=email]:focus + label,
+input[type=url]:focus + label,
+input[type=date]:focus + label,
+input[type=tel]:focus + label,
+input[type=number]:focus + label,
+input[type=search]:focus + label,
+textarea:focus.materialize-textarea + label {
+	color: $input-focus-color;
+}
 
 input[type=text].valid,
 input[type=password].valid,
@@ -59,8 +57,8 @@ input[type=tel].valid,
 input[type=number].valid,
 input[type=search].valid,
 textarea.materialize-textarea.valid {
-	border-bottom: 1px solid $input-success-color;
-	@include box-shadow(0 1px 0 0 $input-success-color);
+	border-color: $input-success-color;
+	@include inner-shadow(0 1px 4px $input-success-color);
 }
 
 input[type=text].invalid,
@@ -72,8 +70,8 @@ input[type=tel].invalid,
 input[type=number].invalid,
 input[type=search].invalid,
 textarea.materialize-textarea.invalid {
-	border-bottom: 1px solid $input-error-color;
-	@include box-shadow(0 1px 0 0 $input-error-color);
+	border-color: $input-error-color;
+	@include inner-shadow(0 1px 4px $input-error-color);
 }
 
 // Prefix Icons
@@ -123,9 +121,10 @@ input[type=tel],
 input[type=number],
 input[type=search],
 textarea.materialize-textarea {
-	background-color: transparent;
-	border: none;
-	border-bottom: 1px solid $input-border-color;
+	background-color: $input-background-color;
+	border: 1px solid $input-border-color;
+	border-radius: 2px;
+	padding-left: 5px !important;
 	outline: none;
 	height: 3rem;
 	width: 100%;
@@ -133,7 +132,7 @@ textarea.materialize-textarea {
 	font-size: 1rem;
 	margin: 0 0 15px 0;
 	padding: 0;
-	@include box-shadow(none);
+	@include inner-shadow(0 1px 4px color("grey", "lighten-1"));
 	@include box-sizing(content-box);
 	@include transition(.3s);
 }
@@ -147,8 +146,8 @@ input[type=tel]:focus,
 input[type=number]:focus,
 input[type=search]:focus,
 textarea:focus.materialize-textarea {
-	border-bottom: 1px solid $input-focus-color;
-	@include box-shadow(0 1px 0 0 $input-focus-color);
+	border: 1px solid $input-focus-color;
+	@include inner-shadow(0 1px 4px $input-focus-color);
 }
 
 textarea.materialize-textarea {

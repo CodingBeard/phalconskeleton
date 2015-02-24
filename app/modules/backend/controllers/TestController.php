@@ -42,7 +42,7 @@ class TestController extends ControllerBase
 
     public function indexAction()
     {
-        \Logins::find()->delete();
+        print_r($this->config);
     }
 
 }
