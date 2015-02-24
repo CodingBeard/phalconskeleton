@@ -26,6 +26,12 @@ class Captcha extends Field
      * @var string
      */
     public $guestsOnly;
+    
+    /**
+     * Ratio of element size on a large screen (out fo 12)
+     * @var int
+     */
+    public $size = 12;
 
     /**
      * Create a captcha field

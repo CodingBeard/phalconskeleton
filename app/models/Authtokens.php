@@ -86,18 +86,14 @@ class Authtokens extends \Phalcon\Mvc\Model
             }
         }
         
-        $token = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, $properties['length']);
-        
         $authtoken = new \Authtokens();
         $authtoken->user_id = $properties['user_id'];
         $authtoken->issued = date('Y-m-d H:i:s');
         $authtoken->expires = date('Y-m-d H:i:s', time() + (60 * 60 * 24 * $properties['expires']));
         $authtoken->type = $properties['type'];
-        $authtoken->token = $token;
-        $authtoken->hashToken();
-        $authtoken->save();
+        $authtoken->token = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, $properties['length']);
         
-        return $token;
+        return $authtoken;
     }
     
     /**

@@ -37,15 +37,12 @@ class TestController extends ControllerBase
             'id = :a:',
             'bind' => ['a' => 1]
         ]);
-        $this->emails->emailVerification($user, 'IO3gla4lbmg6MZ5fe02b');
+        //$this->emails->emailVerification($user, 'IO3gla4lbmg6MZ5fe02b');
     }
 
-    public function beanstalkAction()
+    public function indexAction()
     {
-        $this->queue->addJob(function ($di)
-        {
-            echo $di->get('config')->application->name, PHP_EOL;
-        });
+        \Logins::find()->delete();
     }
 
 }

@@ -56,36 +56,145 @@ class AccountController extends ControllerBase
         ->addField(new \Forms\Fields\Captcha());
 
         if ($this->request->isPost()) {
-            if ($this->auth->checkToken($_POST)) {
+            if ($this->auth->checkToken()) {
                 if ($form->validate()) {
                     $user = $form->addToModel(new \Users());
                     $user->hashPass();
                     $user->active = 1;
-                    
+
                     if ($user->save()) {
                         $user->addRole('Member');
                         $user->addRole('Unverified Email');
-                        
-                        $token = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
-                        $this->emails->emailVerification($user, $token);
-                        
-                        $this->flashSession->success('Account created successfully, please login.');
-                        $this->response->redirect('account/login');
-                        $this->view->disable();
+
+                        $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
+                        $authtoken->save();
+                        $this->emails->emailVerification($user, $authtoken->token);
+
+                        return $this->auth->redirect('account/login', 'success', 'Account created successfully, please login.');
                     }
-                    
                 }
             }
         }
         $this->view->form = $form->getForm();
         $this->view->formjs = $form->getJS();
     }
-    
+
+    /**
+     * Verify an email
+     * @param string $token
+     * @return bool
+     */
     public function verifyemailAction($token = false)
     {
-        if ($token) {
-            
+        if (!$token) {
+            return $this->auth->redirect('', 'error', 'Token is missing.');
         }
+
+        $authtoken = \Authtokens::findFirst([
+            'type = "emailverification" AND token = :a: AND expires > :b:',
+            'bind' => ['a' => $token, 'b' => date('Y-m-d H:i:s')]
+        ]);
+        if (!$authtoken) {
+            sleep(1);
+            return $this->auth->redirect('', 'error', 'That token is not valid.');
+        }
+
+        $user = \Users::findFirst([
+            'id = :a:',
+            'bind' => ['a' => $authtoken->user_id]
+        ]);
+        if ($user) {
+            $user->removeRole('Unverified Email');
+            $user->addRole('Verified Email');
+
+            $authtoken->expires = date('Y-m-d H:i:s');
+            $authtoken->save();
+
+            return $this->auth->redirect('', 'success', 'Thanks for verifying your email.');
+        }
+    }
+
+    /**
+     * Login page
+     */
+    public function loginAction()
+    {
+        $this->tag->appendTitle("Login");
+
+        $form = $this->form;
+        $form->title = 'Login';
+        $form->cancelButton = 'account/register';
+
+        $form
+        ->addField(new \Forms\Fields\Textbox([
+            'key' => 'email',
+            'label' => 'Email',
+            'required' => true,
+        ]))
+        ->addField(new \Forms\Fields\Password([
+            'key' => 'password',
+            'label' => 'Password',
+            'required' => true,
+        ]))
+        ->addField(new \Forms\Fields\Checkbox([
+            'key' => 'rememberme',
+            'label' => 'Remember me'
+        ]));
+
+        if ($this->auth->checkAuthCookie()) {
+            $this->auth->logUserIn($this->cookies->get("RMK"));
+            if ($this->request->getPost('rememberme', 'trim') == 'on') {
+                $this->auth->createAuthCookie();
+            }
+            return $this->auth->redirect('', 'success', 'Welcome back.');
+        }
+
+        if ($this->auth->loginCaptcha()) {
+            $form->addField(new \Forms\Fields\Captcha());
+        }
+        if ($this->request->isPost()) {
+            if ($this->auth->checkToken()) {
+                if ($form->validate()) {
+                    $user = \Users::findFirst([
+                        'email = :a:',
+                        'bind' => ['a' => $this->request->getPost('email', 'email')]
+                    ]);
+                    if (!$user) {
+                        $this->auth->attemptThrolling(null);
+                        return $this->auth->redirect('account/login', 'error', 'That email is not registered with us.');
+                    }
+
+                    if (!password_verify($this->request->getPost('password', 'trim'), $user->password)) {
+                        $this->auth->attemptThrolling($user->id);
+                        return $this->auth->redirect('account/login', 'error', 'Incorrect password.');
+                    }
+
+                    if (!$user->active) {
+                        return $this->auth->redirect('account/login', 'error', 'Your account has been disabled.');
+                    }
+
+                    $this->auth->logUserIn($user);
+                    if ($this->request->getPost('rememberme', 'trim') == 'on') {
+                        $this->auth->createAuthCookie();
+                    }
+                    return $this->auth->redirect('', 'success', 'Welcome back ' . $this->escaper->escapeHtml($user->firstName) . '.');
+                }
+            }
+        }
+
+        $this->view->form = $form->getForm();
+        $this->view->formjs = $form->getJS();
+    }
+
+    /**
+     * Log the user out
+     * @return bool
+     */
+    public function logoutAction()
+    {
+        $this->auth->logUserOut();
+        $this->auth->removeAuthCookie();
+        return $this->auth->redirect('', 'success', 'Logged out.');
     }
 
 }

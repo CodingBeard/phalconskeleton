@@ -156,9 +156,9 @@ class Users extends \Phalcon\Mvc\Model
         "id", "Userroles", "user_id", "role_id", "Roles", "id", ['alias' => 'Roles']
         );
         $this->hasMany("id", "Userroles", "user_id", ['alias' => 'Userroles']);
-        $this->hasMany("id", "Accountactivations", "user_id", ['alias' => 'Accountactivations']);
+        $this->hasMany("id", "Usertokens", "user_id", ['alias' => 'Usertokens']);
         $this->hasMany("id", "Audits", "user_id", ['alias' => 'Audits']);
-        $this->hasMany("id", "Cookietokens", "user_id", ['alias' => 'Cookietokens']);
+        $this->hasMany("id", "Logins", "user_id", ['alias' => 'Logins']);
     }
 
     /**
@@ -177,7 +177,10 @@ class Users extends \Phalcon\Mvc\Model
      */
     public function createCookieToken($days = 7)
     {
-        $token = \Authtokens::newToken(['user_id' => $this->id, 'type' => 'cookie', 'expires' => $days, 'unique' => true]);
+        $authtoken = \Authtokens::newToken(['user_id' => $this->id, 'type' => 'cookie', 'expires' => $days, 'unique' => true]);
+        $token = $authtoken->token;
+        $authtoken->hashToken();
+        $authtoken->save();
         return ['user_id' => $this->id, 'token' => $token];
     }
 

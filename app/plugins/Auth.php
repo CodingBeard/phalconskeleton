@@ -12,14 +12,20 @@
  * @copyright (c) 2015, Tim Marshall
  * @version 
  */
-class Auth
+class Auth extends \Phalcon\Mvc\User\Component
 {
 
     /**
-     * Database user id
-     * @var int|bool 
+     * Whether the user is logged in
+     * @var bool
      */
-    public $id = false;
+    public $loggedIn;
+
+    /**
+     * Database user id
+     * @var int
+     */
+    public $user_id;
 
     /**
      * Array of Roles user has - Empty until User and Roles set
@@ -56,8 +62,140 @@ class Auth
      */
     function __construct()
     {
-        $this->tokenKey = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 22);
-        $this->token = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 22);
+        if (!$this->session->has('auth')) {
+            $auth = [
+                'loggedIn' => false,
+                'tokenKey' => \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 20),
+                'token' => \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 20),
+            ];
+            $this->session->set('auth', (object) $auth);
+        }
+        $this->initialize();
+    }
+
+    /**
+     * Initialize this object with the values stored in session
+     */
+    public function initialize()
+    {
+        $auth = $this->session->get('auth');
+        foreach ($auth as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+
+    /**
+     * Redirect a user with an alert message
+     * @param string $path
+     * @param string $alertType
+     * @param string $alertMessage
+     */
+    public function redirect($path, $alertType, $alertMessage)
+    {
+        $this->flashSession->message($alertType, $alertMessage);
+        $this->response->redirect($path);
+        $this->view->disable();
+        return true;
+    }
+
+    /**
+     * Throttle users with multiple failed logins
+     * @param int $user_id
+     * @return boolean to show a captcha or not
+     */
+    public function attemptThrolling($user_id)
+    {
+        $login = new Logins();
+        $login->user_id = $user_id;
+        $login->ip = $this->request->getClientAddress();
+        $login->attempt = time();
+        $login->success = 0;
+        $login->save();
+
+        $attempts = \Logins::count([
+            'ip = :a: AND attempt >= :b:',
+            'bind' => [
+                'a' => $this->request->getClientAddress(),
+                'b' => (time() - 3600)
+            ]
+        ]);
+
+        switch ($attempts) {
+            case 1:
+            case 2:
+            case 3:
+                break;
+            case 4:
+                sleep(2);
+                break;
+            default:
+                sleep(4);
+                break;
+        }
+    }
+
+    /**
+     * Whether the login form needs a captcha
+     * @return boolean
+     */
+    public function loginCaptcha()
+    {
+        $attempts = \Logins::count([
+            'ip = :a: AND attempt >= :b: AND success = 0',
+            'bind' => [
+                'a' => $this->request->getClientAddress(),
+                'b' => (time() - 3600)
+            ]
+        ]);
+
+        switch ($attempts) {
+            case 0:
+            case 1:
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    /**
+     * Log the supplied user in
+     * @param \Users $user
+     */
+    public function logUserIn($user)
+    {
+        $failedAttempts = \Logins::find([
+            'user_id = :a: AND ip = :b:',
+            'bind' => ['a' => $user->id, 'b' => $this->request->getClientAddress()]
+        ]);
+        if ($failedAttempts) {
+            $failedAttempts->delete();
+        }
+
+        $login = new Logins();
+        $login->user_id = $user->id;
+        $login->ip = $this->request->getClientAddress();
+        $login->attempt = time();
+        $login->success = 1;
+        $login->save();
+
+        $auth = $this->session->get('auth');
+        $auth->loggedIn = true;
+        $auth->user_id = $user->id;
+        if (!$auth->audit_id) {
+            $auth->audit_id = $user->id;
+        }
+        $this->session->set('auth', $auth);
+        $this->initialize();
+        $this->setRoles();
+    }
+
+    /**
+     * Log the user out
+     */
+    public function logUserOut()
+    {
+        $this->session->destroy();
+        $this->redirect('', 'success', 'Logged out.');
     }
 
     /**
@@ -66,27 +204,15 @@ class Auth
      */
     public function getUser()
     {
-        if ($this->id) {
+        if ($this->user_id) {
             return \Users::findFirst([
                 'id = :a:',
-                'bind' => ['a' => $this->id]
+                'bind' => ['a' => $this->user_id]
             ]);
         }
         return false;
     }
 
-    /**
-     * Set the user (and audit ID if not previously set)
-     * @param \Users $user
-     */
-    public function setUser(\Users $user)
-    {
-        $this->id = $user->id;
-        if (!$this->audit_id) {
-            $this->audit_id = $user->id;
-        }
-    }
-    
     /**
      * Update the roles from database
      */
@@ -111,13 +237,12 @@ class Auth
 
     /**
      * Checks the validity of the Anti-CRSF on form submit
-     * @param array $post $_POST
      * @return boolean
      */
-    public function checkToken($post)
+    public function checkToken()
     {
-        if (isset($post[$this->tokenKey])) {
-            if ($post[$this->tokenKey] == $this->token) {
+        if ($this->request->hasPost($this->tokenKey)) {
+            if ($this->request->getPost($this->tokenKey) == $this->token) {
                 return true;
             }
         }
@@ -126,36 +251,35 @@ class Auth
 
     /**
      * Add a remember me cookie to the user's browser
-     * @param \Phalcon\DI $di
      */
-    public function createAuthCookie(\Phalcon\DI $di)
+    public function createAuthCookie()
     {
-        $cookie = $this->user()->createCookieToken(7);
-        $cookies = $di->get('cookies');
-        $cookies->set("RMT_" . $di->getShared('config')->application->name, $cookie['token'], time() + 604800, '/', true, $_SERVER['SERVER_NAME'], true);
-        $cookies->set("RMK_" . $di->getShared('config')->application->name, $cookie['user_id'], time() + 604800, '/', true, $_SERVER['SERVER_NAME'], true);
+        $cookie = $this->getUser()->createCookieToken(7);
+        $domain = $this->config->application->domain;
+        $https = $this->config->application->https;
+        $this->cookies->set("RMT", $cookie['token'], time() + 604800, '/', $domain, $https, $https);
+        $this->cookies->set("RMK", $cookie['user_id'], time() + 604800, '/', $domain, $https, $https);
     }
 
     /**
      * Check the validity of a cookie token
-     * @param \Phalcon\DI $di
      * @return boolean
      */
-    public static function checkAuthCookie(\Phalcon\DI $di)
+    public function checkAuthCookie()
     {
-        $cookies = $di->get('cookies');
-        if ($cookies) {
-            if ($cookies->has("RMT_" . $di->getShared('config')->application->name)) {
-                $token = $cookies->get("RMT_" . $di->getShared('config')->application->name)->getValue();
-                $key = $cookies->get("RMK_" . $di->getShared('config')->application->name)->getValue();
-                $cookietoken = \Usertokens::findFirst([
-                    'type = "cookie" AND user_id = :a:',
-                    'bind' => ['a' => $key]
-                ]);
-                if ($cookietoken) {
-                    if (password_verify($token, $cookietoken->token)) {
-                        return true;
-                    }
+        if ($this->cookies->has("RMT")) {
+            $token = $this->cookies->get("RMT")->getValue();
+            $key = $this->cookies->get("RMK")->getValue();
+            $cookietoken = \Authtokens::findFirst([
+                'type = "cookie" AND expires > :a: AND user_id = :b:',
+                'bind' => ['a' => date('Y-m-d H:i:s'), 'b' => $key]
+            ]);
+            if ($cookietoken) {
+                if (password_verify($token, $cookietoken->token)) {
+                    return true;
+                }
+                else {
+                    $cookietoken->delete();
                 }
             }
         }
@@ -164,24 +288,24 @@ class Auth
 
     /**
      * Delete cookie tokens
-     * @param \Phalcon\DI $di
-     * @return boolean
      */
-    public static function removeAuthCookie(\Phalcon\DI $di)
+    public function removeAuthCookie()
     {
-        $cookies = $di->get('cookies');
-        if ($cookies) {
-            if ($cookies->has("RMT_" . $di->getShared('config')->application->name)) {
-                $key = $cookies->get("RMK_" . $di->getShared('config')->application->name)->getValue();
-                \Usertokens::findFirst([
-                    'type = "cookie" AND user_id = :a:',
-                    'bind' => ['a' => $key]
-                ])->delete();
-                $cookies->set("RMT_" . $di->getShared('config')->application->name, null, time() - 604800, '/', true, $_SERVER['SERVER_NAME'], true);
-                $cookies->set("RMK_" . $di->getShared('config')->application->name, null, time() - 604800, '/', true, $_SERVER['SERVER_NAME'], true);
+        if ($this->cookies->has("RMT")) {
+            $key = $this->cookies->get("RMK")->getValue();
+            $tokens = \Authtokens::find([
+                'type = "cookie" AND expires > :a: AND user_id = :b:',
+                'bind' => ['a' => date('Y-m-d H:i:s'), 'b' => $key]
+            ]);
+            foreach ($tokens as $token) {
+                $token->expires = date('Y-m-d H:i:s');
+                $token->save();
             }
+            $domain = $this->config->application->domain;
+            $https = $this->config->application->https;
+            $this->cookies->set("RMT", null, time() - 604800, '/', $domain, $https, $https);
+            $this->cookies->set("RMK", null, time() - 604800, '/', $domain, $https, $https);
         }
-        return false;
     }
 
 }

@@ -14,7 +14,7 @@ namespace Tartan;
  */
 use Tartan\Mandrill\Exception;
 
-class Mandrill extends \Phalcon\Mvc\User\Plugin
+class Mandrill extends \Phalcon\Mvc\User\Component
 {
 
     const API_VERSION = '1.0';
@@ -24,9 +24,8 @@ class Mandrill extends \Phalcon\Mvc\User\Plugin
     public $output;
     public $key;
 
-    function __construct($di, $api = null)
+    function __construct($api = null)
     {
-        $this->_dependencyInjector = $di;
         if ($api) {
             $this->init($api);
             $this->key = $api;

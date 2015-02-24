@@ -30,7 +30,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-class Captcha extends \Phalcon\Mvc\User\Plugin
+class Captcha extends \Phalcon\Mvc\User\Component
 {
 
     private static $siteVerifyUrl = "https://www.google.com/recaptcha/api/siteverify?";

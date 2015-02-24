@@ -28,7 +28,7 @@ class SiteEmails extends \Phalcon\Mvc\User\Plugin
     public function __construct($dependencyInjector)
     {
         $this->_dependencyInjector = $dependencyInjector;
-        $this->domain = $this->config->mail->domain;
+        $this->domain = $this->config->application->domain;
         $this->footers = $this->config->mail->footers;
     }
 

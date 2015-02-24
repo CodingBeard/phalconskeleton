@@ -3,5 +3,6 @@ logs
 vendor
 app/cache/*.php
 app/config/config.php
+app/config/import.sql
 app/modules/backend/controllers/testController.php
 app/modules/backend/views/test

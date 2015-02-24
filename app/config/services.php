@@ -30,7 +30,7 @@ $di->set('crypt', function() use ($config)
 $di->set('cookies', function()
 {
     $cookies = new Phalcon\Http\Response\Cookies();
-    $cookies->useEncryption(true);
+    $cookies->useEncryption(false);
     return $cookies;
 });
 
@@ -142,21 +142,14 @@ $di->set('filter', function()
     return new \Phalcon\Filter();
 }, true);
 
-$di->set('mandrill', function() use ($di, $config)
+$di->set('mandrill', function() use ($config)
 {
-    return new \Tartan\Mandrill($di, $config->mail->mandrillKey);
+    return new \Tartan\Mandrill($config->mail->mandrillKey);
 });
 
-$di->set('auth', function() use ($di)
+$di->set('auth', function()
 {
-    if ($di->getSession()->has('auth')) {
-        return $di->getSession()->get('auth');
-    }
-    else {
-        $auth = new \Auth();
-        $di->getSession()->set('auth', $auth);
-        return $auth;
-    }
+    return new Auth();
 }, true);
 
 $di->set('showErrors', function() use ($config)
@@ -174,9 +167,9 @@ $di->set('captcha', function() use ($config)
     return new \Captcha($config->captcha->publicKey, $config->captcha->privateKey);
 }, true);
 
-$di->set('emails', function() use ($di)
+$di->set('emails', function()
 {
-    return new \Emails\SiteEmails($di);
+    return new \Emails\SiteEmails();
 }, true);
 
 $di->set('queue', function() use ($config)

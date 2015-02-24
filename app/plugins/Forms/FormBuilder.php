@@ -12,7 +12,7 @@
 
 namespace Forms;
 
-class FormBuilder extends \Phalcon\Mvc\User\Plugin
+class FormBuilder extends \Phalcon\Mvc\User\Component
 {
 
     /**
@@ -31,7 +31,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
      * Form Description
      * @var string
      */
-    public $description = 'Form Description';
+    public $description = '';
 
     /**
      * Outer padding ratio (out of 12)
@@ -50,6 +50,12 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
      * @var string
      */
     public $submitButton = 'Submit';
+
+    /**
+     * Cancel button text
+     * @var string
+     */
+    public $cancelButton = 'Cancel';
 
     /**
      * Cancel button link
@@ -74,15 +80,6 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
      * @var array
      */
     public $js = [];
-
-    /**
-     * 
-     * @param \Phalcon\DI $dependencyInjector
-     */
-    public function __construct($dependencyInjector)
-    {
-        $this->_dependencyInjector = $dependencyInjector;
-    }
 
     /**
      * Renders a .volt file with supplied variables
@@ -128,7 +125,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
 
     /**
      * Add a field to the form
-     * @param array $field
+     * @param \Forms\Field $field
      * @return \Forms\FormBuilder $this
      */
     public function addField($field)
@@ -177,6 +174,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
             'outerRatio' => $this->outerRatio,
             'innerRatio' => $this->innerRatio,
             'submitButton' => $this->submitButton,
+            'cancelButton' => $this->cancelButton,
             'cancelHref' => $this->cancelHref,
             'fields' => $fields
         ];
@@ -276,7 +274,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Plugin
 
         $entry = new \Formentrys();
         $entry->date = date('Y-m-d H:i:s');
-        $entry->user_id = $this->auth->id;
+        $entry->user_id = $this->auth->user_id;
         $entry->form_id = $form->id;
         $entry->save();
 

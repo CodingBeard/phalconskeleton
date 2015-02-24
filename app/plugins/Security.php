@@ -96,9 +96,7 @@ class Security extends Plugin
         if ($auth) {
             $auth->setRoles();
             if ($auth->user()->active == 0) {
-                $this->session->destroy();
-                $this->flashSession->error('Your account has been deactivated.');
-                $this->response->redirect('');
+                $auth->redirect('', 'error', 'Your account has been deactivated.');
                 return false;
             }
             foreach ($auth->roles as $userrole) {
@@ -114,32 +112,7 @@ class Security extends Plugin
         foreach ($dispatcher->getParams() as $param) {
             $redirect .= $param . '/';
         }
-        return $this->deny($auth, $redirect);
-    }
-
-    /**
-     * Denies access, redirects to login page
-     * @param \Auth $auth
-     * @param string $redirect
-     * @return boolean
-     */
-    public function deny($auth, $redirect)
-    {
-        if (!$auth) {
-            $this->response->redirect('account/login/' . $redirect);
-        }
-        else {
-            if (in_array($this->config->userroles->staff, $auth->roles) && $this->module == 'backend') {
-                $this->response->redirect('admin');
-            }
-            else {
-                $this->response->redirect('');
-            }
-        }
-
-        $this->flashSession->error('You do not have the rights to access that page.');
-        $this->view->disable();
-        return false;
+        return $auth->redirect('account/login/' . $redirect, 'error', 'You do not have the rights to access that page.');
     }
 
 }
