@@ -1,7 +1,9 @@
 <?php
+
 /**
  * @package Tartan
  */
+
 namespace Tartan;
 
 /**
@@ -10,20 +12,21 @@ namespace Tartan;
  * @author  Aboozar Ghafari <me@tartan.pro>
  * @link    http://git.tartan.pro
  */
-use Tartan\Mandrill\Exception,
-    Phalcon\Mvc\User\Component;
+use Tartan\Mandrill\Exception;
 
-class Mandrill extends Component
+class Mandrill extends \Phalcon\Mvc\User\Plugin
 {
+
     const API_VERSION = '1.0';
-    const END_POINT   = 'https://mandrillapp.com/api/';
+    const END_POINT = 'https://mandrillapp.com/api/';
 
     public $api;
     public $output;
     public $key;
 
-    function __construct ($api = null)
+    function __construct($di, $api = null)
     {
+        $this->_dependencyInjector = $di;
         if ($api) {
             $this->init($api);
             $this->key = $api;
@@ -31,43 +34,49 @@ class Mandrill extends Component
         return $this;
     }
 
-    function init ($api)
+    function init($api)
     {
-        if (empty($api)) throw new Exception('Invalid API key');
+        if (empty($api))
+            throw new Exception('Invalid API key');
         try {
 
             $response = $this->request('users/ping2', ['key' => $api]);
-            if (!isset($response['PING']) || $response['PING'] != 'PONG!') throw new Exception('Invalid API key');
+            if (!isset($response['PING']) || $response['PING'] != 'PONG!')
+                throw new Exception('Invalid API key');
 
             $this->api = $api;
-
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
     }
 
-    static function getAttachmentStruct ($path)
+    static function getAttachmentStruct($path)
     {
 
         $struct = [];
 
         try {
 
-            if (!@is_file($path)) throw new Exception($path . ' is not a valid file.');
+            if (!@is_file($path))
+                throw new Exception($path . ' is not a valid file.');
 
             $filename = basename($path);
 
             if (!function_exists('get_magic_quotes')) {
-                function get_magic_quotes ()
+
+                function get_magic_quotes()
                 {
                     return false;
                 }
+
             }
             if (!function_exists('set_magic_quotes')) {
-                function set_magic_quotes ($value)
+
+                function set_magic_quotes($value)
                 {
                     return true;
                 }
+
             }
 
             if (strnatcmp(phpversion(), '6') >= 0) {
@@ -79,10 +88,11 @@ class Mandrill extends Component
             $file_buffer = file_get_contents($path);
             $file_buffer = chunk_split(base64_encode($file_buffer), 76, "\n");
 
-            if (strnatcmp(phpversion(), '6') >= 0) set_magic_quotes_runtime($magic_quotes);
+            if (strnatcmp(phpversion(), '6') >= 0)
+                set_magic_quotes_runtime($magic_quotes);
 
             if (strnatcmp(phpversion(), '5.3') >= 0) {
-                $finfo     = finfo_open(FILEINFO_MIME_TYPE);
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mime_type = finfo_file($finfo, $path);
             }
             else {
@@ -92,10 +102,9 @@ class Mandrill extends Component
             if (!Mandrill::isValidContentType($mime_type))
                 throw new Exception($mime_type . ' is not a valid content type (it should be ' . implode('*,', self::getValidContentTypes()) . ').');
 
-            $struct['type']    = $mime_type;
-            $struct['name']    = $filename;
+            $struct['type'] = $mime_type;
+            $struct['name'] = $filename;
             $struct['content'] = $file_buffer;
-
         } catch (Exception $e) {
             throw new Exception('Error creating the attachment structure: ' . $e->getMessage());
         }
@@ -103,18 +112,19 @@ class Mandrill extends Component
         return $struct;
     }
 
-    static function isValidContentType ($ct)
+    static function isValidContentType($ct)
     {
         $valids = self::getValidContentTypes();
 
         foreach ($valids as $vct) {
-            if (strpos($ct, $vct) !== false) return true;
+            if (strpos($ct, $vct) !== false)
+                return true;
         }
 
         return false;
     }
 
-    static function getValidContentTypes ()
+    static function getValidContentTypes()
     {
         return [
             'image/',
@@ -135,7 +145,7 @@ class Mandrill extends Component
      *
      * @return array|string|Exception
      */
-    function request ($method, $args = [], $http = 'POST', $output = 'json')
+    function request($method, $args = [], $http = 'POST', $output = 'json')
     {
         if (!isset($args['key']))
             $args['key'] = $this->api;
@@ -143,7 +153,7 @@ class Mandrill extends Component
         $this->output = $output;
 
         $api_version = self::API_VERSION;
-        $dot_output  = ('json' == $output) ? '' : ".{$output}";
+        $dot_output = ('json' == $output) ? '' : ".{$output}";
 
         $url = self::END_POINT . "{$api_version}/{$method}{$dot_output}";
 
@@ -154,7 +164,7 @@ class Mandrill extends Component
                 $sep_changed = false;
                 if (ini_get("arg_separator.output") != "&") {
                     $sep_changed = true;
-                    $orig_sep    = ini_get("arg_separator.output");
+                    $orig_sep = ini_get("arg_separator.output");
                     ini_set("arg_separator.output", "&");
                 }
 
@@ -176,7 +186,7 @@ class Mandrill extends Component
         }
 
         $response_code = $response['header']['http_code'];
-        $body          = $response['body'];
+        $body = $response['body'];
 
         switch ($output) {
 
@@ -203,17 +213,19 @@ class Mandrill extends Component
         }
     }
 
-    function http_request ($url, $fields = [], $method = 'POST')
+    function http_request($url, $fields = [], $method = 'POST')
     {
 
-        if (!in_array($method, ['POST', 'GET'])) $method = 'POST';
-        if (!isset($fields['key'])) $fields['key'] = $this->api;
+        if (!in_array($method, ['POST', 'GET']))
+            $method = 'POST';
+        if (!isset($fields['key']))
+            $fields['key'] = $this->api;
 
         //some distribs change arg sep to &amp; by default
         $sep_changed = false;
         if (ini_get("arg_separator.output") != "&") {
             $sep_changed = true;
-            $orig_sep    = ini_get("arg_separator.output");
+            $orig_sep = ini_get("arg_separator.output");
             ini_set("arg_separator.output", "&");
         }
 
@@ -246,11 +258,10 @@ class Mandrill extends Component
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2 * 60 * 1000);
 
             $response = curl_exec($ch);
-            $info     = curl_getinfo($ch);
-            $error    = curl_error($ch);
+            $info = curl_getinfo($ch);
+            $error = curl_error($ch);
 
             curl_close($ch);
-
         }
         elseif (function_exists('fsockopen')) {
             $parsed_url = parse_url($url);
@@ -280,7 +291,7 @@ class Mandrill extends Component
 
             $response = false;
 
-            $errno  = '';
+            $errno = '';
             $errstr = '';
             ob_start();
             $fp = fsockopen('ssl://' . $host, $port, $errno, $errstr, 5);
@@ -289,12 +300,12 @@ class Mandrill extends Component
                 stream_set_timeout($fp, 30);
 
                 $payload = "$method $path HTTP/1.0\r\n" .
-                    "Host: $host\r\n" .
-                    "Connection: close\r\n" .
-                    "Content-type: application/x-www-form-urlencoded\r\n" .
-                    "Content-length: " . strlen($params) . "\r\n" .
-                    "Connection: close\r\n\r\n" .
-                    $params;
+                "Host: $host\r\n" .
+                "Connection: close\r\n" .
+                "Content-type: application/x-www-form-urlencoded\r\n" .
+                "Content-length: " . strlen($params) . "\r\n" .
+                "Connection: close\r\n\r\n" .
+                $params;
                 fwrite($fp, $payload);
                 stream_set_timeout($fp, 30);
 
@@ -309,7 +320,8 @@ class Mandrill extends Component
 
                 list($headers, $response) = explode("\r\n\r\n", $response, 2);
 
-                if (ini_get("magic_quotes_runtime")) $response = stripslashes($response);
+                if (ini_get("magic_quotes_runtime"))
+                    $response = stripslashes($response);
                 $info = ['http_code' => 200];
             }
             else {
@@ -327,11 +339,33 @@ class Mandrill extends Component
     }
 
     /**
+     * Check Mandrill API response for errors and log if present
+     * @param array $responses
+     * @return array $responses
+     */
+    public function filterResponse($responses)
+    {
+        if (isset($responses['status'])) {
+            if ($responses['stauts'] == 'error') {
+                error_log("Mandrill Error ({$responses['code']} - {$responses['name']}): " . PHP_EOL . $responses['message'], 0);
+            }
+        }
+        else {
+            foreach ($responses as $response) {
+                if ($response['stauts'] == 'error') {
+                    error_log("Mandrill Error ({$response['code']} - {$response['name']}): " . PHP_EOL . $response['message'], 0);
+                }
+            }
+        }
+        return $responses;
+    }
+
+    /**
      * @link https://mandrillapp.com/api/docs/users.html#method=ping
      *
      * @return array|Exception
      */
-    function users_ping ()
+    function users_ping()
     {
 
         return $this->request('users/ping');
@@ -342,7 +376,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function users_info ()
+    function users_info()
     {
 
         return $this->request('users/info');
@@ -353,7 +387,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function users_senders ()
+    function users_senders()
     {
 
         return $this->request('users/senders');
@@ -364,7 +398,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function users_disable_sender ($domain)
+    function users_disable_sender($domain)
     {
 
         return $this->request('users/disable-senders', ['domain' => $domain]);
@@ -375,7 +409,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function users_verify_sender ($email)
+    function users_verify_sender($email)
     {
 
         return $this->request('users/verify-senders', ['domain' => $email]);
@@ -386,7 +420,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function senders_domains ()
+    function senders_domains()
     {
 
         return $this->request('senders/domains');
@@ -397,7 +431,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function senders_list ()
+    function senders_list()
     {
 
         return $this->request('senders/list');
@@ -408,7 +442,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function senders_info ($email)
+    function senders_info($email)
     {
 
         return $this->request('senders/info', ['address' => $email]);
@@ -419,7 +453,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function senders_time_series ($email)
+    function senders_time_series($email)
     {
 
         return $this->request('senders/time-series', ['address' => $email]);
@@ -430,7 +464,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function tags_list ()
+    function tags_list()
     {
 
         return $this->request('tags/list');
@@ -441,7 +475,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function tags_info ($tag)
+    function tags_info($tag)
     {
 
         return $this->request('tags/info', ['tag' => $tag]);
@@ -452,7 +486,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function tags_time_series ($tag)
+    function tags_time_series($tag)
     {
 
         return $this->request('tags/time-series', ['tag' => $tag]);
@@ -463,7 +497,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function tags_all_time_series ()
+    function tags_all_time_series()
     {
 
         return $this->request('tags/all-time-series');
@@ -474,7 +508,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function templates_add ($name, $code)
+    function templates_add($name, $code)
     {
 
         return $this->request('templates/add', ['name' => $name, 'code' => $code]);
@@ -485,7 +519,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function templates_update ($name, $code)
+    function templates_update($name, $code)
     {
 
         return $this->request('templates/update', ['name' => $name, 'code' => $code]);
@@ -496,7 +530,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function templates_delete ($name)
+    function templates_delete($name)
     {
 
         return $this->request('templates/delete', ['name' => $name]);
@@ -507,7 +541,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function templates_info ($name)
+    function templates_info($name)
     {
 
         return $this->request('templates/info', ['name' => $name]);
@@ -518,7 +552,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function templates_list ()
+    function templates_list()
     {
 
         return $this->request('templates/list');
@@ -529,7 +563,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function templates_time_series ($name)
+    function templates_time_series($name)
     {
 
         return $this->request('templates/time-series', ['name' => $name]);
@@ -540,7 +574,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function urls_list ()
+    function urls_list()
     {
 
         return $this->request('urls/list');
@@ -551,7 +585,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function urls_time_series ($name)
+    function urls_time_series($name)
     {
 
         return $this->request('urls/time-series', ['name' => $name]);
@@ -562,7 +596,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function urls_search ($q)
+    function urls_search($q)
     {
 
         return $this->request('urls/search', ['q' => $q]);
@@ -573,7 +607,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function webhooks_add ($url, $events)
+    function webhooks_add($url, $events)
     {
 
         return $this->request('webhooks/add', ['url' => $url, 'events' => $events]);
@@ -584,7 +618,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function webhooks_update ($url, $events)
+    function webhooks_update($url, $events)
     {
 
         return $this->request('webhooks/update', ['url' => $url, 'events' => $events]);
@@ -595,7 +629,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function webhooks_delete ($id)
+    function webhooks_delete($id)
     {
 
         return $this->request('webhooks/delete', ['id' => $id]);
@@ -606,7 +640,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function webhooks_info ($id)
+    function webhooks_info($id)
     {
 
         return $this->request('webhooks/info', ['id' => $id]);
@@ -617,7 +651,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function webhooks_list ()
+    function webhooks_list()
     {
         return $this->request('webhooks/list');
     }
@@ -627,19 +661,29 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function messages_search ($query, $date_from = '', $date_to = '', $tags = [], $senders = [], $limit = 100)
+    function messages_search($query, $date_from = '', $date_to = '', $tags = [], $senders = [], $limit = 100)
     {
         return $this->request('messages/search', compact('query', 'date_from', 'date_to', 'tags', 'senders', 'limit'));
     }
 
     /**
      * @link https://mandrillapp.com/api/docs/messages.html#method=send
+     * 
+     * If $queue true then add the email to the beanstalk queue
      *
      * @return array|Exception
      */
-    function messages_send ($message)
+    function messages_send($message, $queue = false)
     {
-        return $this->request('messages/send', ['message' => $message]);
+        if ($queue) {
+            $this->queue->addJob(function ($di) use ($message)
+            {
+                return $di->get('mandrill')->filterResponse($di->get('mandrill')->request('messages/send', ['message' => $message]));
+            });
+        }
+        else {
+            return $this->filterResponse($this->request('messages/send', ['message' => $message]));
+        }
     }
 
     /**
@@ -647,7 +691,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function messages_parse ($message)
+    function messages_parse($message)
     {
         return $this->request('messages/parse', ['key' => $this->key, 'raw_message' => $message]);
     }
@@ -657,7 +701,7 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function messages_sendRaw ($message)
+    function messages_sendRaw($message)
     {
         return $this->request('messages/send-raw', ['key' => $this->key, 'raw_message' => $message]);
     }
@@ -667,8 +711,9 @@ class Mandrill extends Component
      *
      * @return array|Exception
      */
-    function messages_send_template ($template_name, $template_content, $message)
+    function messages_send_template($template_name, $template_content, $message)
     {
         return $this->request('messages/send-template', compact('template_name', 'template_content', 'message'));
     }
+
 }

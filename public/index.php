@@ -19,6 +19,8 @@ try {
     $loader->registerNamespaces($config->loader->namespaces->toArray());
     $loader->register();
     
+    include __DIR__ . "/../vendor/autoload.php";
+    
     \ErrorPages::registerShutdown($config->application->showErrors);
 
     include __DIR__ . "/../app/config/services.php";

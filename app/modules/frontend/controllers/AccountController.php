@@ -28,18 +28,8 @@ class AccountController extends ControllerBase
         $form->submitButton = 'Create';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
-            'key' => 'firstName',
-            'label' => 'First Name',
-            'required' => true,
-            'size' => 6
-        ]))
-        ->addField(new \Forms\Fields\Textbox([
-            'key' => 'lastName',
-            'label' => 'Last Name',
-            'required' => true,
-            'size' => 6
-        ]))
+        ->addField(new \Forms\Fields\Textbox(['key' => 'firstName', 'label' => 'First Name', 'required' => true, 'size' => 6]))
+        ->addField(new \Forms\Fields\Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
         ->addField(new \Forms\Fields\Textbox([
             'key' => 'email',
             'label' => 'Email',
@@ -57,32 +47,45 @@ class AccountController extends ControllerBase
             'pattern' => '^.{8,1000}$',
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Dateselect([
-            'key' => 'DoB',
-            'label' => 'Date of birth',
-            'required' => true,
-        ]))
+        ->addField(new \Forms\Fields\Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]))
         ->addField(new \Forms\Fields\Checkbox([
             'key' => 'tos',
             'label' => 'I have read and agree to the <a href="/site/terms">Terms</a>',
             'required' => true
-        ]));
+        ]))
+        ->addField(new \Forms\Fields\Captcha());
 
         if ($this->request->isPost()) {
             if ($this->auth->checkToken($_POST)) {
                 if ($form->validate()) {
-                    
                     $user = $form->addToModel(new \Users());
                     $user->hashPass();
-                    $user->save();
+                    $user->active = 1;
                     
-                    
+                    if ($user->save()) {
+                        $user->addRole('Member');
+                        $user->addRole('Unverified Email');
+                        
+                        $token = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
+                        $this->emails->emailVerification($user, $token);
+                        
+                        $this->flashSession->success('Account created successfully, please login.');
+                        $this->response->redirect('account/login');
+                        $this->view->disable();
+                    }
                     
                 }
             }
         }
         $this->view->form = $form->getForm();
         $this->view->formjs = $form->getJS();
+    }
+    
+    public function verifyemailAction($token = false)
+    {
+        if ($token) {
+            
+        }
     }
 
 }

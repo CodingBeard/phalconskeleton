@@ -16,7 +16,6 @@ use Phalcon\DI\FactoryDefault,
     Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter,
     Phalcon\Session\Adapter\Files as SessionAdapter;
 
-
 $di = new FactoryDefault();
 
 $di->set('config', $config);
@@ -143,9 +142,9 @@ $di->set('filter', function()
     return new \Phalcon\Filter();
 }, true);
 
-$di->set('mandrill', function() use ($config)
+$di->set('mandrill', function() use ($di, $config)
 {
-    return new \Tartan\Mandrill($config->mail->mandrillKey);
+    return new \Tartan\Mandrill($di, $config->mail->mandrillKey);
 });
 
 $di->set('auth', function() use ($di)
@@ -174,3 +173,16 @@ $di->set('captcha', function() use ($config)
 {
     return new \Captcha($config->captcha->publicKey, $config->captcha->privateKey);
 }, true);
+
+$di->set('emails', function() use ($di)
+{
+    return new \Emails\SiteEmails($di);
+}, true);
+
+$di->set('queue', function() use ($config)
+{
+    return new \BeanstalkWithSerialize(array(
+        'host' => $config->beanstalk->host
+    ));
+}, true);
+

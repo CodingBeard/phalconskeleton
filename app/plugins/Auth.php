@@ -130,7 +130,7 @@ class Auth
      */
     public function createAuthCookie(\Phalcon\DI $di)
     {
-        $cookie = $this->user()->createCookieToken();
+        $cookie = $this->user()->createCookieToken(7);
         $cookies = $di->get('cookies');
         $cookies->set("RMT_" . $di->getShared('config')->application->name, $cookie['token'], time() + 604800, '/', true, $_SERVER['SERVER_NAME'], true);
         $cookies->set("RMK_" . $di->getShared('config')->application->name, $cookie['user_id'], time() + 604800, '/', true, $_SERVER['SERVER_NAME'], true);

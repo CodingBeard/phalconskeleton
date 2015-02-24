@@ -216,4 +216,9 @@ ALTER TABLE `authtokens` ADD FOREIGN KEY (user_id) REFERENCES `users` (`id`);
 
 
 
-INSERT INTO `roles` (`name`, `description`, `level`) VALUES('Root Admin', 'Administrator', 0),('Guest', 'Guest', 100);
+INSERT INTO `roles` (`name`, `description`, `level`) VALUES
+('Root Admin', 'Administrator', 0),
+('Member', 'Member', 98),
+('Verified Email', 'Verified email', 99),
+('Unverified Email', 'Unverified Email', 99),
+('Guest', 'Guest', 100);

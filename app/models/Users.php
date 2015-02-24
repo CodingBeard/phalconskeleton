@@ -175,20 +175,9 @@ class Users extends \Phalcon\Mvc\Model
      * Creates a remember me cookie - used with \Auth
      * @return array
      */
-    public function createCookieToken()
+    public function createCookieToken($days = 7)
     {
-        \Usertokens::find([
-            'type = "cookie" AND user_id = :a:',
-            'bind' => ['a' => $this->id]
-        ])->delete();
-
-        $token = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 20);
-
-        $cookie = new Usertokens();
-        $cookie->type = 'cookie';
-        $cookie->user_id = $this->id;
-        $cookie->token = password_hash($token, PASSWORD_DEFAULT);
-        $cookie->save();
+        $token = \Authtokens::newToken(['user_id' => $this->id, 'type' => 'cookie', 'expires' => $days, 'unique' => true]);
         return ['user_id' => $this->id, 'token' => $token];
     }
 

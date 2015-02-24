@@ -1,4 +1,7 @@
 logs
 .sass-cache
+vendor
 app/cache/*.php
 app/config/config.php
+app/modules/backend/controllers/testController.php
+app/modules/backend/views/test

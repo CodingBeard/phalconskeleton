@@ -61,6 +61,54 @@ class Authtokens extends \Phalcon\Mvc\Model
     public $token;
 
     /**
+     * Create an authtoken object and return it
+     * $properties = ['user_id' => 1, 'type' => '', 'unique' => false, 'expires' => 1, 'length' => 20]
+     * @param array $properties
+     * @return \Authtokens
+     */
+    public static function newToken($properties)
+    {
+        if (!isset($properties['expires']))
+            $properties['expires'] = 1;
+        if (!isset($properties['length']))
+            $properties['length'] = 20;
+        
+        if ($properties['unique']) {
+            $tokens = \Authtokens::find([
+                'user_id = :a: AND type = :b:',
+                'bind' => ['a' => $properties['user_id'], 'b' => $properties['type']]
+            ]);
+            if ($tokens) {
+                foreach ($tokens as $token) {
+                    $token->expires = date('Y-m-d H:i:s');
+                    $token->save();
+                }
+            }
+        }
+        
+        $token = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, $properties['length']);
+        
+        $authtoken = new \Authtokens();
+        $authtoken->user_id = $properties['user_id'];
+        $authtoken->issued = date('Y-m-d H:i:s');
+        $authtoken->expires = date('Y-m-d H:i:s', time() + (60 * 60 * 24 * $properties['expires']));
+        $authtoken->type = $properties['type'];
+        $authtoken->token = $token;
+        $authtoken->hashToken();
+        $authtoken->save();
+        
+        return $token;
+    }
+    
+    /**
+     * Hash the token
+     */
+    public function hashToken()
+    {
+        $this->token = password_hash($this->token, PASSWORD_DEFAULT);
+    }
+
+    /**
      * Initialize method for model.
      */
     public function initialize()

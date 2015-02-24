@@ -67,6 +67,17 @@ class Module implements ModuleDefinitionInterface
             $errors = new \ErrorPages($di);
             $eventsManager->attach('dispatch', $errors);
 
+            /*
+             * Filter and standardize controller/action names to make case insensitive and allow for hyphens etc
+             */
+            $eventsManager->attach("dispatch:beforeDispatchLoop", function($event, $dispatcher) use ($di)
+            {
+                $controller = strtolower($di->getShared('filter')->sanitize($dispatcher->getControllerName(), 'alphanum'));
+                $action = strtolower($di->getShared('filter')->sanitize($dispatcher->getActionName(), 'alphanum'));
+                $dispatcher->setControllerName($controller);
+                $dispatcher->setActionName($action);
+            });
+
             $dispatcher = new Dispatcher();
             $dispatcher->setDefaultNamespace("{$this->module}\controllers");
             $dispatcher->setEventsManager($eventsManager);
