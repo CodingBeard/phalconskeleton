@@ -16,10 +16,11 @@ use Phalcon\DI\FactoryDefault,
     Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter,
     Phalcon\Session\Adapter\Files as SessionAdapter;
 
-$di = new Phalcon\Di();
+if (!$di) {
+    $di = new Phalcon\Di();
 
-$di->setDefault(new FactoryDefault());
-
+    $di->setDefault(new FactoryDefault());
+}
 $di->set('config', $config);
 
 $di->set('crypt', function() use ($config)
@@ -78,7 +79,7 @@ $di->set('router', function () use ($config, $routes)
      */
     foreach ($routes as $uri => $route) {
         $router->add('#^/' . implode('-?', str_split($uri)) . '$#i', $route);
-        
+
         $split = explode('::', $route);
         $router->add('#^/' . implode('-?', str_split($uri)) . '(/.*)*$#i', [
             'module' => $split[0],

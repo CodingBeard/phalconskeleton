@@ -12,7 +12,7 @@
 
 namespace Emails;
 
-class SiteEmails extends \Phalcon\Mvc\User\Plugin
+class SiteEmails extends \Phalcon\Mvc\User\Component
 {
 
     /**
@@ -25,11 +25,9 @@ class SiteEmails extends \Phalcon\Mvc\User\Plugin
      * Email container class
      * @param \Phalcon\DI $dependencyInjector
      */
-    public function __construct($dependencyInjector)
+    public function __construct()
     {
-        $this->_dependencyInjector = $dependencyInjector;
         $this->domain = $this->config->application->domain;
-        $this->footers = $this->config->mail->footers;
     }
 
     /**

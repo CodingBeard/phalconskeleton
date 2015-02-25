@@ -58,11 +58,17 @@ class Authtokens extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    public $tokenKey;
+
+    /**
+     *
+     * @var string
+     */
     public $token;
 
     /**
      * Create an authtoken object and return it
-     * $properties = ['user_id' => 1, 'type' => '', 'unique' => false, 'expires' => 1, 'length' => 20]
+     * $properties = ['user_id' => 1, 'type' => '', 'unique' => false, 'expires' => 1]
      * @param array $properties
      * @return \Authtokens
      */
@@ -70,9 +76,7 @@ class Authtokens extends \Phalcon\Mvc\Model
     {
         if (!isset($properties['expires']))
             $properties['expires'] = 1;
-        if (!isset($properties['length']))
-            $properties['length'] = 20;
-        
+
         if ($properties['unique']) {
             $tokens = \Authtokens::find([
                 'user_id = :a: AND type = :b:',
@@ -85,23 +89,64 @@ class Authtokens extends \Phalcon\Mvc\Model
                 }
             }
         }
-        
+
+        $string = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 20);
+
         $authtoken = new \Authtokens();
         $authtoken->user_id = $properties['user_id'];
         $authtoken->issued = date('Y-m-d H:i:s');
         $authtoken->expires = date('Y-m-d H:i:s', time() + (60 * 60 * 24 * $properties['expires']));
         $authtoken->type = $properties['type'];
-        $authtoken->token = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, $properties['length']);
-        
-        return $authtoken;
+        $authtoken->tokenKey = substr($string, 0, 10);
+        $authtoken->token = substr($string, 10);
+        $authtoken->hashToken();
+        $authtoken->save();
+
+        return $string;
     }
-    
+
     /**
      * Hash the token
      */
     public function hashToken()
     {
         $this->token = password_hash($this->token, PASSWORD_DEFAULT);
+    }
+
+    public function expire()
+    {
+        $this->expires = date('Y-m-d H:i:s', time() - 3600);
+    }
+
+    /**
+     * Check the validity of a token
+     * @param string $type
+     * @param string $token
+     * @return boolean
+     */
+    public static function checkToken($type, $token, $expire = true)
+    {
+        $authtoken = \Authtokens::findFirst([
+            'type = :a: AND tokenKey = :b: AND expires >= :c:',
+            'bind' => [
+                'a' => $type,
+                'b' => substr($token, 0, 10),
+                'c' => date('Y-m-d H:i:s')
+            ]
+        ]);
+        if (!$authtoken) {
+            return false;
+        }
+        if (!password_verify(substr($token, 10), $authtoken->token)) {
+            if ($expire) {
+                $authtoken->expire();
+            }
+            return false;
+        }
+        if ($expire) {
+            $authtoken->expire();
+        }
+        return true;
     }
 
     /**
@@ -123,6 +168,7 @@ class Authtokens extends \Phalcon\Mvc\Model
             'issued' => 'issued',
             'expires' => 'expires',
             'type' => 'type',
+            'tokenKey' => 'tokenKey',
             'token' => 'token'
         );
     }

@@ -42,7 +42,9 @@ class TestController extends ControllerBase
 
     public function indexAction()
     {
-        print_r($this->config);
+        $this->queue->addJob(function ($di) {
+            die;
+        });
     }
 
 }

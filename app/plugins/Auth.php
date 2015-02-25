@@ -258,11 +258,11 @@ class Auth extends \Phalcon\Mvc\User\Component
      */
     public function createAuthCookie()
     {
-        $cookie = $this->getUser()->createCookieToken(7);
+        $token = \Authtokens::newToken(['user_id' => $this->user_id, 'type' => 'cookie_RMT', 'expires' => 7, 'unique' => true]);
         $domain = $this->config->application->domain;
         $https = $this->config->application->https;
-        $this->cookies->set("RMT", $cookie['token'], time() + 604800, '/', $domain, $https, $https);
-        $this->cookies->set("RMK", $cookie['user_id'], time() + 604800, '/', $domain, $https, $https);
+        $this->cookies->set("RMT", $token, time() + 604800, '/', $domain, $https, $https);
+        $this->cookies->set("RMK", $this->user_id, time() + 604800, '/', $domain, $https, $https);
     }
 
     /**
@@ -273,19 +273,11 @@ class Auth extends \Phalcon\Mvc\User\Component
     {
         if ($this->cookies->has("RMT")) {
             $token = $this->cookies->get("RMT")->getValue();
-            $key = $this->cookies->get("RMK")->getValue();
-            $cookietoken = \Authtokens::findFirst([
-                'type = "cookie" AND expires > :a: AND user_id = :b:',
-                'bind' => ['a' => date('Y-m-d H:i:s'), 'b' => $key]
-            ]);
-            if ($cookietoken) {
-                if (password_verify($token, $cookietoken->token)) {
-                    return true;
-                }
-                else {
-                    $this->removeAuthCookie();
-                    $cookietoken->delete();
-                }
+            if (\Authtokens::checkToken('cookie_RMT', $token)) {
+                return true;
+            }
+            else {
+                $this->removeAuthCookie();
             }
         }
         return false;
