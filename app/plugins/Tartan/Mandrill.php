@@ -345,13 +345,13 @@ class Mandrill extends \Phalcon\Mvc\User\Component
     public function filterResponse($responses)
     {
         if (isset($responses['status'])) {
-            if ($responses['stauts'] == 'error') {
+            if ($responses['status'] == 'error') {
                 error_log("Mandrill Error ({$responses['code']} - {$responses['name']}): " . PHP_EOL . $responses['message'], 0);
             }
         }
         else {
             foreach ($responses as $response) {
-                if ($response['stauts'] == 'error') {
+                if ($response['status'] == 'error') {
                     error_log("Mandrill Error ({$response['code']} - {$response['name']}): " . PHP_EOL . $response['message'], 0);
                 }
             }
@@ -672,17 +672,9 @@ class Mandrill extends \Phalcon\Mvc\User\Component
      *
      * @return array|Exception
      */
-    function messages_send($message, $queue = false)
+    function messages_send($message)
     {
-        if ($queue) {
-            $this->queue->addJob(function ($di) use ($message)
-            {
-                return $di->get('mandrill')->filterResponse($di->get('mandrill')->request('messages/send', ['message' => $message]));
-            });
-        }
-        else {
-            return $this->filterResponse($this->request('messages/send', ['message' => $message]));
-        }
+        return $this->filterResponse($this->request('messages/send', ['message' => $message]));
     }
 
     /**

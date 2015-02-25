@@ -34,7 +34,7 @@ class AccountController extends ControllerBase
             'key' => 'email',
             'label' => 'Email',
             'required' => true,
-            'unique' => ['model' => '\Users', 'field' => 'email'],
+            'unique' => ['model' => '\Users', 'field' => 'email', 'message' => 'That email is already registered'],
             'repeat' => true,
             'size' => 6
         ]))
@@ -68,7 +68,10 @@ class AccountController extends ControllerBase
 
                         $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
                         $authtoken->save();
-                        $this->emails->emailVerification($user, $authtoken->token);
+                        $this->queue->addJob(function () use ($user, $authtoken)
+                        {
+                            $this->emails->emailVerification($user, $authtoken->token);
+                        });
 
                         return $this->auth->redirect('account/login', 'success', 'Account created successfully, please login.');
                     }
@@ -112,6 +115,110 @@ class AccountController extends ControllerBase
 
             return $this->auth->redirect('', 'success', 'Thanks for verifying your email.');
         }
+    }
+
+    public function resetpassAction($token = false)
+    {
+        $this->tag->appendTitle("Reset Password");
+
+        if ($token) {
+            if (($user_id = \Authtokens::checkToken('passreset', $token))) {
+                $this->auth->logUserIn(\Users::findFirst([
+                    'id = :a:',
+                    'bind' => ['a' => $user_id]
+                ]));
+                $this->session->set('reset-pass', true);
+                return $this->auth->redirect('account/change-pass', 'success', 'Please set a new password.');
+            }
+        }
+        $form = $this->form;
+        $form->title = 'Reset Password';
+        $form->description = 'We will send you an email so you can reset your password';
+        $form->cancelHref = '/';
+
+        $form
+        ->addField(new \Forms\Fields\Textbox([
+            'key' => 'email',
+            'label' => 'Email',
+            'sublabel' => 'The address you registered with',
+            'required' => true,
+            'exists' => ['model' => '\Users', 'field' => 'email', 'message' => 'That account does not exists'],
+        ]))
+        ->addField(new \Forms\Fields\Captcha());
+
+        if ($this->request->isPost()) {
+            if ($this->auth->checkToken()) {
+                if ($form->validate()) {
+                    $user = \Users::findFirst([
+                        'email = :a:',
+                        'bind' => ['a' => $this->request->getPost('email', 'trim')]
+                    ]);
+                    $token = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
+
+                    $this->queue->addJob(function ($that) use ($user, $token)
+                    {
+                        $that->emails->resetPass($user, $token);
+                    });
+                    $this->auth->redirect('account/reset-pass', 'success', 'Password reset email sent, please check your spam folder if you cannot find it.');
+                }
+            }
+        }
+        $this->view->form = $form->getForm();
+        $this->view->formjs = $form->getJS();
+    }
+
+    public function changepassAction()
+    {
+        $this->tag->appendTitle("Change Password");
+
+        $form = $this->form;
+        $form->title = 'Change Password';
+        $form->cancelHref = '/';
+
+        if (!$this->session->has('reset-pass')) {
+            $form
+            ->addField(new \Forms\Fields\Password([
+                'key' => 'oldpassword',
+                'label' => 'Old Password',
+                'required' => true,
+            ]));
+        }
+
+        $form
+        ->addField(new \Forms\Fields\Password([
+            'key' => 'password',
+            'label' => 'New Password',
+            'sublabel' => 'Minimum of 8 characters',
+            'required' => true,
+            'repeat' => true,
+            'pattern' => '^.{8,1000}$',
+            'size' => 6
+        ]));
+
+        if ($this->request->isPost()) {
+            if ($this->auth->checkToken()) {
+                if ($form->validate()) {
+                    $user = $this->auth->getUser();
+                    
+                    if ($this->session->has('reset-pass')) {
+                        $this->session->remove('reset-pass');
+                    }
+                    else {
+                        if (!password_verify($this->request->getPost('oldpassword', 'trim'), $user->password)) {
+                            return $this->auth->redirect('account/change-pass', 'error', 'Incorrect password.');
+                        }
+                    }
+                    
+                    $user->password = $this->request->getPost('password', 'trim');
+                    $user->hashPass();
+                    $user->save();
+                    
+                    $this->auth->redirect('', 'success', 'Password changed');
+                }
+            }
+        }
+        $this->view->form = $form->getForm();
+        $this->view->formjs = $form->getJS();
     }
 
 }

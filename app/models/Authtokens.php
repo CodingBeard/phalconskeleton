@@ -122,7 +122,7 @@ class Authtokens extends \Phalcon\Mvc\Model
      * Check the validity of a token
      * @param string $type
      * @param string $token
-     * @return boolean
+     * @return bool|int
      */
     public static function checkToken($type, $token, $expire = true)
     {
@@ -146,7 +146,7 @@ class Authtokens extends \Phalcon\Mvc\Model
         if ($expire) {
             $authtoken->expire();
         }
-        return true;
+        return $authtoken->users->id;
     }
 
     /**
@@ -154,7 +154,7 @@ class Authtokens extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->belongsTo("user_id", "\Models\Users", "id", array('alias' => 'Users'));
+        $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
     }
 
     /**

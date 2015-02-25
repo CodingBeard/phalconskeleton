@@ -6073,6 +6073,11 @@ label {
   font-size: 1rem;
   color: #212121; }
 
+.sublabel {
+  font-size: 80%;
+  font-style: italic;
+  color: #a1a1a1; }
+
 /***************************
    Text Inputs + Textarea
 ****************************/
@@ -6767,6 +6772,10 @@ input#recaptcha_response_field {
 input.ui-autocomplete-input {
   height: 1rem; }
 
+@media only screen and (max-width: 600px) {
+  .g-recaptcha {
+    margin: 0 auto;
+    width: 304px; } }
 /***************
     Nav List
 ***************/

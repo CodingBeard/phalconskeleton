@@ -9,12 +9,7 @@
  * @copyright (c) 2015, Tim Marshall
  * @version 
  */
-use Phalcon\Mvc\Dispatcher,
-    Phalcon\Events\Event,
-    Phalcon\Mvc\User\Plugin,
-    Phalcon\Mvc\Dispatcher\Exception as DispatchException;
-
-class ErrorPages extends Plugin
+class ErrorPages extends \Phalcon\Mvc\User\Component
 {
 
     /**
@@ -36,8 +31,8 @@ class ErrorPages extends Plugin
     public function beforeException($event, $dispatcher, $exception)
     {
         switch ($exception->getCode()) {
-            case Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
-            case Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
+            case \Phalcon\Mvc\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
+            case \Phalcon\Mvc\Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
                 $dispatcher->forward([
                     'controller' => 'error',
                     'action' => 'notFound',
@@ -53,7 +48,7 @@ class ErrorPages extends Plugin
                 }
         }
     }
-    
+
     /**
      * Register shutdown functions that deal with errors
      * @param bool $showErrors
@@ -64,11 +59,14 @@ class ErrorPages extends Plugin
             register_shutdown_function(function ()
             {
                 if (is_array(error_get_last())) {
-                    if (error_get_last()['type'] == 8)
+                    if (error_get_last()['type'] == 8) {
                         return;
+                    }
                     echo '<pre style="position:absolute;bottom:40px;z-index:1000;">';
                     print_r(error_get_last());
                     echo '</pre>';
+                    $error = date('Y-m-d H:i:s') . ' ' . print_r(['uri' => $_SERVER['REQUEST_URI'], 'trace' => debug_backtrace(false)[1]], true) . PHP_EOL;
+                    error_log($error, 0);
                 }
             });
         }
@@ -76,9 +74,14 @@ class ErrorPages extends Plugin
             register_shutdown_function(function ()
             {
                 if (is_array(error_get_last())) {
+                    if (error_get_last()['type'] == 8) {
+                        return;
+                    }
                     if (error_get_last()['type'] == 1) {
                         header('Location: /error');
                     }
+                    $error = date('Y-m-d H:i:s') . ' ' . print_r(['uri' => $_SERVER['REQUEST_URI'], 'trace' => debug_backtrace(false)[1]], true) . PHP_EOL;
+                    error_log($error, 0);
                 }
             });
         }

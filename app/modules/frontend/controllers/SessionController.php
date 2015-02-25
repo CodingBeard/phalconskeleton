@@ -36,6 +36,7 @@ class SessionController extends ControllerBase
         ->addField(new \Forms\Fields\Password([
             'key' => 'password',
             'label' => 'Password',
+            'sublabel' => '<a href="/account/reset-pass">Forgotten password?</a>',
             'required' => true,
         ]))
         ->addField(new \Forms\Fields\Checkbox([
@@ -43,10 +44,10 @@ class SessionController extends ControllerBase
             'label' => 'Remember me'
         ]));
 
-        if ($this->auth->checkAuthCookie()) {
+        if (($user_id = $this->auth->checkAuthCookie())) {
             $user = \Users::findFirst([
                 'id = :a:',
-                'bind' => ['a' => $this->cookies->get("RMK")]
+                'bind' => ['a' => $user_id]
             ]);
             $this->auth->logUserIn($user);
             $this->auth->createAuthCookie();

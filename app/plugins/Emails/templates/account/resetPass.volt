@@ -10,7 +10,7 @@ copyright (c) 2015, Tim Marshall
 {% endblock %}
 
 {% block content %}
-	<meta itemprop="name" content="Confirm Email"/>
+	<meta itemprop="name" content="Reset Password"/>
 	<table width="100%" cellpadding="0" cellspacing="0">
 	  <tr>
 		<td class="content-block">
@@ -19,22 +19,17 @@ copyright (c) 2015, Tim Marshall
 	  </tr>
 	  <tr>
 		<td class="content-block">
-		  Thanks for signing up with us.
-		</td>
-	  </tr>
-	  <tr>
-		<td class="content-block">
-		  We may need to send you notifications or password resets and it is important that we have a valid email address.
+		  You have requested to reset your password, please click the link below to do so.
 		</td>
 	  </tr>
 	  <tr>
 		<td class="content-block aligncenter" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
-		  <a href="http://{{ config.application.domain }}/verify-email/{{ token }}" class="btn-primary" itemprop="url">Confirm email address</a>
+		  <a href="http://{{ config.application.domain }}/account/reset-pass/{{ token }}" class="btn-primary" itemprop="url">Reset Password</a>
 		</td>
 	  </tr>
 	  <tr>
 		<td class="content-block">
-		  If you did not register an account with us, please ignore this email.
+		  If you did not make this request please ignore it.
 		</td>
 	  </tr>
 	  <tr>

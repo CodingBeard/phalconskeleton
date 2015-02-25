@@ -96,7 +96,26 @@ class SiteEmails extends \Phalcon\Mvc\User\Component
             'subject' => "Thanks for registering at {$this->config->application->name}! Please verify your email",
             'html' => $content->html,
             'text' => $content->text,
-        ], true);
+        ]);
+    }
+
+    /**
+     * Send an rest pass email
+     * @param \Users $user
+     * @param string $token
+     */
+    public function resetPass($user, $token)
+    {
+        $content = $this->render('account', 'resetPass', ['user' => $user, 'token' => $token]);
+
+        $this->mandrill->messages_send([
+            'from_email' => 'No-reply@' . $this->domain,
+            'from_name' => $this->config->application->name,
+            'to' => [['email' => $user->email, 'name' => $user->getName()]],
+            'subject' => "Password reset",
+            'html' => $content->html,
+            'text' => $content->text,
+        ]);
     }
 
 }

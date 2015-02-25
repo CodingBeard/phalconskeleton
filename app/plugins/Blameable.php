@@ -58,7 +58,7 @@ class Blameable extends Behavior implements BehaviorInterface
      */
     public function createAudit($type, ModelInterface $model)
     {
-        $auth = $model->getDI()->getSession()->get('auth');
+        $auth = $model->getDI()->get('auth');
         $request = $model->getDI()->getRequest();
 
         $audit = new \Audits();

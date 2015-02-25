@@ -262,7 +262,6 @@ class Auth extends \Phalcon\Mvc\User\Component
         $domain = $this->config->application->domain;
         $https = $this->config->application->https;
         $this->cookies->set("RMT", $token, time() + 604800, '/', $domain, $https, $https);
-        $this->cookies->set("RMK", $this->user_id, time() + 604800, '/', $domain, $https, $https);
     }
 
     /**
@@ -301,7 +300,6 @@ class Auth extends \Phalcon\Mvc\User\Component
             $domain = $this->config->application->domain;
             $https = $this->config->application->https;
             $this->cookies->set("RMT", null, time() - 3600, '/', $domain, $https, $https);
-            $this->cookies->set("RMK", null, time() - 3600, '/', $domain, $https, $https);
         }
     }
 

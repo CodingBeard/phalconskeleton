@@ -27,12 +27,27 @@ class BeanstalkTask extends \Phalcon\CLI\Task
 
         while (($job = $this->queue->reserve())) {
 
-            $serialized = $job->getBody();
-            $unserialized = $serializer->unserialize($serialized);
+            $details = $job->getBody();
+            register_shutdown_function(function () use ($details, $job)
+            {
+                if (is_array(error_get_last())) {
+                    if (error_get_last()['type'] == 8) {
+                        return;
+                    }
+                    if (error_get_last()['type'] == 1) {
+                        $job->delete();
+                    }
+                    $error = date('Y-m-d H:i:s') . ' ' . print_r($details, true) . PHP_EOL;
+                    file_put_contents(__DIR__ . '/../../logs/clierror.log', $error, FILE_APPEND);
+                    echo $error;
+                }
+            });
+            $unserialized = $serializer->unserialize($details['function']);
+
             if (is_callable($unserialized)) {
-                $unserialized($this->getDI());
+                $unserialized($this);
+                $job->delete();
             }
-            $job->delete();
         }
     }
 

@@ -14,7 +14,7 @@ copyright (c) 2015, Tim Marshall
 	{% if required is true %}
 		<strong style="color: red;">*</strong>
 	{% endif %}
-	<span class="light">
+	<span class="sublabel">
 	  {{ sublabel }}
 	</span>
   </label>

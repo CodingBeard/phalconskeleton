@@ -25,7 +25,7 @@ class TestController extends ControllerBase
             'bind' => ['a' => 1]
         ]);
         $variables = ['user' => $user, 'token' => 'IO3gla4lbmg6MZ5fe02b'];
-        echo $this->emails->render('account', 'emailVerification', $variables, true);
+        echo $this->emails->render('account', 'resetPass', $variables, true);
     }
 
     /**
@@ -40,11 +40,17 @@ class TestController extends ControllerBase
         //$this->emails->emailVerification($user, 'IO3gla4lbmg6MZ5fe02b');
     }
 
+    public function beanstalkAction()
+    {
+        $this->queue->addJob(function ($that)
+        {
+            
+        });
+    }
+
     public function indexAction()
     {
-        $this->queue->addJob(function ($di) {
-            die;
-        });
+        
     }
 
 }

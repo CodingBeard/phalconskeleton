@@ -58,7 +58,7 @@ class Logins extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->belongsTo("user_id", "\Models\Users", "id", array('alias' => 'Users'));
+        $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
     }
 
     /**

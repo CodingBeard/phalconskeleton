@@ -40,6 +40,12 @@ class Field
     public $unique = false;
 
     /**
+     * Array of New Model, field to check
+     * @var bool|array
+     */
+    public $exists = false;
+
+    /**
      * Whether this field is a repeated field
      * @var bool
      */
@@ -77,13 +83,34 @@ class Field
                 'bind' => ['a' => $POST[$this->key]]
             ]);
             if ($found) {
-                $this->errorMessage = 'An entry with this value exists';
+                if (isset($this->unique['message'])) {
+                    $this->errorMessage = $this->unique['message'];
+                }
+                else {
+                    $this->errorMessage = 'An entry with this value exists';
+                }
+                return false;
+            }
+        }
+        if ($this->exists) {
+            $model = $this->exists['model'];
+            $found = $model::findFirst([
+                $this->exists['field'] . ' = :a:',
+                'bind' => ['a' => $POST[$this->key]]
+            ]);
+            if (!$found) {
+                if (isset($this->exists['message'])) {
+                    $this->errorMessage = $this->exists['message'];
+                }
+                else {
+                    $this->errorMessage = 'This must match an existing entry';
+                }
                 return false;
             }
         }
         return true;
     }
-    
+
     /**
      * Set the default value of a field
      */

@@ -23,21 +23,27 @@ try {
 
     include __DIR__ . "/../vendor/autoload.php";
 
-    \ErrorPages::registerShutdown(true);
+    register_shutdown_function(function () use ($argv)
+    {
+        unlink(__DIR__ . '/pids/' . $argv[1] . '.pid');
+    });
 
     $di = new CliDI();
 
     $di->set('config', $config);
     $di->set('db', function () use ($config)
     {
-        return new DbAdapter([
+        return new Phalcon\Db\Adapter\Pdo\Mysql([
             'adapter' => $config->database->adapter,
             'host' => $config->database->host,
             'username' => $config->database->username,
             'password' => $config->database->password,
             'dbname' => $config->database->dbname,
-            'port' => $config->database->port,
         ]);
+    });
+    $di->set('mandrill', function() use ($config)
+    {
+        return new \Tartan\Mandrill($config->mail->mandrillKey);
     });
     $di->set('emails', function()
     {
@@ -51,14 +57,14 @@ try {
     }, true);
     $di->set('view', function () use ($config)
     {
-        $view = new View();
+        $view = new \Phalcon\Mvc\View();
         $view->setViewsDir($config->view->frontend->viewsDir);
         $view->registerEngines([
             '.volt' => function ($view, $di) use ($config)
             {
-                $volt = new VoltEngine($view, $di);
+                $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di);
                 $volt->setOptions([
-                    'compiledPath' => $config->view->frontend->compileDir,
+                    'compiledPath' => __DIR__ . '/cache/',
                     'compiledSeparator' => '_',
                     'compileAlways' => true
                 ]);
@@ -107,5 +113,6 @@ try {
     $console->handle($arguments);
 } catch (Exception $e) {
     \ErrorPages::handleException($e, true);
+    file_put_contents(__DIR__ . '/../logs/clierror.log', $e->getMessage() . PHP_EOL . $e->getTraceAsString());
     exit(255);
 }

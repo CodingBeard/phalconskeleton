@@ -18,7 +18,8 @@ class BeanstalkWithSerialize extends \Phalcon\Queue\Beanstalk
     {
         $serialize = new \SuperClosure\Serializer();
         $serialized = $serialize->serialize($job);
-        return $this->put($serialized, $options);
+        $trace = ['uri' => $_SERVER['REQUEST_URI'], 'trace' => debug_backtrace(false)[1]];
+        return $this->put(['function' => $serialized, 'trace' => $trace], $options);
     }
 
 }
