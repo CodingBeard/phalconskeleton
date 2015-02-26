@@ -1,0 +1,8 @@
+insert into permissions (module, controller, action) values
+('frontend', 'index', 'index'),
+('frontend', 'session', 'login'),
+('frontend', 'account', 'register'),
+('frontend', 'account', 'resetpass');
+
+insert into permissionroles (permission_id, role_id) values
+(1, 5),(2, 5),(3, 5),(4, 5);

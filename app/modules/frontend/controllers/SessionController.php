@@ -78,7 +78,13 @@ class SessionController extends ControllerBase
                     if ($this->request->getPost('rememberme', 'trim') == 'on') {
                         $this->auth->createAuthCookie();
                     }
-                    return $this->auth->redirect('', 'success', 'Welcome back ' . $this->escaper->escapeHtml($user->firstName) . '.');
+                    
+                    if ($this->request->get('continue')) {
+                        return $this->auth->redirect($this->request->get('continue'), 'success', 'Welcome back ' . $this->escaper->escapeHtml($user->firstName) . '.');
+                    }
+                    else {
+                        return $this->auth->redirect('', 'success', 'Welcome back ' . $this->escaper->escapeHtml($user->firstName) . '.');
+                    }
                 }
             }
         }

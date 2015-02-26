@@ -93,9 +93,9 @@ class Security extends Plugin
             return true;
         }
 
-        if ($auth) {
+        if ($auth->loggedIn) {
             $auth->setRoles();
-            if ($auth->user()->active == 0) {
+            if ($auth->getUser()->active == 0) {
                 $auth->redirect('', 'error', 'Your account has been deactivated.');
                 return false;
             }
@@ -105,14 +105,8 @@ class Security extends Plugin
                 }
             }
         }
-        $redirect = '?continue=';
-        if ($this->module == 'backend')
-            $redirect .= 'admin/';
-        $redirect .= $controller . '/' . $action . '/';
-        foreach ($dispatcher->getParams() as $param) {
-            $redirect .= $param . '/';
-        }
-        return $auth->redirect('account/login/' . $redirect, 'error', 'You do not have the rights to access that page.');
+        $redirect = '?continue=' . substr($_SERVER['REQUEST_URI'], 1);
+        return $auth->redirect('login/' . $redirect, 'error', 'You do not have the rights to access that page.');
     }
 
 }

@@ -59,8 +59,8 @@ class Module implements ModuleDefinitionInterface
             /*
              * Add plugins to the dispatcher to listen for events
              */
-            //$security = new \Security($di, $this->module);
-            //$eventsManager->attach('dispatch', $security);
+            $security = new \Security($di, $this->module);
+            $eventsManager->attach('dispatch', $security);
 
             $assets = new \Assets($di, $this->module);
             $eventsManager->attach('dispatch', $assets);

@@ -159,6 +159,7 @@ class Users extends \Phalcon\Mvc\Model
         $this->hasMany("id", "Usertokens", "user_id", ['alias' => 'Usertokens']);
         $this->hasMany("id", "Audits", "user_id", ['alias' => 'Audits']);
         $this->hasMany("id", "Logins", "user_id", ['alias' => 'Logins']);
+        $this->hasMany("id", "Emailchanges", "user_id", ['alias' => 'Emailchanges']);
     }
 
     /**
