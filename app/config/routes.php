@@ -24,4 +24,7 @@ return [
     'verifyemail' => 'frontend::account::verifyemail',
     'login' => 'frontend::session::login',
     'logout' => 'frontend::session::logout',
+    'terms' => 'frontend::site::terms',
+    'privacy' => 'frontend::site::privacy',
+    'credits' => 'frontend::site::credits',
 ];

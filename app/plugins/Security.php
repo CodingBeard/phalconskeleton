@@ -95,7 +95,7 @@ class Security extends Plugin
 
         if ($auth->loggedIn) {
             $auth->setRoles();
-            if ($auth->getUser()->active == 0) {
+            if ($auth->getUser()->hasRole('Deactivated')) {
                 $auth->redirect('', 'error', 'Your account has been deactivated.');
                 return false;
             }

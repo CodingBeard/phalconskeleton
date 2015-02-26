@@ -48,9 +48,9 @@ SET navigation = [
 			<a class="collapsible-header" data-activates="collapse">Site</a>
 			<div id="collapse" class="collapsible-body">
 			  <ul>
-				<li><a href="{{ url('site/terms') }}">Terms</a></li>
-				<li><a href="{{ url('site/privacy') }}">Privacy</a></li>
-				<li><a href="{{ url('site/credits') }}">Credits</a></li>
+				<li><a href="{{ url('terms') }}">Terms</a></li>
+				<li><a href="{{ url('privacy') }}">Privacy</a></li>
+				<li><a href="{{ url('credits') }}">Credits</a></li>
 			  </ul>
 			</div>
 		  </li>

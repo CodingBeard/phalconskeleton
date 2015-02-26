@@ -163,7 +163,11 @@ class Authtokens extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
+        $this->keepSnapshots(true);
+        $this->addBehavior(new \Blameable());
+        $this->useDynamicUpdate(true);
+        $this->hasMany('id', 'Emailchanges', 'authtoken_id', array('alias' => 'Emailchanges'));
+        $this->belongsTo('user_id', 'Users', 'id', array('alias' => 'Users'));
     }
 
     /**

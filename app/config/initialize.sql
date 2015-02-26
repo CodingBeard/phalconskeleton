@@ -242,6 +242,7 @@ ALTER TABLE `emailchanges` ADD FOREIGN KEY (authtoken_id) REFERENCES `authtokens
 
 INSERT INTO `roles` (`name`, `description`, `level`) VALUES
 ('Root Admin', 'Administrator', 0),
+('Deactivated', 'Deactivated account', 97),
 ('Member', 'Member', 98),
 ('Verified Email', 'Verified email', 99),
 ('Unverified Email', 'Unverified Email', 99),

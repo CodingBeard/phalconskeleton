@@ -19,7 +19,6 @@
  * @copyright (c) 2015, Tim Marshall
  * @version 
  */
-
 class Logins extends \Phalcon\Mvc\Model
 {
 
@@ -43,7 +42,7 @@ class Logins extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var int
+     * @var integer
      */
     public $attempt;
 
@@ -58,7 +57,10 @@ class Logins extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
+        $this->keepSnapshots(true);
+        $this->addBehavior(new \Blameable());
+        $this->useDynamicUpdate(true);
+        $this->belongsTo('user_id', 'Users', 'id', array('alias' => 'Users'));
     }
 
     /**

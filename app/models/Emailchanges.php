@@ -58,6 +58,9 @@ class Emailchanges extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
+        $this->keepSnapshots(true);
+        $this->addBehavior(new \Blameable());
+        $this->useDynamicUpdate(true);
         $this->belongsTo("authtoken_id", "Authtokens", "id", array('alias' => 'Authtokens'));
         $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
     }
