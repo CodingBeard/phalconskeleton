@@ -24,8 +24,12 @@ class TestController extends ControllerBase
             'id = :a:',
             'bind' => ['a' => 1]
         ]);
-        $variables = ['user' => $user, 'token' => 'IO3gla4lbmg6MZ5fe02b'];
-        echo $this->emails->render('account', 'resetPass', $variables, true);
+        $change = \Emailchanges::findFirst([
+            'id = :a:',
+            'bind' => ['a' => 1]
+        ]);
+        $variables = ['user' => $user, 'emailchange' => $change, 'token' => 'd1aXe7wJfjt57lfKufZv'];
+        echo $this->emails->render('account', 'changeEmailRevoke', $variables, true);
     }
 
     /**
@@ -44,7 +48,7 @@ class TestController extends ControllerBase
     {
         $this->queue->addJob(function ($that)
         {
-            
+
         });
     }
 

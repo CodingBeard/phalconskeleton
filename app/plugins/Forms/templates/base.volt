@@ -34,7 +34,7 @@ copyright (c) 2015, Tim Marshall
 	  {% endif %}
 	  <div class="row">
 		<button id="submit" class="btn green" type="submit">{{ submitButton }}</button>
-		<a class="btn white black-text right" href="{{ cancelHref }}">{{ cancelButton }}</a>
+		<a class="btn white black-text right" href="{{ url(cancelHref) }}">{{ cancelButton }}</a>
 	  </div>
 	</div>
   </div>

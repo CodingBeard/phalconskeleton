@@ -67,10 +67,12 @@ class AccountController extends ControllerBase
                         $user->addRole('Unverified Email');
 
                         $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
+                        $token = $authtoken->string;
+
                         $authtoken->save();
-                        $this->queue->addJob(function () use ($user, $authtoken)
+                        $this->queue->addJob(function () use ($user, $token)
                         {
-                            $this->emails->emailVerification($user, $authtoken->token);
+                            $this->emails->emailVerification($user, $token);
                         });
 
                         return $this->auth->redirect('account/login', 'success', 'Account created successfully, please login.');
@@ -117,16 +119,18 @@ class AccountController extends ControllerBase
         }
     }
 
+    /**
+     * Reset password page
+     * @param string $token
+     * @return bool
+     */
     public function resetpassAction($token = false)
     {
         $this->tag->appendTitle("Reset Password");
 
         if ($token) {
-            if (($user_id = \Authtokens::checkToken('passreset', $token))) {
-                $this->auth->logUserIn(\Users::findFirst([
-                    'id = :a:',
-                    'bind' => ['a' => $user_id]
-                ]));
+            if (($authtoken = \Authtokens::checkToken('passreset', $token))) {
+                $this->auth->logUserIn($authtoken->users);
                 $this->session->set('reset-pass', true);
                 return $this->auth->redirect('account/change-pass', 'success', 'Please set a new password.');
             }
@@ -153,7 +157,8 @@ class AccountController extends ControllerBase
                         'email = :a:',
                         'bind' => ['a' => $this->request->getPost('email', 'trim')]
                     ]);
-                    $token = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
+                    $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
+                    $token = $authtoken->string;
 
                     $this->queue->addJob(function ($that) use ($user, $token)
                     {
@@ -167,13 +172,17 @@ class AccountController extends ControllerBase
         $this->view->formjs = $form->getJS();
     }
 
+    /**
+     * Change password page
+     * @return bool
+     */
     public function changepassAction()
     {
         $this->tag->appendTitle("Change Password");
 
         $form = $this->form;
         $form->title = 'Change Password';
-        $form->cancelHref = '/';
+        $form->cancelHref = 'account';
 
         if (!$this->session->has('reset-pass')) {
             $form
@@ -199,26 +208,153 @@ class AccountController extends ControllerBase
             if ($this->auth->checkToken()) {
                 if ($form->validate()) {
                     $user = $this->auth->getUser();
-                    
+
                     if ($this->session->has('reset-pass')) {
                         $this->session->remove('reset-pass');
                     }
                     else {
-                        if (!password_verify($this->request->getPost('oldpassword', 'trim'), $user->password)) {
+                        if (!$user->checkPass($this->request->getPost('oldpassword', 'trim'))) {
                             return $this->auth->redirect('account/change-pass', 'error', 'Incorrect password.');
                         }
                     }
-                    
+
                     $user->password = $this->request->getPost('password', 'trim');
                     $user->hashPass();
                     $user->save();
-                    
-                    $this->auth->redirect('', 'success', 'Password changed');
+
+                    $this->auth->redirect('account', 'success', 'Password changed.');
                 }
             }
         }
         $this->view->form = $form->getForm();
         $this->view->formjs = $form->getJS();
+    }
+
+    /**
+     * Change Email address page
+     * @param string $token
+     * @return type
+     */
+    public function changeemailAction()
+    {
+        $this->tag->appendTitle("Change Email");
+
+        $form = $this->form;
+        $form->title = 'Change Email';
+        $form->cancelHref = 'account';
+
+        $form
+        ->addField(new \Forms\Fields\Password([
+            'key' => 'password',
+            'label' => 'Current Password',
+            'required' => true,
+        ]))
+        ->addField(new \Forms\Fields\Textbox([
+            'key' => 'email',
+            'label' => 'New Email',
+            'required' => true,
+            'unique' => ['model' => '\Users', 'field' => 'email', 'message' => 'That email is already registered'],
+            'repeat' => true,
+            'size' => 6
+        ]));
+
+        if ($this->request->isPost()) {
+            if ($this->auth->checkToken()) {
+                if ($form->validate()) {
+                    $user = $this->auth->getUser();
+
+                    if (!$user->checkPass($this->request->getPost('password', 'trim'))) {
+                        return $this->auth->redirect('account/change-email', 'error', 'Incorrect password.');
+                    }
+
+                    $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailchangerevoke', 'unique' => true, 'expires' => 7]);
+                    $token = $authtoken->string;
+
+                    $change = new \Emailchanges();
+                    $change->user_id = $user->id;
+                    $change->authtoken_id = $authtoken->id;
+                    $change->date = date('Y-m-d H:i:s');
+                    $change->oldEmail = $user->email;
+                    $change->save();
+
+                    $user->email = $this->request->getPost('email', 'trim');
+                    $user->save();
+
+                    $this->queue->addJob(function ($that) use ($user, $change, $token)
+                    {
+                        $that->emails->changeEmail($user, $change, $token);
+                    });
+
+                    $this->auth->redirect('account', 'success', 'Email changed.');
+                }
+            }
+        }
+        $this->view->form = $form->getForm();
+        $this->view->formjs = $form->getJS();
+    }
+
+    /**
+     * Check a token to revoke an email change
+     * @param string $token
+     * @return bool
+     */
+    public function revokeemailchangeAction($token = false)
+    {
+        if ($token) {
+            if (($authtoken = \Authtokens::checkToken('emailchangerevoke', $token))) {
+                $user = $authtoken->users;
+                $change = \Emailchanges::findFirst([
+                    'authtoken_id = :a:',
+                    'bind' => ['a' => $authtoken->id]
+                ]);
+
+                $user->email = $change->oldEmail;
+                $user->save();
+
+                return $this->auth->redirect('account', 'success', 'Email address change revoked.');
+            }
+        }
+        return $this->auth->redirect('account', 'danger', 'Invalid Token.');
+    }
+
+    /**
+     * Update account info
+     */
+    public function changeinfoAction()
+    {
+        $this->tag->appendTitle("Update Account");
+
+        $form = $this->form;
+        $form->title = 'Update Account';
+        $form->submitButton = 'Update';
+        $form->cancelHref = 'account';
+
+        $form
+        ->addField(new \Forms\Fields\Textbox(['key' => 'firstName', 'label' => 'First Name', 'required' => true, 'size' => 6]))
+        ->addField(new \Forms\Fields\Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
+        ->addField(new \Forms\Fields\Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]));
+
+        if ($this->request->isPost()) {
+            if ($this->auth->checkToken()) {
+                if ($form->validate()) {
+                    $user = $form->addToModel($this->auth->getUser(), ['firstName', 'lastName', 'DoB']);
+
+                    if ($user->save()) {
+                        $this->auth->redirect('account', 'success', 'Account details updated');
+                    }
+                }
+            }
+        }
+        $this->view->form = $form->getForm();
+        $this->view->formjs = $form->getJS();
+    }
+
+    /**
+     * Account
+     */
+    public function indexAction()
+    {
+        $this->tag->appendTitle("Account");
     }
 
 }

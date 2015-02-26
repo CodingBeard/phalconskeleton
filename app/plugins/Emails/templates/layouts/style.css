@@ -137,11 +137,9 @@ a {
 	text-decoration: underline;
 }
 
-.btn-primary {
+.btn {
 	text-decoration: none;
 	color: #FFF;
-	background-color: #4CAF50;
-	border: solid #4CAF50;
 	border-width: 10px 20px;
 	line-height: 2;
 	font-weight: bold;
@@ -150,6 +148,26 @@ a {
 	display: inline-block;
 	border-radius: 2px;
 	text-transform: capitalize;
+}
+
+.red {
+	background-color: #F44336;
+	border: solid #F44336;
+}
+
+.green {
+	background-color: #4CAF50;
+	border: solid #4CAF50;
+}
+
+.blue {
+	background-color: #2196F3;
+	border: solid #2196F3;
+}
+
+.yellow {
+	background-color: #ffeb3b;
+	border: solid #ffeb3b;
 }
 
 /* -------------------------------------

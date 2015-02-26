@@ -10,7 +10,7 @@ copyright (c) 2015, Tim Marshall
 {% endblock %}
 
 {% block content %}
-	<meta itemprop="name" content="Confirm Email"/>
+	<meta itemprop="name" content="Reset Password"/>
 	<table width="100%" cellpadding="0" cellspacing="0">
 	  <tr>
 		<td class="content-block">
@@ -19,22 +19,17 @@ copyright (c) 2015, Tim Marshall
 	  </tr>
 	  <tr>
 		<td class="content-block">
-		  Thanks for signing up with us.
+		  At {{ date(config.defaults.datetimeFormat) }} Your email address was changed to: {{ user.email|e }}.
 		</td>
 	  </tr>
 	  <tr>
 		<td class="content-block">
-		  We may need to send you notifications or password resets and it is important that we have a valid email address.
+		  If you did not request this please revoke the change using the link below.
 		</td>
 	  </tr>
 	  <tr>
 		<td class="content-block aligncenter" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
-		  <a href="http://{{ config.application.domain }}/verify-email/{{ token }}" class="btn blue" itemprop="url">Confirm email address</a>
-		</td>
-	  </tr>
-	  <tr>
-		<td class="content-block">
-		  If you did not register an account with us, please ignore this email.
+		  <a href="http://{{ config.application.domain }}/account/revoke-email-change/{{ token }}" class="btn red" itemprop="url">Revoke change</a>
 		</td>
 	  </tr>
 	  <tr>

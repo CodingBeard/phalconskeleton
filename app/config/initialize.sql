@@ -207,6 +207,17 @@ CREATE TABLE `logins` (
   PRIMARY KEY (`id`)
 );
 
+DROP TABLE IF EXISTS `emailchanges`;
+		
+CREATE TABLE `emailchanges` (
+  `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
+  `user_id` INT NULL DEFAULT NULL,
+  `authtoken_id` INT NULL DEFAULT NULL,
+  `date` DATETIME NULL DEFAULT NULL,
+  `oldEmail` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
 -- ---
 -- Foreign Keys 
 -- ---
@@ -225,7 +236,8 @@ ALTER TABLE `userroles` ADD FOREIGN KEY (role_id) REFERENCES `roles` (`id`);
 ALTER TABLE `auditfields` ADD FOREIGN KEY (audit_id) REFERENCES `audits` (`id`);
 ALTER TABLE `authtokens` ADD FOREIGN KEY (user_id) REFERENCES `users` (`id`);
 ALTER TABLE `logins` ADD FOREIGN KEY (user_id) REFERENCES `users` (`id`);
-
+ALTER TABLE `emailchanges` ADD FOREIGN KEY (user_id) REFERENCES `users` (`id`);
+ALTER TABLE `emailchanges` ADD FOREIGN KEY (authtoken_id) REFERENCES `authtokens` (`id`);
 
 
 INSERT INTO `roles` (`name`, `description`, `level`) VALUES

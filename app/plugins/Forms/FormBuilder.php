@@ -227,6 +227,9 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
     {
         if ($translation) {
             foreach ($translation as $postKey => $modelKey) {
+                if (is_int($postKey)) {
+                    $postKey = $modelKey;
+                }
                 $model->$modelKey = $this->request->getPost($postKey, 'trim');
             }
         }

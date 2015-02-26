@@ -23,11 +23,6 @@ try {
 
     include __DIR__ . "/../vendor/autoload.php";
 
-    register_shutdown_function(function () use ($argv)
-    {
-        unlink(__DIR__ . '/pids/' . $argv[1] . '.pid');
-    });
-
     $di = new CliDI();
 
     $di->set('config', $config);
@@ -112,7 +107,6 @@ try {
 
     $console->handle($arguments);
 } catch (Exception $e) {
-    \ErrorPages::handleException($e, true);
     file_put_contents(__DIR__ . '/../logs/clierror.log', $e->getMessage() . PHP_EOL . $e->getTraceAsString());
     exit(255);
 }

@@ -29,6 +29,12 @@ class Auth extends \Phalcon\Mvc\User\Component
     public $user_id;
 
     /**
+     * User model cache
+     * @var \Users
+     */
+    public $user = false;
+
+    /**
      * Array of Roles user has - Empty until User and Roles set
      * @var array 
      */
@@ -168,7 +174,7 @@ class Auth extends \Phalcon\Mvc\User\Component
     public function logUserIn($user)
     {
         $failedAttempts = \Logins::find([
-            'user_id = :a: AND ip = :b:',
+            'user_id = :a: AND ip = :b: AND success = 0',
             'bind' => ['a' => $user->id, 'b' => $this->request->getClientAddress()]
         ]);
         if ($failedAttempts) {
@@ -209,10 +215,13 @@ class Auth extends \Phalcon\Mvc\User\Component
     public function getUser()
     {
         if ($this->user_id) {
-            return \Users::findFirst([
-                'id = :a:',
-                'bind' => ['a' => $this->user_id]
-            ]);
+            if (!$this->user) {
+                $this->user = \Users::findFirst([
+                    'id = :a:',
+                    'bind' => ['a' => $this->user_id]
+                ]);
+            }
+            return $this->user;
         }
         return false;
     }
@@ -258,10 +267,10 @@ class Auth extends \Phalcon\Mvc\User\Component
      */
     public function createAuthCookie()
     {
-        $token = \Authtokens::newToken(['user_id' => $this->user_id, 'type' => 'cookie_RMT', 'expires' => 7, 'unique' => true]);
+        $authtoken = \Authtokens::newToken(['user_id' => $this->user_id, 'type' => 'cookie_RMT', 'expires' => 7, 'unique' => true]);
         $domain = $this->config->application->domain;
         $https = $this->config->application->https;
-        $this->cookies->set("RMT", $token, time() + 604800, '/', $domain, $https, $https);
+        $this->cookies->set("RMT", $authtoken->string, time() + 604800, '/', $domain, $https, $https);
     }
 
     /**
@@ -272,8 +281,8 @@ class Auth extends \Phalcon\Mvc\User\Component
     {
         if ($this->cookies->has("RMT")) {
             $token = $this->cookies->get("RMT")->getValue();
-            if (\Authtokens::checkToken('cookie_RMT', $token)) {
-                return true;
+            if (($authtoken = \Authtokens::checkToken('cookie_RMT', $token))) {
+                return $authtoken->users;
             }
             else {
                 $this->removeAuthCookie();

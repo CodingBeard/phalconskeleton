@@ -3,7 +3,7 @@
 /**
  * Users
  *
-CREATE TABLE `users` (
+  CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `firstName` varchar(255) DEFAULT NULL,
   `lastName` varchar(255) DEFAULT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE `users` (
   `password` varchar(255) DEFAULT NULL,
   `active` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB
+  ) ENGINE=InnoDB
  * 
  * @category 
  * @package phalconskeleton
@@ -73,7 +73,7 @@ class Users extends \Phalcon\Mvc\Model
     {
         return $this->getDI()->get('escaper')->escapeHtml($this->firstName) . ' ' . $this->getDI()->get('escaper')->escapeHtml($this->lastName);
     }
-    
+
     /**
      * Add a role to the user
      * @param string $roleName
@@ -166,9 +166,17 @@ class Users extends \Phalcon\Mvc\Model
      */
     public function hashPass()
     {
-        if (strlen($this->password) >= 8) {
-            $this->password = password_hash($this->password, PASSWORD_DEFAULT);
-        }
+        $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Check the supplied password
+     * @param string $password
+     * @return bool
+     */
+    public function checkPass($password)
+    {
+        return password_verify($password, $this->password);
     }
 
     /**

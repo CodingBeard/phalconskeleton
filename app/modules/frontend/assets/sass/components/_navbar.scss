@@ -68,6 +68,9 @@ nav {
       color: $navbar-link-color;
       display: inline-block;
       padding: 0px 15px;
+	  &:hover {
+		  color: $navbar-link-color;
+	  }
     }
 
     &.left {

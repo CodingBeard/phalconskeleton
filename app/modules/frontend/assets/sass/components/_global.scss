@@ -43,6 +43,11 @@ a {
 	}
 }
 
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+		padding-left: 0;
+    }
+}
 
 // Positioning
 .valign-wrapper {
@@ -140,9 +145,6 @@ video.responsive-video {
 	max-width: 100%;
 	height: auto;
 }
-
-
-
 
 // parallax
 .parallax-container {
@@ -306,12 +308,30 @@ table, th, td {
 	border: none;
 }
 
+thead {
+	border-bottom: 1px solid $table-border-color;
+}
+
+td, th{
+	padding: 15px 5px;
+	display: table-cell;
+	text-align: left;
+	vertical-align: middle;
+	border-radius: 2px;
+}
+
 table {
 	width:100%;
 	display: table;
-
-	&.bordered tr {
-		border-bottom: 1px solid $table-border-color;
+	border-collapse: collapse;
+	margin-bottom: 1em;
+	
+	&.condensed td {
+		padding: 3px 3px;
+	}
+	
+	&.bordered td {
+		border: 1px solid $table-border-color;
 	}
 
 	&.striped {
@@ -321,7 +341,6 @@ table {
 	}
 
 	&.hoverable {
-
 		tbody tr {
 			@include transition(background-color .25s ease);
 			&:hover {
@@ -337,18 +356,6 @@ table {
 		}
 	}
 
-}
-
-thead {
-	border-bottom: 1px solid $table-border-color;
-}
-
-td, th{
-	padding: 15px 5px;
-	display: table-cell;
-	text-align: left;
-	vertical-align: middle;
-	border-radius: 2px;
 }
 
 // Responsive Table

@@ -67,6 +67,12 @@ class Authtokens extends \Phalcon\Mvc\Model
     public $token;
 
     /**
+     * Plaintext version of the token
+     * @var string
+     */
+    public $string;
+
+    /**
      * Create an authtoken object and return it
      * $properties = ['user_id' => 1, 'type' => '', 'unique' => false, 'expires' => 1]
      * @param array $properties
@@ -102,7 +108,9 @@ class Authtokens extends \Phalcon\Mvc\Model
         $authtoken->hashToken();
         $authtoken->save();
 
-        return $string;
+        $authtoken->string = $string;
+
+        return $authtoken;
     }
 
     /**
@@ -124,7 +132,7 @@ class Authtokens extends \Phalcon\Mvc\Model
      * @param string $token
      * @return bool|int
      */
-    public static function checkToken($type, $token, $expire = true)
+    public static function checkToken($type, $token, $user_id = false)
     {
         $authtoken = \Authtokens::findFirst([
             'type = :a: AND tokenKey = :b: AND expires >= :c:',
@@ -138,15 +146,16 @@ class Authtokens extends \Phalcon\Mvc\Model
             return false;
         }
         if (!password_verify(substr($token, 10), $authtoken->token)) {
-            if ($expire) {
-                $authtoken->expire();
-            }
+            $authtoken->expire();
             return false;
         }
-        if ($expire) {
-            $authtoken->expire();
+        $authtoken->expire();
+        if ($user_id) {
+            return $authtoken->users->id;
         }
-        return $authtoken->users->id;
+        else {
+            return $authtoken;
+        }
     }
 
     /**

@@ -44,14 +44,10 @@ class SessionController extends ControllerBase
             'label' => 'Remember me'
         ]));
 
-        if (($user_id = $this->auth->checkAuthCookie())) {
-            $user = \Users::findFirst([
-                'id = :a:',
-                'bind' => ['a' => $user_id]
-            ]);
+        if (($user = $this->auth->checkAuthCookie())) {
             $this->auth->logUserIn($user);
             $this->auth->createAuthCookie();
-            return $this->auth->redirect('', 'success', 'Welcome back.');
+            return $this->auth->redirect('', 'success', 'Welcome back' . $this->escaper->escapeHtml($user->firstName) . '.');
         }
 
         if ($this->auth->loginCaptcha()) {
@@ -69,7 +65,7 @@ class SessionController extends ControllerBase
                         return $this->auth->redirect('account/login', 'error', 'That email is not registered with us.');
                     }
 
-                    if (!password_verify($this->request->getPost('password', 'trim'), $user->password)) {
+                    if (!$user->checkPass($this->request->getPost('password', 'trim'))) {
                         $this->auth->attemptThrolling($user->id);
                         return $this->auth->redirect('account/login', 'error', 'Incorrect password.');
                     }

@@ -118,4 +118,35 @@ class SiteEmails extends \Phalcon\Mvc\User\Component
         ]);
     }
 
+    /**
+     * Send an email change confirmation/revoke email
+     * @param \Users $user
+     * @param \Emailchanges $emailChange
+     * @param string $token
+     */
+    public function changeEmail($user, $emailChange, $token)
+    {
+        $content = $this->render('account', 'changeEmailRevoke', ['user' => $user, 'oldEmail' => $emailChange->oldEmail, 'token' => $token]);
+
+        $this->mandrill->messages_send([
+            'from_email' => 'No-reply@' . $this->domain,
+            'from_name' => $this->config->application->name,
+            'to' => [['email' => $emailChange->oldEmail, 'name' => $user->getName()]],
+            'subject' => "Your {$this->config->application->name} email has been changed",
+            'html' => $content->html,
+            'text' => $content->text,
+        ]);
+        
+        $content = $this->render('account', 'changeEmailNotice', ['user' => $user, 'oldEmail' => $emailChange->oldEmail, 'token' => $token]);
+
+        $this->mandrill->messages_send([
+            'from_email' => 'No-reply@' . $this->domain,
+            'from_name' => $this->config->application->name,
+            'to' => [['email' => $user->email, 'name' => $user->getName()]],
+            'subject' => "Your {$this->config->application->name} email has been changed",
+            'html' => $content->html,
+            'text' => $content->text,
+        ]);
+    }
+
 }

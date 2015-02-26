@@ -14,7 +14,7 @@ $success-color: color("green", "base") !default;
 $error-color: color("red", "base") !default;
 $link-color: color("light-blue", "darken-1") !default;
 $link-hover-color: color("light-blue", "lighten-1") !default;
-$background-color: color("blue", "lighten-5");
+$background-color: #fff;
 
 /*** Badges ***/
 $badge-bg-color: $secondary-color;

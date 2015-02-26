@@ -12,6 +12,10 @@
  * Customize the background color to match your design.
  */
 
+header, main, footer {
+    padding-left: 240px !important;
+}
+
 ::-moz-selection {
     background: #b3d4fc;
     text-shadow: none;

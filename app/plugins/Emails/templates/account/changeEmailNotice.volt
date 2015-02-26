@@ -19,17 +19,7 @@ copyright (c) 2015, Tim Marshall
 	  </tr>
 	  <tr>
 		<td class="content-block">
-		  You have requested to reset your password, please click the link below to do so.
-		</td>
-	  </tr>
-	  <tr>
-		<td class="content-block aligncenter" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
-		  <a href="http://{{ config.application.domain }}/account/reset-pass/{{ token }}" class="btn blue" itemprop="url">Reset Password</a>
-		</td>
-	  </tr>
-	  <tr>
-		<td class="content-block">
-		  If you did not make this request please ignore it.
+		  At {{ date(config.defaults.datetimeFormat) }} Your email address was changed from {{ oldEmail|e }} to this one.
 		</td>
 	  </tr>
 	  <tr>
