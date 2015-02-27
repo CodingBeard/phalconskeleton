@@ -75,23 +75,61 @@ class Users extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Set the roles for a user
+     * @param array $roleNames
+     */
+    public function setRoles($roleNames)
+    {
+        $int = false;
+        if (is_int(abs($roleNames[0]))) {
+            $int = true;
+        }
+
+        foreach ($roleNames as $roleName) {
+            if (!$this->hasRole($roleName)) {
+                $this->addRole($roleName);
+            }
+        }
+
+        foreach ($this->roles as $role) {
+            if ($int) {
+                if (!in_array($role->id, $roleNames)) {
+                    $this->removeRole($role->id);
+                }
+            }
+            else {
+                if (!in_array($role->name, $roleNames)) {
+                    $this->removeRole($role->name);
+                }
+            }
+        }
+    }
+
+    /**
      * Add a role to the user
-     * @param string $roleName
+     * @param string|int $roleName
      */
     public function addRole($roleName)
     {
-        if (!$this->hasRole($roleName)) {
-            $role = \Roles::findFirst([
-                'name = :a:',
-                'bind' => ['a' => $roleName]
-            ]);
-            if ($role) {
-                $userrole = new Userroles();
-                $userrole->user_id = $this->id;
-                $userrole->role_id = $role->id;
-                $userrole->save();
-            }
+        if ($this->hasRole($roleName)) {
+            return false;
         }
+
+        if (is_int(abs($roleName))) {
+            $role = \Roles::findFirstById($roleName);
+        }
+        else {
+            $role = \Roles::findFirstByName($roleName);
+        }
+
+        if (!$role) {
+            return false;
+        }
+
+        $userrole = new Userroles();
+        $userrole->user_id = $this->id;
+        $userrole->role_id = $role->id;
+        $userrole->save();
     }
 
     /**
@@ -102,10 +140,10 @@ class Users extends \Phalcon\Mvc\Model
     public function removeRole($roleName)
     {
         $role = $this->hasRole($roleName);
-        if ($role) {
-            return $role->delete();
+        if (!$role) {
+            return false;
         }
-        return false;
+        return $role->delete();
     }
 
     /**
@@ -115,17 +153,21 @@ class Users extends \Phalcon\Mvc\Model
      */
     public function hasRole($roleName)
     {
-        $role = \Roles::findFirst([
-            'name = :a:',
-            'bind' => ['a' => $roleName]
-        ]);
-        if ($role) {
-            return $this->getUserroles([
-                'role_id = :a:',
-                'bind' => ['a' => $role->id]
-            ])->getFirst();
+        if (is_int(abs($roleName))) {
+            $role = \Roles::findFirstById($roleName);
         }
-        return false;
+        else {
+            $role = \Roles::findFirstByName($roleName);
+        }
+
+        if (!$role) {
+            return false;
+        }
+
+        return $this->getUserroles([
+            'role_id = :a:',
+            'bind' => ['a' => $role->id]
+        ])->getFirst();
     }
 
     /**
@@ -135,13 +177,18 @@ class Users extends \Phalcon\Mvc\Model
      */
     public static function getUsersByRole($roleName)
     {
-        $role = \Roles::findFirst([
-            'name = :a:',
-            'bind' => ['a' => $roleName]
-        ]);
-        if ($role) {
-            return $role->users;
+        if (is_int(abs($roleName))) {
+            $role = \Roles::findFirstById($roleName);
         }
+        else {
+            $role = \Roles::findFirstByName($roleName);
+        }
+
+        if (!$role) {
+            return false;
+        }
+
+        return $role->users;
     }
 
     /**

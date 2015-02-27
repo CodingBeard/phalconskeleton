@@ -56,10 +56,7 @@ class SessionController extends ControllerBase
         if ($this->request->isPost()) {
             if ($this->auth->checkToken()) {
                 if ($form->validate()) {
-                    $user = \Users::findFirst([
-                        'email = :a:',
-                        'bind' => ['a' => $this->request->getPost('email', 'email')]
-                    ]);
+                    $user = \Users::findFirstByEmail($this->request->getPost('email', 'email'));
                     if (!$user) {
                         $this->auth->attemptThrolling(null);
                         return $this->auth->redirect('account/login', 'error', 'That email is not registered with us.');

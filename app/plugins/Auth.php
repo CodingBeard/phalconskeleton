@@ -216,10 +216,7 @@ class Auth extends \Phalcon\Mvc\User\Component
     {
         if ($this->user_id) {
             if (!$this->user) {
-                $this->user = \Users::findFirst([
-                    'id = :a:',
-                    'bind' => ['a' => $this->user_id]
-                ]);
+                $this->user = \Users::findFirstById($this->user_id);
             }
             return $this->user;
         }

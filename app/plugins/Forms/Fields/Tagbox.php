@@ -58,6 +58,18 @@ class Tagbox extends Field
     public $size = 12;
 
     /**
+     * Minimum characters typed before autocomplete popup
+     * @var string
+     */
+    public $autocompleteOnFocus = 'false';
+
+    /**
+     * Minimum characters typed before autocomplete popup
+     * @var int
+     */
+    public $minLength = 2;
+
+    /**
      * A limit on the amount of tags possible to add
      * @var string|int
      */
@@ -112,6 +124,11 @@ class Tagbox extends Field
             $this->tagValues[$option->label] = $option->value;
             $this->tagLabels[] = $option->label;
         }
+        
+        if ($this->autocompleteOnFocus) {
+            $this->autocompleteOnFocus = 'true';
+            $this->minLength = 0;
+        }
     }
 
     public function setDefault($value)
@@ -121,6 +138,22 @@ class Tagbox extends Field
                 $this->options[$key]->default = true;
             }
         }
+    }
+    
+    /**
+     * Validate the post data for this field
+     * @param type $POST
+     * @return boolean
+     */
+    public function validate($POST)
+    {
+        if ($this->required) {
+            if (!count($POST[$this->key])) {
+                $this->errorMessage = 'Field is required';
+                return false;
+            }
+        }
+        return true;
     }
 
 }

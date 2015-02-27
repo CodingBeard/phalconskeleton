@@ -38,7 +38,8 @@ copyright (c) 2015, Tim Marshall
 		var tagLabels = {{ json_encode(tagLabels) }};
 		$('#{{ key|escape_attr }}').tagit({
 			availableTags: tagLabels,
-			autocomplete: {delay: 0, minLength: 2},
+			autocomplete: {delay: 0, minLength: {{ minLength }}},
+			showAutocompleteOnFocus: {{ autocompleteOnFocus }},
 			removeConfirmation: true,
 			fieldName: '{{ key|escape_attr }}',
 			tagLimit: {{ tagLimit }},

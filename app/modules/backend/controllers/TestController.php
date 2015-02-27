@@ -20,14 +20,8 @@ class TestController extends ControllerBase
      */
     public function emaildesignAction()
     {
-        $user = \Users::findFirst([
-            'id = :a:',
-            'bind' => ['a' => 1]
-        ]);
-        $change = \Emailchanges::findFirst([
-            'id = :a:',
-            'bind' => ['a' => 1]
-        ]);
+        $user = \Users::findFirstById(1);
+        $change = \Emailchanges::findFirstById(1);
         $variables = ['user' => $user, 'emailchange' => $change, 'token' => 'd1aXe7wJfjt57lfKufZv'];
         echo $this->emails->render('account', 'changeEmailRevoke', $variables, true);
     }
@@ -37,10 +31,7 @@ class TestController extends ControllerBase
      */
     public function emailsendAction()
     {
-        $user = \Users::findFirst([
-            'id = :a:',
-            'bind' => ['a' => 3]
-        ]);
+        $user = \Users::findFirstById(3);
         //$authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
         //$token = $authtoken->string;
 
@@ -60,7 +51,9 @@ class TestController extends ControllerBase
 
     public function indexAction()
     {
+        $user = \Users::findFirstById(1);
         
+        echo $user->hasRole('Root Admin')->id;
     }
 
 }

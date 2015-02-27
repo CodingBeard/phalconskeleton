@@ -21,7 +21,7 @@ copyright (c) 2015, Tim Marshall
 	  {{ sublabel }}
 	</span>
   </label>
-  <div class="inline-selects section">
+  <div class="inline-selects">
 	<select {{ requiredAttribute }} name="{{ key|escape_attr }}-year" class="browser-default {{ error|escape_attr }} {{ class|escape_attr }}">
 	  <option disabled value="">Year</option>
 	  {% if ranges.year is iterable %}

@@ -252,10 +252,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
      */
     public function saveData($name, $user_id)
     {
-        $form = \Looseforms::findFirst([
-            'name = :a:',
-            'bind' => ['a' => $name]
-        ]);
+        $form = \Looseforms::findFirstByName($name);
         if (!$form) {
             $form = new \Looseforms();
             $form->name = $name;
@@ -268,8 +265,8 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
                     continue;
 
                 $fieldModel = new \Formfields();
-                $fieldModel->fieldKey = $field['variables']['key'];
-                $fieldModel->fieldName = $field['variables']['label'];
+                $fieldModel->fieldKey = $field->key;
+                $fieldModel->fieldName = $field->label;
                 $fieldModel->form_id = $form->id;
                 $fieldModel->save();
             }
@@ -284,13 +281,10 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
         foreach ($this->fields as $field) {
             $formdata = new \Formdatas();
             $formdata->formentry_id = $entry->id;
-            $field_id = \Formfields::findFirst([
-                'fieldKey = :a:',
-                'bind' => ['a' => $field['variables']['key']]
-            ])->id;
+            $field_id = \Formfields::findFirstByFieldKey($field->key)->id;
             if ($field_id) {
                 $formdata->field_id = $field_id;
-                $formdata->value = $this->request->getPost($field['variables']['key'], 'trim');
+                $formdata->value = $this->request->getPost($field->key, 'trim');
                 $formdata->save();
             }
         }

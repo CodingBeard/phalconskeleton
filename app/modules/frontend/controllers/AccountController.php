@@ -140,10 +140,7 @@ class AccountController extends ControllerBase
         if ($this->request->isPost()) {
             if ($this->auth->checkToken()) {
                 if ($form->validate()) {
-                    $user = \Users::findFirst([
-                        'email = :a:',
-                        'bind' => ['a' => $this->request->getPost('email', 'trim')]
-                    ]);
+                    $user = \Users::findFirstByEmail($this->request->getPost('email', 'trim'));
                     $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
                     $token = $authtoken->string;
 
@@ -290,10 +287,7 @@ class AccountController extends ControllerBase
         if ($token) {
             if (($authtoken = \Authtokens::checkToken('emailchangerevoke', $token))) {
                 $user = $authtoken->users;
-                $change = \Emailchanges::findFirst([
-                    'authtoken_id = :a:',
-                    'bind' => ['a' => $authtoken->id]
-                ]);
+                $change = \Emailchanges::findFirstByAuthtoken_id($authtoken->id);
 
                 $user->email = $change->oldEmail;
                 $user->save();
