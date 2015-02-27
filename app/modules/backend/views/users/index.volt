@@ -20,7 +20,7 @@ copyright (c) 2015, Tim Marshall
 	</div>
 	<div class="row">
 	  <div class="col s12">
-		<table class="table bordered striped condensed datatable">
+		<table class="table bordered striped condensed datatable responsive-table">
 		  <thead>
 			<tr>
 			  <td>ID</td>

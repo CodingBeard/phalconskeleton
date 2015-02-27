@@ -120,8 +120,9 @@ class Assets extends Phalcon\Mvc\User\Plugin
         $cssLastModified = filemtime($this->config->application->publicDir . $this->cssPath);
         foreach ($this->assets->get('css')->getResources() as $resource) {
             if ($resource->getLocal()) {
-                if (filemtime($this->sourcePath . $resource->getPath()) > $cssLastModified) {
+                if (($lastmod = filemtime($this->sourcePath . $resource->getPath())) > $cssLastModified) {
                     $cssNeedsRefreshing = true;
+                    $cssLastModified = $lastmod;
                 }
             }
         }
@@ -129,16 +130,11 @@ class Assets extends Phalcon\Mvc\User\Plugin
         $jsLastModified = filemtime($this->config->application->publicDir . $this->jsPath);
         foreach ($this->assets->get('js')->getResources() as $resource) {
             if ($resource->getLocal()) {
-                if (filemtime($this->sourcePath . $resource->getPath()) > $jsLastModified) {
+                if (($lastmod = filemtime($this->sourcePath . $resource->getPath())) > $jsLastModified) {
                     $jsNeedsRefreshing = true;
+                    $jsLastModified = $lastmod;
                 }
             }
-        }
-
-        $revision = json_decode(file_get_contents($this->revisionPath));
-
-        if ($cssNeedsRefreshing) {
-            file_put_contents($this->revisionPath, json_encode(['css' => ++$revision->css, 'js' => $revision->js]));
         }
 
         if ($this->minify) {
@@ -151,15 +147,11 @@ class Assets extends Phalcon\Mvc\User\Plugin
         $this->assets->collection('css')
         ->join(true)
         ->setTargetPath($this->cssPath)
-        ->setTargetUri($this->addRevision($this->cssPath, $revision->css))
+        ->setTargetUri($this->addRevision($this->cssPath, $cssLastModified))
         ->addFilter($filter);
         
         if ($cssNeedsRefreshing) {
             $this->assets->outputCss();
-        }
-
-        if ($jsNeedsRefreshing) {
-            file_put_contents($this->revisionPath, json_encode(['css' => $revision->css, 'js' => ++$revision->js]));
         }
 
         if ($this->minify) {
@@ -172,7 +164,7 @@ class Assets extends Phalcon\Mvc\User\Plugin
         $this->assets->collection('js')
         ->join(true)
         ->setTargetPath($this->jsPath)
-        ->setTargetUri($this->addRevision($this->jsPath, $revision->js))
+        ->setTargetUri($this->addRevision($this->jsPath, $jsLastModified))
         ->addFilter($filter);
 
         if ($jsNeedsRefreshing) {

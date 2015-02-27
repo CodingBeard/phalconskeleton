@@ -39,9 +39,15 @@ class TestController extends ControllerBase
     {
         $user = \Users::findFirst([
             'id = :a:',
-            'bind' => ['a' => 1]
+            'bind' => ['a' => 3]
         ]);
-        //$this->emails->emailVerification($user, 'IO3gla4lbmg6MZ5fe02b');
+        //$authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
+        //$token = $authtoken->string;
+
+        $this->queue->addJob(function ($that) use ($user, $token)
+        {
+            //$that->emails->emailVerification($user, $token);
+        });
     }
 
     public function beanstalkAction()

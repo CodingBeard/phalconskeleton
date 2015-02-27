@@ -13,10 +13,18 @@ SET navigation = [
 %}
 <nav role="navigation">
   <div class="container">
-	<a href="{{ url('admin') }}" class="brand-logo hide-on-large-only">Phalcon</a>
+	<div class="hide-on-large-only">
+	  <a href="{{ url('admin') }}" class="brand-logo h-logo">
+		<img class="h-logo" src="{{ url('img/icons/logo-grey-70.png') }}" alt="CodingBeard" />
+		Admin
+	  </a>
+	</div>
 	<ul id="nav-mobile" class="side-nav fixed">
 	  <li class="logo hide-on-med-and-down">
-		<a href="{{ url('admin') }}" class="brand-logo">Phalcon</a>
+		<img src="{{ url('img/icons/logo-70.png') }}" alt="CodingBeard" />
+		<a href="{{ url('admin') }}" class="brand-logo">
+		  Admin
+		</a>
 	  </li>
 	  {% for one in navigation %}
 		  {% set active = '' %}
@@ -52,20 +60,6 @@ SET navigation = [
 			  </li>
 		  {% endif %}
 	  {% endfor %}
-	  <li class="no-padding hide-on-med-and-up">
-		<ul class="collapsible">
-		  <li class="bold">
-			<a class="collapsible-header" data-activates="collapse">Site</a>
-			<div id="collapse" class="collapsible-body">
-			  <ul>
-				<li><a href="{{ url('terms') }}">Terms</a></li>
-				<li><a href="{{ url('privacy') }}">Privacy</a></li>
-				<li><a href="{{ url('credits') }}">Credits</a></li>
-			  </ul>
-			</div>
-		  </li>
-		</ul>
-	  </li>
 	</ul>
 	<a href="#" data-activates="nav-mobile" class="button-collapse white-text"><i class="mdi-navigation-menu"></i></a>
   </div>

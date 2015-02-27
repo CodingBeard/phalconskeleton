@@ -20,6 +20,22 @@ main {
 	padding-right: 10px;
 }
 
+.logo, .brand-logo {
+	height: 90px !important;
+	padding-left: 0 !important;
+}
+.brand-logo {
+	padding-top: 10px !important;
+}
+.h-logo {
+	padding: 0px !important;
+	height: 45px;
+	width: auto;
+}
+.logo img {
+	float: left;
+}
+
 ::-moz-selection {
     background: #b3d4fc;
     text-shadow: none;
@@ -213,9 +229,9 @@ fieldset {
 }
 
 @media print,
-       (-o-min-device-pixel-ratio: 5/4),
-       (-webkit-min-device-pixel-ratio: 1.25),
-       (min-resolution: 120dpi) {
+(-o-min-device-pixel-ratio: 5/4),
+(-webkit-min-device-pixel-ratio: 1.25),
+(min-resolution: 120dpi) {
     /* Style adjustments for high resolution devices */
 }
 

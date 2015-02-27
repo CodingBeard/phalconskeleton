@@ -69,7 +69,6 @@ class AccountController extends ControllerBase
                         $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
                         $token = $authtoken->string;
 
-                        $authtoken->save();
                         $this->queue->addJob(function () use ($user, $token)
                         {
                             $this->emails->emailVerification($user, $token);
@@ -95,28 +94,16 @@ class AccountController extends ControllerBase
             return $this->auth->redirect('', 'error', 'Token is missing.');
         }
 
-        $authtoken = \Authtokens::findFirst([
-            'type = "emailverification" AND token = :a: AND expires > :b:',
-            'bind' => ['a' => $token, 'b' => date('Y-m-d H:i:s')]
-        ]);
-        if (!$authtoken) {
+        if (!($authtoken = \Authtokens::checkToken('emailverification', $token))) {
             sleep(1);
             return $this->auth->redirect('', 'error', 'That token is not valid.');
         }
 
-        $user = \Users::findFirst([
-            'id = :a:',
-            'bind' => ['a' => $authtoken->user_id]
-        ]);
-        if ($user) {
-            $user->removeRole('Unverified Email');
-            $user->addRole('Verified Email');
+        $user = $authtoken->users;
+        $user->removeRole('Unverified Email');
+        $user->addRole('Verified Email');
 
-            $authtoken->expires = date('Y-m-d H:i:s');
-            $authtoken->save();
-
-            return $this->auth->redirect('', 'success', 'Thanks for verifying your email.');
-        }
+        return $this->auth->redirect('', 'success', 'Thanks for verifying your email.');
     }
 
     /**

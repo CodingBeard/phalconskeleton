@@ -13,7 +13,10 @@ SET navigation = [
 %}
 <nav role="navigation">
   <div class="container">
-	<a id="logo-container" href="/" class="brand-logo">Phalcon</a>
+	<a id="logo-container" href="/" class="brand-logo">
+	  <img class="logo" src="{{ url('img/icons/logo-grey-70.png') }}" alt="CodingBeard" />
+	  Skeleton
+	</a>
 	<ul id="nav-mobile" class="side-nav hide-on-large-only">
 	  {% for one in navigation %}
 		  {% if one[1] is iterable %}

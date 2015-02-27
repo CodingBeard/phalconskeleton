@@ -252,7 +252,8 @@ INSERT INTO `permissions` (`module`, `controller`, `action`) VALUES
 ('frontend', 'index', 'index'),
 ('frontend', 'session', 'login'),
 ('frontend', 'account', 'register'),
-('frontend', 'account', 'resetpass');
+('frontend', 'account', 'resetpass'),
+('frontend', 'account', 'verifyemail');
 
 INSERT INTO `permissionroles` (`permission_id`, `role_id`) VALUES
-(1, 5),(2, 5),(3, 5),(4, 5);
+(1, 5),(2, 5),(3, 5),(4, 5),(5, 5);

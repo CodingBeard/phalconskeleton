@@ -7,4 +7,5 @@ app/config/import.sql
 app/modules/backend/controllers/TestController.php
 app/modules/backend/views/test
 cli/test.php
-cli/pids
+cli/pids/*.pid
+cli/cache/*.php
