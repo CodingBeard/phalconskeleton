@@ -17,6 +17,7 @@ use Phalcon\Events\Event,
 
 class Security extends Plugin
 {
+
     /**
      * Name of module initialized in
      * @var string 
@@ -84,8 +85,12 @@ class Security extends Plugin
         $action = strtolower($dispatcher->getActionName());
 
 
-        if ($auth->isAdmin)
-            return true;
+        if (!$auth->loggedIn) {
+            if (($user = $auth->checkAuthCookie())) {
+                $auth->logUserIn($user);
+                $this->auth->createAuthCookie();
+            }
+        }
 
         $acl = $this->getAcl();
 
@@ -103,6 +108,9 @@ class Security extends Plugin
                 if ($acl->isAllowed($userrole, $controller, $action) == \Phalcon\Acl::ALLOW) {
                     return true;
                 }
+            }
+            if ($auth->isAdmin) {
+                return true;
             }
         }
         $redirect = '?continue=' . substr($_SERVER['REQUEST_URI'], 1);

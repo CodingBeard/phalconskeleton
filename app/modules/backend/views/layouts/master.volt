@@ -13,6 +13,10 @@ copyright (c) 2015, Tim Marshall
 	{{ get_title() }}
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/img/icons/apple-touch-icon-180x180.png">
+	<link rel="icon" type="image/png" href="/img/icons/android-chrome-192x192.png" sizes="192x192">
+	<meta name="msapplication-square310x310logo" content="/img/icons/largetile.png" />
 	<meta property="og:url" content="http://{{ _SERVER['SERVER_NAME'] ~ _SERVER['REQUEST_URI'] }}" />
 	<meta property="og:title" content="{{ get_title()|striptags|trim }}" />
 	<meta property="og:image" content="" />

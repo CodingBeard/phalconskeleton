@@ -9909,7 +9909,7 @@
 		 *      } );
 		 *    } );
 		 */
-		"bAutoWidth": true,
+		"bAutoWidth": false,
 	
 	
 		/**

@@ -127,14 +127,28 @@
 }
 
 // Small button
+.btn-tiny {
+	@extend .btn;
+	height: 1rem;
+	line-height: 1rem;
+	padding: 3px;
+	font-size: 1rem;
+	margin: 0;
+
+	i {
+		font-size: 1rem;
+	}
+}
+
+// Small button
 .btn-small {
 	@extend .btn;
 	height: $button-height * 0.8;
 	line-height: $button-line-height * 0.8;
-	font-size: 0.8rem;
+	font-size: 1rem;
 
 	i {
-		font-size: 0.8rem;
+		font-size: 1rem;
 	}
 }
 

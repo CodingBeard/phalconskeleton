@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "66e8f31fc1ee55f248a551e8d26f20ff",
+    "hash": "763708555c24ba99f4e40f00ccb51da1",
     "packages": [
         {
             "name": "jeremeamia/SuperClosure",
@@ -63,6 +63,53 @@
                 "tokenizer"
             ],
             "time": "2015-01-26 23:07:39"
+        },
+        {
+            "name": "m1ome/phalcon-datatables",
+            "version": "1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/m1ome/phalcon-datatables.git",
+                "reference": "ecb052c7c260abcf5990876ab0199e9dca34011d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/m1ome/phalcon-datatables/zipball/ecb052c7c260abcf5990876ab0199e9dca34011d",
+                "reference": "ecb052c7c260abcf5990876ab0199e9dca34011d",
+                "shasum": ""
+            },
+            "require-dev": {
+                "crysalead/kahlan": "dev-master",
+                "fzaninotto/faker": "1.5.*@dev"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev_master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DataTables\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pavel Makarenko",
+                    "email": "cryfall@gmail.com"
+                }
+            ],
+            "description": "DataTables adapter for Phalcon Framework",
+            "keywords": [
+                "datatables",
+                "phalcon",
+                "plugin"
+            ],
+            "time": "2015-02-25 14:20:09"
         },
         {
             "name": "nikic/php-parser",

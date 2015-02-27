@@ -36,16 +36,16 @@ ul {
 a {
 	color: $link-color;
 	text-decoration: none;
-	
+
 	&:hover {
 		color: $link-hover-color;
 		@include transition(color .2s);
 	}
 }
 
-@media only screen and (max-width : 992px) {
+@media #{$medium-and-down} {
     header, main, footer {
-		padding-left: 0;
+		padding-left: 0 !important;
     }
 }
 
@@ -325,11 +325,11 @@ table {
 	display: table;
 	border-collapse: collapse;
 	margin-bottom: 1em;
-	
+
 	&.condensed td {
 		padding: 3px 3px;
 	}
-	
+
 	&.bordered td {
 		border: 1px solid $table-border-color;
 	}

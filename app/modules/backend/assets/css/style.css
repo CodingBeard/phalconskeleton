@@ -13,7 +13,11 @@
  */
 
 header, main, footer {
-    padding-left: 240px !important;
+    padding-left: 240px;
+}
+
+main {
+	padding-right: 10px;
 }
 
 ::-moz-selection {
