@@ -92,6 +92,10 @@ class Users extends \Phalcon\Mvc\Model
         }
 
         foreach ($this->roles as $role) {
+            if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
+                $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
+                continue;
+            }
             if ($int) {
                 if (!in_array($role->id, $roleNames)) {
                     $this->removeRole($role->id);

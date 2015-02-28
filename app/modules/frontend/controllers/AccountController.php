@@ -55,32 +55,27 @@ class AccountController extends ControllerBase
         ]))
         ->addField(new \Forms\Fields\Captcha());
 
-        if ($this->request->isPost()) {
-            if ($this->auth->checkToken()) {
-                if ($form->validate()) {
-                    $user = $form->addToModel(new \Users());
-                    $user->hashPass();
-                    $user->active = 1;
+        if ($form->validate()) {
+            $user = $form->addToModel(new \Users());
+            $user->hashPass();
+            $user->active = 1;
 
-                    if ($user->save()) {
-                        $user->addRole('Member');
-                        $user->addRole('Unverified Email');
+            if ($user->save()) {
+                $user->addRole('Member');
+                $user->addRole('Unverified Email');
 
-                        $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
-                        $token = $authtoken->string;
+                $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
+                $token = $authtoken->string;
 
-                        $this->queue->addJob(function () use ($user, $token)
-                        {
-                            $this->emails->emailVerification($user, $token);
-                        });
+                $this->queue->addJob(function () use ($user, $token)
+                {
+                    $this->emails->emailVerification($user, $token);
+                });
 
-                        return $this->auth->redirect('account/login', 'success', 'Account created successfully, please login.');
-                    }
-                }
+                return $this->auth->redirect('account/login', 'success', 'Account created successfully, please login.');
             }
         }
-        $this->view->form = $form->getForm();
-        $this->view->formjs = $form->getJS();
+        $form->render();
     }
 
     /**
@@ -137,23 +132,18 @@ class AccountController extends ControllerBase
         ]))
         ->addField(new \Forms\Fields\Captcha());
 
-        if ($this->request->isPost()) {
-            if ($this->auth->checkToken()) {
-                if ($form->validate()) {
-                    $user = \Users::findFirstByEmail($this->request->getPost('email', 'trim'));
-                    $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
-                    $token = $authtoken->string;
+        if ($form->validate()) {
+            $user = \Users::findFirstByEmail($this->request->getPost('email', 'trim'));
+            $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
+            $token = $authtoken->string;
 
-                    $this->queue->addJob(function ($that) use ($user, $token)
-                    {
-                        $that->emails->resetPass($user, $token);
-                    });
-                    $this->auth->redirect('account/reset-pass', 'success', 'Password reset email sent, please check your spam folder if you cannot find it.');
-                }
-            }
+            $this->queue->addJob(function ($that) use ($user, $token)
+            {
+                $that->emails->resetPass($user, $token);
+            });
+            $this->auth->redirect('account/reset-pass', 'success', 'Password reset email sent, please check your spam folder if you cannot find it.');
         }
-        $this->view->form = $form->getForm();
-        $this->view->formjs = $form->getJS();
+        $form->render();
     }
 
     /**
@@ -188,30 +178,25 @@ class AccountController extends ControllerBase
             'size' => 6
         ]));
 
-        if ($this->request->isPost()) {
-            if ($this->auth->checkToken()) {
-                if ($form->validate()) {
-                    $user = $this->auth->getUser();
+        if ($form->validate()) {
+            $user = $this->auth->getUser();
 
-                    if ($this->session->has('reset-pass')) {
-                        $this->session->remove('reset-pass');
-                    }
-                    else {
-                        if (!$user->checkPass($this->request->getPost('oldpassword', 'trim'))) {
-                            return $this->auth->redirect('account/change-pass', 'error', 'Incorrect password.');
-                        }
-                    }
-
-                    $user->password = $this->request->getPost('password', 'trim');
-                    $user->hashPass();
-                    $user->save();
-
-                    $this->auth->redirect('account', 'success', 'Password changed.');
+            if ($this->session->has('reset-pass')) {
+                $this->session->remove('reset-pass');
+            }
+            else {
+                if (!$user->checkPass($this->request->getPost('oldpassword', 'trim'))) {
+                    return $this->auth->redirect('account/change-pass', 'error', 'Incorrect password.');
                 }
             }
+
+            $user->password = $this->request->getPost('password', 'trim');
+            $user->hashPass();
+            $user->save();
+
+            $this->auth->redirect('account', 'success', 'Password changed.');
         }
-        $this->view->form = $form->getForm();
-        $this->view->formjs = $form->getJS();
+        $form->render();
     }
 
     /**
@@ -242,39 +227,34 @@ class AccountController extends ControllerBase
             'size' => 6
         ]));
 
-        if ($this->request->isPost()) {
-            if ($this->auth->checkToken()) {
-                if ($form->validate()) {
-                    $user = $this->auth->getUser();
+        if ($form->validate()) {
+            $user = $this->auth->getUser();
 
-                    if (!$user->checkPass($this->request->getPost('password', 'trim'))) {
-                        return $this->auth->redirect('account/change-email', 'error', 'Incorrect password.');
-                    }
-
-                    $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailchangerevoke', 'unique' => true, 'expires' => 7]);
-                    $token = $authtoken->string;
-
-                    $change = new \Emailchanges();
-                    $change->user_id = $user->id;
-                    $change->authtoken_id = $authtoken->id;
-                    $change->date = date('Y-m-d H:i:s');
-                    $change->oldEmail = $user->email;
-                    $change->save();
-
-                    $user->email = $this->request->getPost('email', 'trim');
-                    $user->save();
-
-                    $this->queue->addJob(function ($that) use ($user, $change, $token)
-                    {
-                        $that->emails->changeEmail($user, $change, $token);
-                    });
-
-                    $this->auth->redirect('account', 'success', 'Email changed.');
-                }
+            if (!$user->checkPass($this->request->getPost('password', 'trim'))) {
+                return $this->auth->redirect('account/change-email', 'error', 'Incorrect password.');
             }
+
+            $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailchangerevoke', 'unique' => true, 'expires' => 7]);
+            $token = $authtoken->string;
+
+            $change = new \Emailchanges();
+            $change->user_id = $user->id;
+            $change->authtoken_id = $authtoken->id;
+            $change->date = date('Y-m-d H:i:s');
+            $change->oldEmail = $user->email;
+            $change->save();
+
+            $user->email = $this->request->getPost('email', 'trim');
+            $user->save();
+
+            $this->queue->addJob(function ($that) use ($user, $change, $token)
+            {
+                $that->emails->changeEmail($user, $change, $token);
+            });
+
+            $this->auth->redirect('account', 'success', 'Email changed.');
         }
-        $this->view->form = $form->getForm();
-        $this->view->formjs = $form->getJS();
+        $form->render();
     }
 
     /**
@@ -315,19 +295,14 @@ class AccountController extends ControllerBase
         ->addField(new \Forms\Fields\Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
         ->addField(new \Forms\Fields\Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]));
 
-        if ($this->request->isPost()) {
-            if ($this->auth->checkToken()) {
-                if ($form->validate()) {
-                    $user = $form->addToModel($this->auth->getUser(), ['firstName', 'lastName', 'DoB']);
+        if ($form->validate()) {
+            $user = $form->addToModel($this->auth->getUser());
 
-                    if ($user->save()) {
-                        $this->auth->redirect('account', 'success', 'Account details updated');
-                    }
-                }
+            if ($user->save()) {
+                $this->auth->redirect('account', 'success', 'Account details updated');
             }
         }
-        $this->view->form = $form->getForm();
-        $this->view->formjs = $form->getJS();
+        $form->render();
     }
 
     /**

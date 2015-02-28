@@ -10468,7 +10468,9 @@
 		 *      } );
 		 *    } )
 		 */
-		"fnInitComplete": null,
+		"fnInitComplete": function (settings, json) {
+		  $(this).removeClass('invisible');
+		},
 	
 	
 		/**

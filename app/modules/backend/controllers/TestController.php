@@ -51,9 +51,12 @@ class TestController extends ControllerBase
 
     public function indexAction()
     {
-        $user = \Users::findFirstById(1);
-        
-        echo $user->hasRole('Root Admin')->id;
+        $this->response->setContentType('text/plain');
+        $permission = \Permissions::findFirstById(3);
+        $permission->setRoles([5]);
+        foreach ($permission->permissionroles as $permissionrole) {
+            echo $permissionrole->roles->name, PHP_EOL;
+        }
     }
 
 }

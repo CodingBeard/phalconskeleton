@@ -3,13 +3,13 @@
 /**
  * Permissions
  * 
- CREATE TABLE `permissions` (
+  CREATE TABLE `permissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `module` varchar(255) DEFAULT NULL,
   `controller` varchar(255) DEFAULT NULL,
   `action` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB
+  ) ENGINE=InnoDB
  *
  * @category 
  * @package phalconskeleton
@@ -17,7 +17,6 @@
  * @copyright (c) 2015, Tim Marshall
  * @version 
  */
-
 class Permissions extends \Phalcon\Mvc\Model
 {
 
@@ -46,6 +45,86 @@ class Permissions extends \Phalcon\Mvc\Model
     public $action;
 
     /**
+     * Set the roles which can access a page
+     * @param array $roleNames
+     */
+    public function setRoles($roleNames)
+    {
+
+        foreach ($roleNames as $roleName) {
+            if (!$this->hasRole($roleName)) {
+                $this->addRole($roleName);
+            }
+        }
+
+        foreach ($this->roles as $role) {
+            if (!in_array($role->id, $roleNames)) {
+                $this->removeRole($role->id);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Add a role which can access a page
+     * @param string|int $role_id
+     */
+    public function addRole($role_id)
+    {
+        if ($this->hasRole($role_id)) {
+            return false;
+        }
+
+        $role = \Roles::findFirstById($role_id);
+
+        if (!$role) {
+            return false;
+        }
+
+        $permissionrole = new Permissionroles();
+        $permissionrole->permission_id = $this->id;
+        $permissionrole->role_id = $role->id;
+        $permissionrole->save();
+    }
+
+    /**
+     * Remove a role which can access a page
+     * @param int $role_id
+     * @return boolean
+     */
+    public function removeRole($role_id)
+    {
+        $role = $this->hasRole($role_id);
+        if (!$role) {
+            return false;
+        }
+        return $role->delete();
+    }
+
+    /**
+     * Check for the existance of a role which can access this page
+     * @param int $role_id
+     * @return boolean|\Permissionroles
+     */
+    public function hasRole($role_id)
+    {
+        return $this->getPermissionroles([
+            'role_id = :a:',
+            'bind' => ['a' => $role_id]
+        ])->getFirst();
+    }
+
+    /**
+     * Propagate delete to permissionroles
+     */
+    public function beforeDelete()
+    {
+        foreach ($this->permissionroles as $permissionrole) {
+            $permissionrole->delete();
+        }
+    }
+
+    /**
      * Independent Column Mapping.
      */
     public function columnMap()
@@ -64,84 +143,12 @@ class Permissions extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-		$this->addBehavior(new \Blameable());
+        $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
         $this->hasManyToMany(
-            "id",
-            "Permissionroles",
-            "permission_id", "role_id",
-            "Roles",
-            "id"
+        "id", "Permissionroles", "permission_id", "role_id", "Roles", "id"
         );
         $this->hasMany("id", "Permissionroles", "permission_id", ['alias' => 'Permissionroles']);
-    }
-
-    /**
-     * Updates the permissions in database
-     */
-    public static function addNewActions()
-    {
-        $modules = self::getControllersActions();
-        $inDb = [];
-        foreach (\Permissions::find() as $permission) {
-            $inDb[$permission->module . $permission->controller . $permission->action] = $permission;
-        }
-        $inFolders = [];
-        foreach ($modules as $module => $controllers) {
-            foreach ($controllers as $controller => $actions) {
-                foreach ($actions as $action) {
-                    $inFolders[$module . $controller . $action] = $module . $controller . $action;
-                    if (!array_key_exists($module . $controller . $action, $inDb)) {
-                        $permission = new Permissions();
-                        $permission->save([
-                            'module' => $module,
-                            'controller' => $controller,
-                            'action' => $action
-                        ]);
-                        $permissionrole = new Permissionroles();
-                        $permissionrole->permission_id = $permission->id;
-                        $permissionrole->role_id = 1;
-                        $permissionrole->save();
-                    }
-                }
-            }
-        }
-        foreach ($inDb as $key => $permission) {
-            if (!array_key_exists($key, $inFolders)) {
-                foreach ($permission->permissionroles as $permissionrole) {
-                    $permissionrole->delete();
-                }
-                $permission->delete();
-            }
-        }
-    }
-    
-    /**
-     * Find all the actions
-     * @return array
-     */
-    public static function getControllersActions()
-    {
-        $controllerActions = array();
-        $modules = array(
-            'frontend',
-            'backend'
-        );
-        foreach ($modules as $module) {
-            foreach (glob(__DIR__ . '/../../' . $module . '/controllers/*') as $path) {
-                $pop = explode('/', $path);
-                $file = array_pop($pop);
-                if ($file == 'ControllerBase.php')
-                    continue;
-                $class = substr($file, 0, -4);
-                foreach (get_class_methods($module . '\controllers\\' . $class) as $method) {
-                    if (substr($method, -6) == 'Action') {
-                        $controllerActions[$module][str_replace('Controller', '', $class)][] = str_replace('Action', '', $method);
-                    }
-                }
-            }
-        }
-        return $controllerActions;
     }
 
 }

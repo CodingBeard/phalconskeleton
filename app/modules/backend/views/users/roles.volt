@@ -23,38 +23,23 @@ copyright (c) 2015, Tim Marshall
 		<table class="table bordered striped condensed datatable responsive-table invisible">
 		  <thead>
 			<tr>
-			  <td>ID</td>
+			  <td>Level</td>
+			  <td>User Count</td>
 			  <td>Name</td>
-			  <td>Email</td>
-			  <td>Last Login</td>
-			  <td>Roles</td>
+			  <td>Description</td>
 			  <td>Action</td>
 			</tr>
 		  </thead>
 		  <tbody>
-			{% if users is iterable %}
-				{% for user in users %}
+			{% if roles is iterable %}
+				{% for role in roles %}
 					<tr>
-					  <td>{{ user.id|e }}</td>
-					  <td>{{ user.getName()|e }}</td>
-					  <td>{{ user.email|e }}</td>
+					  <td>{{ role.level|e }}</td>
+					  <td>{{ role.users.count() }}</td>
+					  <td>{{ role.name|e }}</td>
+					  <td>{{ role.description|e }}</td>
 					  <td>
-						{% if user.logins.count() %}
-							{{ date(config.defaults.datetimeFormat, user.logins.getLast().attempt) }}
-						{% else %}
-							Never
-						{% endif %}
-					  </td>
-					  <td>
-						| 
-						{% if user.roles is iterable %}
-							{% for role in user.roles %}
-								{{ role.name|e }} |
-							{% endfor %}
-						{% endif %}
-					  </td>
-					  <td>
-						  <a href="{{ url('admin/users/edit/' ~ user.id) }}" class="btn-tiny blue darken-2">Edit</a>
+						  <a href="{{ url('admin/users/editrole/' ~ role.id) }}" class="btn-tiny blue darken-2">Edit</a>
 					  </td>
 					</tr>
 				{% endfor %}

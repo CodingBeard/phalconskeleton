@@ -79,6 +79,13 @@ textarea.materialize-textarea.invalid {
 	@include inner-shadow(0 1px 4px $input-error-color);
 }
 
+input[type=text].thead-search-input {
+	width: 90%;
+	padding: 0px;
+	margin: 0px;
+	height: 1.5rem;
+}
+
 // Prefix Icons
 .prefix {
 	position: absolute;
@@ -157,7 +164,7 @@ textarea:focus.materialize-textarea {
 
 textarea.materialize-textarea {
 	overflow-y: hidden; /* prevents scroll bar flash */
-	padding: 1.6rem 0; /* prevents text jump on Enter keypress */
+	padding: 0.6rem 0; /* prevents text jump on Enter keypress */
 	resize: none;
 	min-height: 3rem;
 }

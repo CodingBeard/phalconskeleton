@@ -76,6 +76,12 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
     public $fields = [];
 
     /**
+     * String of the form's html
+     * @var string
+     */
+    public $html = false;
+
+    /**
      * Array of javascripts needed for the form
      * @var array
      */
@@ -144,9 +150,8 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
 
     /**
      * Generate the full form's html
-     * @return string
      */
-    public function getForm()
+    public function render()
     {
         $fields = [];
         foreach ($this->fields as $field) {
@@ -178,7 +183,23 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
             'cancelHref' => $this->cancelHref,
             'fields' => $fields
         ];
-        return $this->renderFile('base', $variables);
+        $this->html = $this->renderFile('base', $variables);
+
+        if (!is_file("{$this->view->getViewsDir()}{$this->dispatcher->getControllerName()}/{$this->dispatcher->getActionName()}.volt")) {
+            $this->view->pick('layouts/formbase');
+        }
+    }
+
+    /**
+     * Get the form's html
+     * @return string
+     */
+    public function getHtml()
+    {
+        if (!$this->html) {
+            $this->render();
+        }
+        return $this->html;
     }
 
     /**
@@ -202,6 +223,12 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
     {
         if (!$this->request->isPost())
             return;
+
+        if (!$this->auth->checkToken()) {
+            $field->errorMessage = 'Invalid Anti-CRSF token.';
+            return false;
+        }
+
         $result = true;
         foreach ($this->fields as $field) {
             if (!$field->validate($_POST)) {
@@ -210,7 +237,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
             }
             if ($field->template == 'captcha') {
                 if (!$this->captcha->verify()) {
-                    $field->errorMessage = 'Invalid Captcha';
+                    $field->errorMessage = 'Invalid Captcha.';
                 }
             }
         }
@@ -234,10 +261,11 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
             }
         }
         else {
-            foreach ($model->columnMap() as $key) {
-                if ($key == 'id')
-                    continue;
-                $model->$key = $this->request->getPost($key, 'trim');
+            foreach ($this->fields as $field) {
+                $key = $field->key;
+                if (in_array($key, $model->columnMap())) {
+                    $model->$key = $this->request->getPost($key, 'trim');
+                }
             }
         }
         return $model;
