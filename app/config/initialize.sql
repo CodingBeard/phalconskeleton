@@ -240,6 +240,7 @@ CREATE TABLE `navlinks` (
   `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
   `navbar_id` INT NULL DEFAULT NULL,
   `label` VARCHAR(255) NULL DEFAULT NULL,
+  `level` TINYINT NULL DEFAULT NULL,
   `link` VARCHAR(255) NULL DEFAULT NULL,
   `parent_id` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -319,18 +320,16 @@ INSERT INTO `permissionroles` VALUES
 (6,5,5),
 (14,3,5),
 (16,17,5),
-(17,18,5),
-(18,11,5),
-(19,12,5),
-(20,7,2),
-(21,9,2),
-(22,6,2),
-(23,10,2),
-(24,8,5),
-(25,13,2),
-(26,16,5),
-(27,15,5),
-(28,14,5);
+(17,12,5),
+(18,7,2),
+(19,9,2),
+(20,6,2),
+(21,10,2),
+(22,8,5),
+(23,13,2),
+(24,16,5),
+(25,15,5),
+(26,14,5);
 
 INSERT INTO `navbars` VALUES 
 (1,'Footer'),

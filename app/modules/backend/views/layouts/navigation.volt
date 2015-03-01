@@ -7,7 +7,7 @@ copyright (c) 2015, Tim Marshall
   <ul class="hide-on-med-and-down">
 	{% set _backendnav = navbarObject.findFirst('name = "Backend"') %}
 	{# Header sub nav (level 3) #}
-	{% for navlink in _backendnav.getNavlinks('parent_id IS NOT NULL') %}
+	{% for navlink in _backendnav.getNavlinks('level = 1') %}
 		{% if navlink.inUrl(_SERVER['REQUEST_URI']) and navlink.children is iterable %}
 			{% set active = '' %}
 			{% if navlink.isUrl(_SERVER['REQUEST_URI']) %}
@@ -48,7 +48,7 @@ copyright (c) 2015, Tim Marshall
 	  {# Main nav #}
 	  <div class="hide-on-med-and-down">
 		{% if _backendnav.id %}
-			{% for navlink in _backendnav.getNavlinks('parent_id IS NULL') %}
+			{% for navlink in _backendnav.getNavlinks('level = 0') %}
 				{% set active = '' %}
 				{% if navlink.children is iterable %}
 					{% for child in navlink.children %}
@@ -88,7 +88,7 @@ copyright (c) 2015, Tim Marshall
 		</div>
 		{# Mobile nav #}
 		<div class="hide-on-med-and-up">
-		  {% for navlink in _backendnav.getNavlinks('parent_id IS NULL') %}
+		  {% for navlink in _backendnav.getNavlinks('level = 0') %}
 			  {% set active = '' %}
 			  {% if navlink.children is iterable %}
 				  {% for child in navlink.children %}
@@ -145,7 +145,7 @@ copyright (c) 2015, Tim Marshall
 		  {# footer nav appended to mobile nav #}
 		  {% set _footernav = navbarObject.findFirst('name = "Footer"') %}
 		  {% if _footernav.id %}
-			  {% for navlink in _footernav.getNavlinks('parent_id IS NULL') %}
+			  {% for navlink in _footernav.getNavlinks('level = 0') %}
 				  {% if navlink.children is iterable %}
 					  <li class="no-padding">
 						<ul class="collapsible">

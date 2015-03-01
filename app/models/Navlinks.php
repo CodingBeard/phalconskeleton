@@ -6,16 +6,14 @@
   CREATE TABLE `navlinks` (
   `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
   `navbar_id` INT NULL DEFAULT NULL,
-  `order` INT NULL DEFAULT NULL,
+  `level` TINYINT NULL DEFAULT NULL,
   `label` VARCHAR(255) NULL DEFAULT NULL,
   `link` VARCHAR(255) NULL DEFAULT NULL,
   `parent_id` INT NULL DEFAULT NULL,
-  `permission_id` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
   );
   ALTER TABLE `navlinks` ADD FOREIGN KEY (navbar_id) REFERENCES `navbars` (`id`);
   ALTER TABLE `navlinks` ADD FOREIGN KEY (parent_id) REFERENCES `navlinks` (`id`);
-  ALTER TABLE `navlinks` ADD FOREIGN KEY (permission_id) REFERENCES `permissions` (`id`);
  *
  * @category 
  * @package phalconskeleton
@@ -37,6 +35,12 @@ class Navlinks extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $navbar_id;
+
+    /**
+     *
+     * @var int
+     */
+    public $level;
 
     /**
      *
@@ -118,6 +122,7 @@ class Navlinks extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'navbar_id' => 'navbar_id',
+            'level' => 'level',
             'label' => 'label',
             'link' => 'link',
             'parent_id' => 'parent_id',

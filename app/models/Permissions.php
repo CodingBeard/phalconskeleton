@@ -50,16 +50,18 @@ class Permissions extends \Phalcon\Mvc\Model
      */
     public function setRoles($roleNames)
     {
-
-        foreach ($roleNames as $roleName) {
-            if (!$this->hasRole($roleName)) {
-                $this->addRole($roleName);
+        if (is_array($roleNames)) {
+            foreach ($roleNames as $roleName) {
+                if (!$this->hasRole($roleName)) {
+                    $this->addRole($roleName);
+                }
             }
         }
-
-        foreach ($this->roles as $role) {
-            if (!in_array($role->id, $roleNames)) {
-                $this->removeRole($role->id);
+        if ($this->roles->count()) {
+            foreach ($this->roles as $role) {
+                if (!in_array($role->id, $roleNames)) {
+                    $this->removeRole($role->id);
+                }
             }
         }
         return true;

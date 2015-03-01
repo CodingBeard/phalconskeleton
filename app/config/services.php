@@ -88,7 +88,6 @@ $di->set('router', function () use ($config, $routes)
             'params' => 1
         ]);
     }
-    //print_r($router->getRoutes()); die;
     return $router;
 });
 

@@ -12,7 +12,7 @@ copyright (c) 2015, Tim Marshall
 	<ul class="right hide-on-med-and-down">
 	  {% set _frontendnav = navbarObject.findFirst('name = "Frontend"') %}
 	  {% if _frontendnav.id %}
-		  {% for navlink in _frontendnav.getNavlinks('parent_id IS NULL') %}
+		  {% for navlink in _frontendnav.getNavlinks('level = 0') %}
 			  {% if navlink.children is iterable %}
 				  <li class="no-padding">
 					<a class="dropdown-button" href="#" data-activates="dropdown">{{ navlink.label }}</a>
@@ -34,7 +34,7 @@ copyright (c) 2015, Tim Marshall
 	</ul>
 	<ul id="nav-mobile" class="side-nav hide-on-large-only">
 	  {% if _frontendnav.id %}
-		  {% for navlink in _frontendnav.getNavlinks('parent_id IS NULL') %}
+		  {% for navlink in _frontendnav.getNavlinks('level = 0') %}
 			  {% if navlink.children is iterable %}
 				  <li class="no-padding">
 					<ul class="collapsible">
@@ -61,7 +61,7 @@ copyright (c) 2015, Tim Marshall
 	  {% endif %}
 	  {% set _footernav = navbarObject.findFirst('name = "Footer"') %}
 	  {% if _footernav.id %}
-		  {% for navlink in _footernav.getNavlinks('parent_id IS NULL') %}
+		  {% for navlink in _footernav.getNavlinks('level = 0') %}
 			  {% if navlink.children is iterable %}
 				  <li class="no-padding">
 					<ul class="collapsible">

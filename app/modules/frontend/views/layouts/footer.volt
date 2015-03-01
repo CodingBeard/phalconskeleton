@@ -13,7 +13,7 @@ copyright (c) 2015, Tim Marshall
 			<li>
 			  <a>|</a>
 			</li>
-			{% for navlink in _footernav.getNavlinks('parent_id IS NULL') %}
+			{% for navlink in _footernav.getNavlinks('level = 0') %}
 				{% if navlink.children is iterable %}
 					{% for child in navlink.children %}
 						<li>

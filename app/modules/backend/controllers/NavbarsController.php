@@ -148,6 +148,7 @@ class NavbarsController extends ControllerBase
                         $link['link'] = substr($link['link'], 1);
                     }
                     $navlink = new \Navlinks();
+                    $navlink->level = $link['level'];
                     $navlink->label = $link['label'];
                     $navlink->link = $link['link'];
                     $navlink->navbar_id = $navbar->id;

@@ -60,7 +60,6 @@ return new \Phalcon\Config([
         'frontend' => [
             'minify' => false,
             'sourcePath' => __DIR__ . '/../modules/frontend/assets/',
-            'revisionPath' => __DIR__ . '/../modules/frontend/assetRevision',
             'cssPath' => 'css/main.min.css',
             'cssPaths' => [
                 'css/materialize.css',
@@ -86,7 +85,6 @@ return new \Phalcon\Config([
         'backend' => [
             'minify' => false,
             'sourcePath' => __DIR__ . '/../modules/backend/assets/',
-            'revisionPath' => __DIR__ . '/../modules/backend/assetRevision',
             'cssPath' => 'css/admin.min.css',
             'cssPaths' => [
                 '../../frontend/assets/css/materialize.css',

@@ -79,25 +79,28 @@ class Users extends \Phalcon\Mvc\Model
             $int = true;
         }
 
-        foreach ($roleNames as $roleName) {
-            if (!$this->hasRole($roleName)) {
-                $this->addRole($roleName);
-            }
-        }
-
-        foreach ($this->roles as $role) {
-            if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
-                $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
-                continue;
-            }
-            if ($int) {
-                if (!in_array($role->id, $roleNames)) {
-                    $this->removeRole($role->id);
+        if (is_array($roleNames)) {
+            foreach ($roleNames as $roleName) {
+                if (!$this->hasRole($roleName)) {
+                    $this->addRole($roleName);
                 }
             }
-            else {
-                if (!in_array($role->name, $roleNames)) {
-                    $this->removeRole($role->name);
+        }
+        if ($this->roles->count()) {
+            foreach ($this->roles as $role) {
+                if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
+                    $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
+                    continue;
+                }
+                if ($int) {
+                    if (!in_array($role->id, $roleNames)) {
+                        $this->removeRole($role->id);
+                    }
+                }
+                else {
+                    if (!in_array($role->name, $roleNames)) {
+                        $this->removeRole($role->name);
+                    }
                 }
             }
         }
