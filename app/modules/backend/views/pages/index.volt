@@ -25,18 +25,28 @@ copyright (c) 2015, Tim Marshall
 			<tr>
 			  <td>ID</td>
 			  <td>Name</td>
+			  <td>Standalone</td>
+			  <td>Url</td>
 			  <td>Action</td>
 			</tr>
 		  </thead>
 		  <tbody>
-			{% if navbars is iterable %}
-				{% for navbar in navbars %}
+			{% if pages is iterable %}
+				{% for page in pages %}
 					<tr>
-					  <td>{{ navbar.id|e }}</td>
-					  <td>{{ navbar.name|e }}</td>
+					  <td>{{ page.id|e }}</td>
+					  <td>{{ page.name|e }}</td>
 					  <td>
-						<a class="btn btn-tiny blue darken-2" href="{{ url('admin/navbars/edit/' ~ navbar.id) }}">Edit</a>
-						<a class="btn btn-tiny green darken-2" href="{{ url('admin/navbars/manage/' ~ navbar.id) }}">Manage</a>
+						{% if page.standalone %}
+							Yes
+						{% else %}
+							No
+						{% endif %}
+					  </td>
+					  <td>{{ page.url|e }}</td>
+					  <td>
+						<a class="btn btn-tiny blue darken-2" href="{{ url('admin/pages/edit/' ~ page.id) }}">Edit</a>
+						<a class="btn btn-tiny green darken-2" href="{{ url('admin/pages/manage/' ~ page.id) }}">Manage</a>
 					  </td>
 					</tr>
 				{% endfor %}

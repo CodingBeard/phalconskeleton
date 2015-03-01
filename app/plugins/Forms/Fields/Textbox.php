@@ -98,12 +98,7 @@ class Textbox extends Field
      */
     public function __construct($properties)
     {
-        foreach ($properties as $key => $value) {
-            $this->$key = $value;
-        }
-        if ($this->required) {
-            $this->requiredAttribute = 'required';
-        }
+        parent::__construct($properties);
     }
 
     public function setDefault($value)

@@ -86,16 +86,7 @@ class Dateselect extends Field
      */
     public function __construct($properties)
     {
-        foreach ($properties as $key => $value) {
-            if (is_callable($value)) {
-                $value = $value();
-            }
-            $this->$key = $value;
-        }
-
-        if ($this->required) {
-            $this->requiredAttribute = 'required';
-        }
+        parent::__construct($properties);
 
         if (!$this->ranges) {
             $this->ranges['year'] = range(date('Y'), 1900);
@@ -174,6 +165,9 @@ class Dateselect extends Field
                 $this->errorMessage = 'That date is not valid';
                 return false;
             }
+        }
+        if (is_callable($this->required)) {
+            $this->required = $this->required($POST);
         }
         if ($this->required) {
             if (!strlen(trim($POST[$this->key]))) {

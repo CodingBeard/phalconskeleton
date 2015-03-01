@@ -158,6 +158,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
      */
     public function field($fieldName, $properties)
     {
+        $fieldName = '\Forms\Fields\\' . ucfirst($fieldName);
         $field = new $fieldName($properties);
         return $this->renderField($field);
     }
@@ -278,7 +279,16 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
             foreach ($this->fields as $field) {
                 $key = $field->key;
                 if (in_array($key, $model->columnMap())) {
-                    $model->$key = $this->request->getPost($key, 'trim');
+                    if (in_array($field->template, ['checkbox', 'switchbox'])) {
+                        $value = ($this->request->getPost($key, 'trim') == 'on') ? 1 : 0;
+                    }
+                    else {
+                        $value = $this->request->getPost($key, 'trim');
+                    }
+                    if (!$value && substr($key, -3) == '_id') {
+                        $value = null;
+                    }
+                    $model->$key = $value;
                 }
             }
         }

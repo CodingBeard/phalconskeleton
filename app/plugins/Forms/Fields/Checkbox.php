@@ -78,12 +78,7 @@ class Checkbox extends Field
      */
     public function __construct($properties)
     {
-        foreach ($properties as $key => $value) {
-            $this->$key = $value;
-        }
-        if ($this->required) {
-            $this->requiredAttribute = 'required';
-        }
+        parent::__construct($properties);
         if ($this->default) {
             $this->default = 'checked';
         }

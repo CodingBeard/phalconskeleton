@@ -11,4 +11,11 @@ $(function () {
 	belowOrigin: true
   });
   $('select').material_select(); 
+  $('.confirm').click(function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	if (confirm($(this).attr('data-message'))) {
+	  window.location.href = $(this).attr('href');
+	}
+  });
 });

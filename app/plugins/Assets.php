@@ -85,9 +85,6 @@ class Assets extends Phalcon\Mvc\User\Plugin
         foreach ($this->config->assets->$module as $key => $value) {
             $this->$key = $value;
         }
-        if (!is_file($this->revisionPath)) {
-            file_put_contents($this->revisionPath, json_encode(['css' => 0, 'js' => 0]));
-        }
     }
 
     /**

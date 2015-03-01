@@ -73,12 +73,7 @@ class Checkboxgroup extends Field
      */
     public function __construct($properties)
     {
-        foreach ($properties as $key => $value) {
-            if (is_callable($value)) {
-                $value = $value();
-            }
-            $this->$key = $value;
-        }
+        parent::__construct($properties);
         foreach ($this->options as $key => $option) {
             $this->options[$key] = (object) $option;
         }

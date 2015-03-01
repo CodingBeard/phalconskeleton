@@ -42,9 +42,7 @@ class Captcha extends Field
      */
     public function __construct($properties = ['guestsOnly' => false])
     {
-        foreach ($properties as $key => $value) {
-            $this->$key = $value;
-        }
+        parent::__construct($properties);
     }
 
 }

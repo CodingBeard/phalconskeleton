@@ -30,3 +30,19 @@ copyright (c) 2015, Tim Marshall
 	</label>
   </div>
 </div>
+{% if toggleRequired is iterable %}
+	<script type="text/javascript">
+		$('[name="{{ key|escape_js }}"]').change(function () {
+		{% for inputKey in toggleRequired %}
+			if ($('[name="{{ inputKey|escape_js }}"]').is('[required]')) {
+				$('[name="{{ inputKey|escape_js }}"]').removeAttr('required').removeAttr('placeholder');
+				$('[for="{{ inputKey|escape_js }}"]').find('strong').remove();
+			}
+			else {
+				$('[name="{{ inputKey|escape_js }}"]').attr('required', true);
+				$('[for="{{ inputKey|escape_js }}"]').append('<strong style="color: red;">*</strong>');
+			}
+		{% endfor %}
+		});
+	</script>
+{% endif %}

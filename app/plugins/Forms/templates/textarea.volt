@@ -21,5 +21,5 @@ copyright (c) 2015, Tim Marshall
 	  {{ sublabel }}
 	</span>
   </label>
-  <textarea {{ requiredAttribute }} name="{{ key|escape_attr }}" class="materialize-textarea {{ error|escape_attr }} {{ class|escape_attr }}">{{ default }}</textarea>
+  <textarea {{ requiredAttribute }} {{ patternAttribute }} name="{{ key|escape_attr }}" class="materialize-textarea {{ error|escape_attr }} {{ class|escape_attr }}">{{ default }}</textarea>
 </div>

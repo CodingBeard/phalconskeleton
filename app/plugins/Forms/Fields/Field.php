@@ -28,10 +28,22 @@ class Field extends \Forms\FormBuilder
     public $required = false;
 
     /**
+     * Text for the required atribute
+     * @var bool
+     */
+    public $requiredAttribute = '';
+
+    /**
      * Regex pattern to match against
      * @var bool|string
      */
     public $pattern = false;
+
+    /**
+     * Text for the pattern atribute
+     * @var bool|string
+     */
+    public $patternAttribute = '';
 
     /**
      * Array of New Model, field to check
@@ -50,6 +62,22 @@ class Field extends \Forms\FormBuilder
      * @var bool
      */
     public $isRepeat;
+
+    public function __construct($properties)
+    {
+        foreach ($properties as $key => $value) {
+            if (is_callable($value) && $value instanceof \Closure) {
+                $value = $value();
+            }
+            $this->$key = $value;
+        }
+        if ($this->required) {
+            $this->requiredAttribute = 'required';
+        }
+        if ($this->pattern) {
+            $this->patternAttribute = 'pattern="' . $this->pattern . '"';
+        }
+    }
 
     /**
      * Validate the post data for this field

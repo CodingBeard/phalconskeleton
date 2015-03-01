@@ -131,7 +131,7 @@ textarea.materialize-textarea {
 	border-radius: 2px;
 	padding-left: 5px !important;
 	outline: none;
-	height: 3rem;
+	height: 2rem;
 	width: 100%;
 
 	font-size: 1rem;
@@ -367,6 +367,9 @@ form p:last-child {
 
 
 // Switch
+.switch {
+	padding-top: 0.3rem;
+}
 .switch,
 .switch * {
     -webkit-user-select: none;
@@ -455,8 +458,8 @@ input[type=checkbox]:first-child:not(:disabled) ~ .lever:active:after {
 		border: none;
 		border-bottom: 1px solid $input-border-color;
 		outline: none;
-		height: 3rem;
-		line-height: 3rem;
+		height: 2rem;
+		line-height: 2rem;
 		width: 100%;
 		font-size: 1rem;
 		margin: 0 0 15px 0;
@@ -473,6 +476,15 @@ input[type=checkbox]:first-child:not(:disabled) ~ .lever:active:after {
 
 select { display: none; }
 select.browser-default { display: block; }
+
+select {
+	background-color: #fffafa;
+	width: 100%;
+	padding: 5px;
+	border: 1px solid #f2f2f2;
+	border-radius: 2px;
+	height: 2rem;
+}
 
 .inline-selects {
 	select {
@@ -700,15 +712,6 @@ input[type=range]:focus::-ms-fill-upper {
 /***************************
    Text Inputs + Textarea
 ****************************/
-
-select {
-	background-color: #fffafa;
-	width: 100%;
-	padding: 5px;
-	border: 1px solid #f2f2f2;
-	border-radius: 2px;
-	height: 3rem;
-}
 
 input {
 	&#recaptcha_response_field {

@@ -21,5 +21,5 @@ copyright (c) 2015, Tim Marshall
 	  {{ sublabel }}
 	</span>
   </label>
-  <input {{ requiredAttribute }} name="{{ key|escape_attr }}" class="{{ error|escape_attr }} {{ class|escape_attr }}" type="password" autocomplete="off" value="{{ default|escape_attr }}">
+  <input {{ requiredAttribute }} {{ patternAttribute }} name="{{ key|escape_attr }}" class="{{ error|escape_attr }} {{ class|escape_attr }}" type="password" autocomplete="off" value="{{ default|escape_attr }}">
 </div>

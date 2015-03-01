@@ -82,6 +82,7 @@ class Switchbox extends Field
      *  'label' => '',
      *  'sublabel' => '',
      *  'required' => false,
+     *  'toggleRequired' => ['name1', 'name2', 'name..'],
      *  'class' => '',
      *  'onText' => '',
      *  'offText' => '',
@@ -92,12 +93,7 @@ class Switchbox extends Field
      */
     public function __construct($properties)
     {
-        foreach ($properties as $key => $value) {
-            $this->$key = $value;
-        }
-        if ($this->required) {
-            $this->requiredAttribute = 'required';
-        }
+        parent::__construct($properties);
         if ($this->default) {
             $this->default = 'checked';
         }

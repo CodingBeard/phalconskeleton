@@ -86,15 +86,7 @@ class Radio extends Field
      */
     public function __construct($properties)
     {
-        foreach ($properties as $key => $value) {
-            if (is_callable($value)) {
-                $value = $value();
-            }
-            $this->$key = $value;
-        }
-        if ($this->required) {
-            $this->requiredAttribute = 'required';
-        }
+        parent::__construct($properties);
         if ($this->inline) {
             $this->inline = 'inline';
         }

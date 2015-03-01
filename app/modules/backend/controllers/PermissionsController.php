@@ -69,9 +69,9 @@ class PermissionsController extends ControllerBase
     {
         $modules = $this->getControllersActions();
 
-        $inDb = [];
+        $permissionsInDb = [];
         foreach (\Permissions::find() as $permission) {
-            $inDb[($permission->module . $permission->controller . $permission->action)] = $permission;
+            $permissionsInDb[($permission->module . $permission->controller . $permission->action)] = $permission;
         }
 
         $inFolders = [];
@@ -81,7 +81,7 @@ class PermissionsController extends ControllerBase
 
                     $inFolders[($module . $controller . $action)] = ($module . $controller . $action);
 
-                    if (!array_key_exists(($module . $controller . $action), $inDb)) {
+                    if (!array_key_exists(($module . $controller . $action), $permissionsInDb)) {
                         $permission = new \Permissions();
                         $permission->module = $module;
                         $permission->controller = $controller;
@@ -92,7 +92,7 @@ class PermissionsController extends ControllerBase
             }
         }
 
-        foreach ($inDb as $key => $permission) {
+        foreach ($permissionsInDb as $key => $permission) {
             if (!array_key_exists($key, $inFolders)) {
                 $permission->delete();
             }

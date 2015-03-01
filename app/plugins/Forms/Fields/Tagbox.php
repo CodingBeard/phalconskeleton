@@ -100,6 +100,7 @@ class Tagbox extends Field
      *  'label' => '',
      *  'sublabel' => '',
      *  'required' => false,
+     *  'autocompleteOnFocus' => false,
      *  'class' => '',
      *  'size' => 12,
      *  'tagLimit' => 'null',
@@ -111,12 +112,7 @@ class Tagbox extends Field
      */
     public function __construct($properties)
     {
-        foreach ($properties as $key => $value) {
-            if (is_callable($value)) {
-                $value = $value();
-            }
-            $this->$key = $value;
-        }
+        parent::__construct($properties);
         foreach ($this->options as $key => $option) {
             $this->options[$key] = (object) $option;
         }
@@ -147,6 +143,9 @@ class Tagbox extends Field
      */
     public function validate($POST)
     {
+        if (is_callable($this->required)) {
+            $this->required = $this->required($POST);
+        }
         if ($this->required) {
             if (!count($POST[$this->key])) {
                 $this->errorMessage = 'Field is required';
