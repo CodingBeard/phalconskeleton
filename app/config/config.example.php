@@ -18,16 +18,32 @@ return new \Phalcon\Config([
         'dbname' => '',
     ],
     'application' => [
-        'name' => 'Skeleton',
+        'name' => '',
+        'domain' => '',
+        'https' => false,
         'modelsDir' => __DIR__ . '/../models/',
         'publicDir' => __DIR__ . '/../../public/',
-        'modules' => [
-            'frontend' => __DIR__ . '/../modules/frontend/Module.php',
-            'backend' => __DIR__ . '/../modules/backend/Module.php'
-        ],
         'baseUri' => '/',
         'cipher' => '',
         'showErrors' => true,
+    ],
+    'defaults' => [
+        'dateFormat' => 'd/m/Y',
+        'datetimeFormat' => 'd/m/Y H:i:s'
+    ],
+    'modules' => [
+        'uriPrefixes' => [
+            'frontend' => '',
+            'backend' => '/admin'
+        ],
+        'files' => [
+            'frontend' => __DIR__ . '/../modules/frontend/Module.php',
+            'backend' => __DIR__ . '/../modules/backend/Module.php'
+        ],
+        'controllers' => [
+            'frontend' => __DIR__ . '/../modules/frontend/controllers/',
+            'backend' => __DIR__ . '/../modules/backend/controllers/'
+        ],
     ],
     'loader' => [
         'dirs' => [
@@ -43,12 +59,12 @@ return new \Phalcon\Config([
     'assets' => [
         'frontend' => [
             'minify' => false,
-            'sourcePath' => __DIR__ . '/../assets/frontend/',
+            'sourcePath' => __DIR__ . '/../modules/frontend/assets/',
             'revisionPath' => __DIR__ . '/../modules/frontend/assetRevision',
             'cssPath' => 'css/main.min.css',
             'cssPaths' => [
-                'css/normalize.css',
                 'css/materialize.css',
+                'css/normalize.css',
                 'css/font-awesome.min.css',
                 'css/jquery.dataTables.css',
                 'css/jquery-ui.css',
@@ -69,28 +85,28 @@ return new \Phalcon\Config([
         ],
         'backend' => [
             'minify' => false,
-            'sourcePath' => __DIR__ . '/../assets/',
+            'sourcePath' => __DIR__ . '/../modules/backend/assets/',
             'revisionPath' => __DIR__ . '/../modules/backend/assetRevision',
             'cssPath' => 'css/admin.min.css',
             'cssPaths' => [
-                'frontend/css/normalize.css',
-                'backend/css/materialize.css',
-                'frontend/css/font-awesome.min.css',
-                'frontend/css/jquery.dataTables.css',
-                'frontend/css/jquery-ui.css',
-                'frontend/css/jquery-ui.theme.css',
-                'frontend/css/jquery.tagit.css',
-                'backend/css/style.css',
+                '../../frontend/assets/css/materialize.css',
+                '../../frontend/assets/css/normalize.css',
+                '../../frontend/assets/css/font-awesome.min.css',
+                '../../frontend/assets/css/jquery.dataTables.css',
+                '../../frontend/assets/css/jquery-ui.css',
+                '../../frontend/assets/css/jquery-ui.theme.css',
+                '../../frontend/assets/css/jquery.tagit.css',
+                'css/style.css',
             ],
             'jsPath' => 'js/admin.min.js',
             'jsPaths' => [
-                'frontend/js/jquery-1.11.1.min.js',
-                'frontend/js/materialize.js',
-                'frontend/js/jquery.dataTables.js',
-                'frontend/js/jquery-ui.js',
-                'frontend/js/tag-it.js',
-                'frontend/js/cookiebanner.js',
-                'backend/js/main.js',
+                '../../frontend/assets/js/jquery-1.11.1.min.js',
+                '../../frontend/assets/js/materialize.js',
+                '../../frontend/assets/js/jquery.dataTables.js',
+                '../../frontend/assets/js/jquery-ui.js',
+                '../../frontend/assets/js/tag-it.js',
+                '../../frontend/assets/js/cookiebanner.js',
+                'js/main.js',
             ],
         ],
     ],
@@ -99,47 +115,29 @@ return new \Phalcon\Config([
             'viewsDir' => __DIR__ . '/../modules/frontend/views/',
             'compileDir' => __DIR__ . '/../cache/',
             'alwaysCompile' => true,
-            'filters' => [
-                ['number_format', 'number_format'],
-                ['ucfirst', 'ucfirst'],
-                ['strtotime', 'strtotime'],
-            ],
-            'functions' => [
-                ['replace', 'str_replace'],
-                ['substr', 'substr'],
-                ['implode', 'implode'],
-                ['explode', 'explode'],
-                ['in_array', 'in_array'],
-                ['unserialize', 'unserialize'],
-                ['json_decode', 'json_decode'],
-                ['json_encode', 'json_encode'],
-                ['round', 'round'],
-                ['nl2br', 'nl2br'],
-                ['stripos', 'stripos'],
-            ]
         ],
         'backend' => [
             'viewsDir' => __DIR__ . '/../modules/backend/views/',
             'compileDir' => __DIR__ . '/../cache/',
             'alwaysCompile' => true,
-            'filters' => [
-                ['number_format', 'number_format'],
-                ['ucfirst', 'ucfirst'],
-                ['strtotime', 'strtotime'],
-            ],
-            'functions' => [
-                ['replace', 'str_replace'],
-                ['substr', 'substr'],
-                ['implode', 'implode'],
-                ['explode', 'explode'],
-                ['in_array', 'in_array'],
-                ['unserialize', 'unserialize'],
-                ['json_decode', 'json_decode'],
-                ['json_encode', 'json_encode'],
-                ['round', 'round'],
-                ['nl2br', 'nl2br'],
-                ['stripos', 'stripos'],
-            ]
+        ],
+        'filters' => [
+            ['number_format', 'number_format'],
+            ['ucfirst', 'ucfirst'],
+            ['strtotime', 'strtotime'],
+        ],
+        'functions' => [
+            ['replace', 'str_replace'],
+            ['substr', 'substr'],
+            ['implode', 'implode'],
+            ['explode', 'explode'],
+            ['in_array', 'in_array'],
+            ['unserialize', 'unserialize'],
+            ['json_decode', 'json_decode'],
+            ['json_encode', 'json_encode'],
+            ['round', 'round'],
+            ['nl2br', 'nl2br'],
+            ['stripos', 'stripos'],
         ],
     ],
     'captcha' => [
@@ -147,12 +145,9 @@ return new \Phalcon\Config([
         'privateKey' => '',
     ],
     'mail' => [
-        'domain' => '',
-        'mandrillKey' => '',
+        'mandrillKey' => ''
     ],
- /*
-  '' => array(
-  '' => '',
-  ),
- */
+    'beanstalk' => [
+        'host' => '127.0.0.1',
+    ],
 ]);

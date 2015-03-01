@@ -23,7 +23,7 @@ copyright (c) 2015, Tim Marshall
   </label>
   {% if options is iterable %}
 	  {% for count, option in options %}
-		  <div>
+		  <div class="{{ inline }}">
 			<input {{ requiredAttribute }} id="{{ key ~ count|escape_attr }}" name="{{ key|escape_attr }}" class="{{ class|escape_attr }}" type="radio" value="{{ option.value|escape_attr }}" {{ option.default }}> 
 			<label for="{{ key ~ count|escape_attr }}">{{ option.label }}</label>
 		  </div>

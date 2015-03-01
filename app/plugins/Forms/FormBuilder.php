@@ -95,7 +95,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
      */
     public function renderFile($file, $variables)
     {
-        $view = clone $this->view;
+        $view = clone $this->formview;
         $view->setViewsDir(__DIR__);
         foreach ($variables as $key => $value) {
             $view->setVar($key, $value);
@@ -137,15 +137,29 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
     public function addField($field)
     {
         $this->fields[] = $field;
-        if ($field->repeat) {
-            $repeat = clone $field;
-            $repeat->key = 'repeat' . $repeat->key;
-            $repeat->label = 'Repeat ' . $repeat->label;
-            $repeat->repeat = false;
-            $repeat->isRepeat = true;
-            $this->fields[] = $repeat;
+        if (isset($field->repeat)) {
+            if ($field->repeat) {
+                $repeat = clone $field;
+                $repeat->key = 'repeat' . $repeat->key;
+                $repeat->label = 'Repeat ' . $repeat->label;
+                $repeat->repeat = false;
+                $repeat->isRepeat = true;
+                $this->fields[] = $repeat;
+            }
         }
         return $this;
+    }
+
+    /**
+     * Return the string of a field
+     * @param string $fieldName
+     * @param array $properties
+     * @return string
+     */
+    public function field($fieldName, $properties)
+    {
+        $field = new $fieldName($properties);
+        return $this->renderField($field);
     }
 
     /**

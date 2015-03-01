@@ -23,6 +23,7 @@ class ControllerBase extends Controller
     public function initialize()
     {
         $this->tag->setTitle($this->config->application->name . ' - ');
+        $this->view->navbarObject = new \Navbars();
     }
 
 }

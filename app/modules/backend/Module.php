@@ -88,7 +88,7 @@ class Module implements ModuleDefinitionInterface
         /*
          * Set up Volt Engine
          */
-        $di->set('view', function () use ($di, $config)
+        $view = function () use ($di, $config)
         {
             $view = new View();
             $view->setViewsDir($config->view[$this->module]->viewsDir);
@@ -102,10 +102,10 @@ class Module implements ModuleDefinitionInterface
                         'compileAlways' => $config->view[$this->module]->alwaysCompile
                     ]);
                     $compiler = $volt->getCompiler();
-                    foreach ($config->view[$this->module]->filters as $filter) {
+                    foreach ($config->view->filters as $filter) {
                         $compiler->addFilter($filter[0], $filter[1]);
                     }
-                    foreach ($config->view[$this->module]->functions as $function) {
+                    foreach ($config->view->functions as $function) {
                         $compiler->addFunction($function[0], $function[1]);
                     }
                     return $volt;
@@ -113,7 +113,9 @@ class Module implements ModuleDefinitionInterface
                 '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
             ]);
             return $view;
-        }, true);
+        };
+        $di->set('view', $view, true);
+        $di->set('formview', $view, true);
     }
 
 }

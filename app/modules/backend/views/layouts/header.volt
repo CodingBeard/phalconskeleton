@@ -6,11 +6,11 @@ copyright (c) 2015, Tim Marshall
 <div class="supernav">
   <div class="container">
 	<div class="right">
-	  {% if auth.loggedIn %}
-		  <a href="{{ url('') }}">Back</a> /
-		  <a href="{{ url('logout') }}">Logout</a>
-	  {% else %}
-		  <a href="{{ url('login') }}">Login/Register</a>
+	  {% set _headernav = navbarObject.findFirst('name = "Backend_header"') %}
+	  {% if _headernav.navlinks is iterable %}/
+		  {% for navlink in _headernav.navlinks %}
+			  <a href="{{ url(navlink.link) }}">{{ navlink.label }}</a> /
+		  {% endfor %}
 	  {% endif %}
 	</div>
   </div>

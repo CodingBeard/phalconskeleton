@@ -12,7 +12,7 @@
 
 namespace Forms\Fields;
 
-class Field
+class Field extends \Forms\FormBuilder
 {
 
     /**
@@ -59,7 +59,7 @@ class Field
     public function validate($POST)
     {
         if ($this->required) {
-            if (!strlen(trim($POST[$this->key]))) {
+            if (isset($POST[$this->key]) && !strlen(trim($POST[$this->key]))) {
                 $this->errorMessage = 'Field is required';
                 return false;
             }

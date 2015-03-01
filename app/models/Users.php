@@ -60,12 +60,6 @@ class Users extends \Phalcon\Mvc\Model
     public $password;
 
     /**
-     *
-     * @var integer
-     */
-    public $active;
-
-    /**
      * Escape and concat first/last name
      * @return string
      */
@@ -243,8 +237,7 @@ class Users extends \Phalcon\Mvc\Model
             'lastName' => 'lastName',
             'DoB' => 'DoB',
             'email' => 'email',
-            'password' => 'password',
-            'active' => 'active'
+            'password' => 'password'
         ];
     }
 

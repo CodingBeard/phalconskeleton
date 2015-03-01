@@ -7,13 +7,33 @@ copyright (c) 2015, Tim Marshall
   <div class="footer-copyright">
 	<div class="container hide-on-small-only">
 	  © 2015 <a href="http://codingbeard.com">CodingBeard.com</a>
-		<ul class="list-inline right">
-		  <li><a href="{{ url('terms') }}">Terms</a></li>
-		  <li>|</li>
-		  <li><a href="{{ url('privacy') }}">Privacy</a></li>
-		  <li>|</li>
-		  <li><a href="{{ url('credits') }}">Credits</a></li>
-		</ul>
+	  <ul class="list-inline right">
+		{% set _footernav = navbarObject.findFirst('name = "Footer"') %}
+		{% if _footernav.id %}
+			<li>
+			  <a>|</a>
+			</li>
+			{% for navlink in _footernav.getNavlinks('parent_id IS NULL') %}
+				{% if navlink.children is iterable %}
+					{% for child in navlink.children %}
+						<li>
+						  <a href="{{ url(child.link) }}">{{ child.label }}</a>
+						</li>
+						<li>
+						  <a>|</a>
+						</li>
+					{% endfor %}
+				{% else %}
+					<li>
+					  <a href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
+					</li>
+					<li>
+					  <a>|</a>
+					</li>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+	  </ul>
 	</div>
 	<div class="hide-on-med-and-up center">
 	  © 2015 <a href="http://codingbeard.com">CodingBeard.com</a>

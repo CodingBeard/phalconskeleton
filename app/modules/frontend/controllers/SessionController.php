@@ -53,16 +53,16 @@ class SessionController extends ControllerBase
             $user = \Users::findFirstByEmail($this->request->getPost('email', 'email'));
             if (!$user) {
                 $this->auth->attemptThrolling(null);
-                return $this->auth->redirect('account/login', 'error', 'That email is not registered with us.');
+                return $this->auth->redirect('login', 'error', 'That email is not registered with us.');
             }
 
             if (!$user->checkPass($this->request->getPost('password', 'trim'))) {
                 $this->auth->attemptThrolling($user->id);
-                return $this->auth->redirect('account/login', 'error', 'Incorrect password.');
+                return $this->auth->redirect('login', 'error', 'Incorrect password.');
             }
 
-            if (!$user->active) {
-                return $this->auth->redirect('account/login', 'error', 'Your account has been disabled.');
+            if ($user->hasRole('Disabled')) {
+                return $this->auth->redirect('login', 'error', 'Your account has been disabled.');
             }
 
             $this->auth->logUserIn($user);

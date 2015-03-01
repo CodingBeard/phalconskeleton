@@ -79,13 +79,6 @@ textarea.materialize-textarea.invalid {
 	@include inner-shadow(0 1px 4px $input-error-color);
 }
 
-input[type=text].thead-search-input {
-	width: 90%;
-	padding: 0px;
-	margin: 0px;
-	height: 1.5rem;
-}
-
 // Prefix Icons
 .prefix {
 	position: absolute;

@@ -55,7 +55,7 @@ copyright (c) 2015, Tim Marshall
 	  </ul>
 	  {% if auth.getUser().emailchanges is iterable %}
 		  <h5>Previous emails</h5>
-		  <table class="datatable condensed bordered striped invisible">
+		  <table class="datatable condensed bordered striped responsive-table invisible">
 			<thead>
 			  <tr>
 				<td>Date of change</td>

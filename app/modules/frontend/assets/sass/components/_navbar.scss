@@ -118,6 +118,10 @@ nav {
 
 }
 
+.side-nav {
+	overflow-y: auto;
+}
+
 .supernav {
 	background-color: $supernav-background-color;
 	height: $supernav-height;

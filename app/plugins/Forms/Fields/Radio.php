@@ -52,6 +52,12 @@ class Radio extends Field
     public $class = '';
 
     /**
+     * Whether to display the buttons inline or not
+     * @var string
+     */
+    public $inline = false;
+
+    /**
      * Ratio of element size on a large screen (out fo 12)
      * @var int
      */
@@ -88,6 +94,9 @@ class Radio extends Field
         }
         if ($this->required) {
             $this->requiredAttribute = 'required';
+        }
+        if ($this->inline) {
+            $this->inline = 'inline';
         }
         foreach ($this->options as $key => $option) {
             $this->options[$key] = (object) $option;

@@ -149,6 +149,7 @@ class Permissions extends \Phalcon\Mvc\Model
         "id", "Permissionroles", "permission_id", "role_id", "Roles", "id"
         );
         $this->hasMany("id", "Permissionroles", "permission_id", ['alias' => 'Permissionroles']);
+        $this->hasMany("id", "Navlinks", "permission_id", ['alias' => 'Navlinks']);
     }
 
 }

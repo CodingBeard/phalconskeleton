@@ -226,14 +226,16 @@ class Auth extends \Phalcon\Mvc\User\Component
     /**
      * Update the roles from database
      */
-    public function setRoles()
+    public function setRoles($force = false)
     {
-        foreach ($this->getUser()->roles as $role) {
-            if ($role->id == 1)
-                $this->isAdmin = true;
-            $roles[] = $role->name;
+        if (!is_array($this->roles) || $force) {
+            foreach ($this->getUser()->roles as $role) {
+                if ($role->id == 1)
+                    $this->isAdmin = true;
+                $roles[] = $role->name;
+            }
+            $this->roles = $roles;
         }
-        $this->roles = $roles;
     }
 
     /**
