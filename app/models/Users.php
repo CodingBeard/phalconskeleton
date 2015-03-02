@@ -2,17 +2,6 @@
 
 /**
  * Users
- *
-  CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `firstName` varchar(255) DEFAULT NULL,
-  `lastName` varchar(255) DEFAULT NULL,
-  `DoB` date DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `active` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-  ) ENGINE=InnoDB
  * 
  * @category 
  * @package phalconskeleton

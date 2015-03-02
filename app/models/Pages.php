@@ -2,15 +2,6 @@
 
 /**
  * Pages
- *
-  CREATE TABLE `pages` (
-  `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
-  `name` VARCHAR(255) NULL DEFAULT NULL,
-  `title` VARCHAR(255) NULL DEFAULT NULL,
-  `standalone` TINYINT NULL DEFAULT NULL,
-  `url` VARCHAR(255) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-  );
  * 
  * @category 
  * @package phalconskeleton

@@ -291,9 +291,26 @@ class AccountController extends ControllerBase
         $form->cancelHref = 'account';
 
         $form
-        ->addField(new \Forms\Fields\Textbox(['key' => 'firstName', 'label' => 'First Name', 'required' => true, 'size' => 6]))
-        ->addField(new \Forms\Fields\Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
-        ->addField(new \Forms\Fields\Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]));
+        ->addField(new \Forms\Fields\Textbox([
+            'key' => 'firstName',
+            'label' => 'First Name',
+            'required' => true,
+            'default' => $this->auth->getUser()->firstName,
+            'size' => 6
+        ]))
+        ->addField(new \Forms\Fields\Textbox([
+            'key' => 'lastName',
+            'label' => 'Last Name',
+            'required' => true,
+            'default' => $this->auth->getUser()->lastName,
+            'size' => 6
+        ]))
+        ->addField(new \Forms\Fields\Dateselect([
+            'key' => 'DoB',
+            'label' => 'Date of birth',
+            'required' => true,
+            'default' => $this->auth->getUser()->DoB,
+        ]));
 
         if ($form->validate()) {
             $user = $form->addToModel($this->auth->getUser());

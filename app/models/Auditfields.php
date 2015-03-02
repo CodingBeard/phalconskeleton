@@ -2,17 +2,6 @@
 
 /**
  * Auditfields
- * 
-CREATE TABLE `auditfields` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `audit_id` int(11) DEFAULT NULL,
-  `fieldName` varchar(255) DEFAULT NULL,
-  `oldValue` mediumtext,
-  `newValue` mediumtext,
-  PRIMARY KEY (`id`),
-  KEY `audit_id` (`audit_id`),
-  CONSTRAINT `auditfields_ibfk_1` FOREIGN KEY (`audit_id`) REFERENCES `audits` (`id`)
-) ENGINE=InnoDB
  *
  * @category 
  * @package phalconskeleton

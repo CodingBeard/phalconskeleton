@@ -2,12 +2,6 @@
 
 /**
  * Navbars
- * 
-  CREATE TABLE `navbars` (
-  `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
-  `name` VARCHAR(255) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-  );
  *
  * @category 
  * @package phalconskeleton

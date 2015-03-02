@@ -2,13 +2,6 @@
 
 /**
  * Roles
-CREATE TABLE `roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `level` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-) ENGINE=InnoDB
  *
  * @category 
  * @package phalconskeleton

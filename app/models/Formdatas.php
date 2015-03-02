@@ -2,18 +2,6 @@
 
 /**
  * Form Data
- * 
-  CREATE TABLE `formdatas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `formentry_id` int(11) DEFAULT NULL,
-  `field_id` int(11) DEFAULT NULL,
-  `value` mediumtext,
-  PRIMARY KEY (`id`),
-  KEY `formentry_id` (`formentry_id`),
-  KEY `field_id` (`field_id`),
-  CONSTRAINT `formdatas_ibfk_2` FOREIGN KEY (`field_id`) REFERENCES `formfields` (`id`),
-  CONSTRAINT `formdatas_ibfk_1` FOREIGN KEY (`formentry_id`) REFERENCES `formentrys` (`id`)
-  ) ENGINE=InnoDB
  *
  * @category 
  * @package phalconskeleton

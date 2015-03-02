@@ -2,16 +2,6 @@
 
 /**
  * Password resets
- *
-CREATE TABLE `passresets` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
-  `reset` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `passresets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB
  * 
  * @category 
  * @package phalconskeleton

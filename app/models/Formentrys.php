@@ -2,18 +2,6 @@
 
 /**
  * Form Entries
- *
-  CREATE TABLE `formentrys` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` datetime DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `form_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `form_id` (`form_id`),
-  CONSTRAINT `formentrys_ibfk_2` FOREIGN KEY (`form_id`) REFERENCES `looseforms` (`id`),
-  CONSTRAINT `formentrys_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-  ) ENGINE=InnoDB
  * 
  * @category 
  * @package phalconskeleton

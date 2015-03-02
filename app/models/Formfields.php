@@ -2,16 +2,6 @@
 
 /**
  * Form Fields
- * 
-  CREATE TABLE `formfields` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `form_id` int(11) DEFAULT NULL,
-  `fieldKey` varchar(255) DEFAULT NULL,
-  `fieldName` mediumtext,
-  PRIMARY KEY (`id`),
-  KEY `form_id` (`form_id`),
-  CONSTRAINT `formfields_ibfk_1` FOREIGN KEY (`form_id`) REFERENCES `looseforms` (`id`)
-  ) ENGINE=InnoDB
  *
  * @category 
  * @package phalconskeleton

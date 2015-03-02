@@ -2,14 +2,6 @@
 
 /**
  * Permissions
- * 
-  CREATE TABLE `permissions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `module` varchar(255) DEFAULT NULL,
-  `controller` varchar(255) DEFAULT NULL,
-  `action` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-  ) ENGINE=InnoDB
  *
  * @category 
  * @package phalconskeleton

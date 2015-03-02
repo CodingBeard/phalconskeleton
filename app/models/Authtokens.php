@@ -2,18 +2,6 @@
 
 /**
  * Authtokens
- *
-  CREATE TABLE `authtokens` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `issued` datetime DEFAULT NULL,
-  `expires` datetime DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `authtokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-  ) ENGINE=InnoDB
  * 
  * @category 
  * @package phalconskeleton

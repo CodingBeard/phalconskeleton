@@ -2,17 +2,6 @@
 
 /**
  * Permissionroles
- *
-CREATE TABLE `permissionroles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `permission_id` int(11) DEFAULT NULL,
-  `role_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `permission_id` (`permission_id`),
-  KEY `role_id` (`role_id`),
-  CONSTRAINT `permissionroles_ibfk_1` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`),
-  CONSTRAINT `permissionroles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB
  * 
  * @category 
  * @package phalconskeleton

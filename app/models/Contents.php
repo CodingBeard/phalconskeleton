@@ -1,20 +1,7 @@
 <?php
 
 /**
- * Pages
- *
-  CREATE TABLE `contents` (
-  `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
-  `ordering` INT NULL DEFAULT NULL,
-  `width` TINYINT NULL DEFAULT NULL,
-  `offset` TINYINT NULL DEFAULT NULL,
-  `content` MEDIUMTEXT NULL DEFAULT NULL,
-  `page_id` INT NULL DEFAULT NULL,
-  `parent_id` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-  );
-  ALTER TABLE `contents` ADD FOREIGN KEY (page_id) REFERENCES `pages` (`id`);
-  ALTER TABLE `contents` ADD FOREIGN KEY (parent_id) REFERENCES `contents` (`id`);
+ * Contents
  * 
  * @category 
  * @package phalconskeleton

@@ -2,16 +2,6 @@
 
 /**
  * Logins
- *
-  CREATE TABLE `logins` (
-  `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
-  `user_id` INT NULL DEFAULT NULL,
-  `ip` VARCHAR(255) NULL DEFAULT NULL,
-  `attempt` INT(11) NULL DEFAULT NULL,
-  `success` TINYINT NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-  );
-  ALTER TABLE `logins` ADD FOREIGN KEY (user_id) REFERENCES `users` (`id`);
  * 
  * @category 
  * @package phalconskeleton
