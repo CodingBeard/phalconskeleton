@@ -38,7 +38,7 @@ class Navbars extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Navlinks', 'navbar_id', array('alias' => 'Navlinks'));
+        $this->hasMany('id', 'Navlinks', 'navbar_id', ['alias' => 'Navlinks']);
     }
 
     /**
@@ -46,10 +46,10 @@ class Navbars extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'name' => 'name'
-        );
+        ];
     }
 
 }

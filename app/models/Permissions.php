@@ -57,6 +57,9 @@ class Permissions extends \Phalcon\Mvc\Model
                 }
             }
         }
+        if (!is_array($roleNames)) {
+            $roleNames = [];
+        }
         if ($this->roles->count()) {
             foreach ($this->roles as $role) {
                 if (!in_array($role->id, $roleNames)) {
@@ -127,19 +130,6 @@ class Permissions extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Independent Column Mapping.
-     */
-    public function columnMap()
-    {
-        return [
-            'id' => 'id',
-            'module' => 'module',
-            'controller' => 'controller',
-            'action' => 'action',
-        ];
-    }
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -151,7 +141,19 @@ class Permissions extends \Phalcon\Mvc\Model
         "id", "Permissionroles", "permission_id", "role_id", "Roles", "id"
         );
         $this->hasMany("id", "Permissionroles", "permission_id", ['alias' => 'Permissionroles']);
-        $this->hasMany("id", "Navlinks", "permission_id", ['alias' => 'Navlinks']);
+    }
+
+    /**
+     * Independent Column Mapping.
+     */
+    public function columnMap()
+    {
+        return [
+            'id' => 'id',
+            'module' => 'module',
+            'controller' => 'controller',
+            'action' => 'action',
+        ];
     }
 
 }

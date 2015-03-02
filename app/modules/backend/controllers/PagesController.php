@@ -43,11 +43,16 @@ class PagesController extends ControllerBase
             'required' => true,
             'size' => 6
         ]))
+        ->addField(new \Forms\Fields\Textbox([
+            'key' => 'title',
+            'label' => 'Page Title',
+            'required' => true,
+            'size' => 6
+        ]))
         ->addField(new \Forms\Fields\Switchbox([
             'key' => 'standalone',
             'label' => 'Standalone page',
             'toggleRequired' => ['url'],
-            'size' => 6
         ]))
         ->addField(new \Forms\Fields\Textbox([
             'key' => 'url',
@@ -56,7 +61,6 @@ class PagesController extends ControllerBase
             {
                 return ($this->request->getPost('standalone', 'trim') == 'on') ? true : false;
             },
-            'size' => 12
         ]));
 
         if ($form->validate()) {
@@ -93,12 +97,18 @@ class PagesController extends ControllerBase
             'default' => $page->name,
             'size' => 6
         ]))
+        ->addField(new \Forms\Fields\Textbox([
+            'key' => 'title',
+            'label' => 'Page Title',
+            'required' => true,
+            'default' => $page->title,
+            'size' => 6
+        ]))
         ->addField(new \Forms\Fields\Switchbox([
             'key' => 'standalone',
             'label' => 'Standalone page',
             'toggleRequired' => ['url'],
             'default' => $page->standalone,
-            'size' => 6
         ]))
         ->addField(new \Forms\Fields\Textbox([
             'key' => 'url',
@@ -111,7 +121,6 @@ class PagesController extends ControllerBase
                 }
                 return $page->standalone;
             },
-            'size' => 12
         ]));
 
         if ($form->validate()) {
@@ -130,6 +139,7 @@ class PagesController extends ControllerBase
      */
     public function manageAction($page_id)
     {
+        $this->view->getViewsDir();
         $this->tag->appendTitle("Manage Page");
         $page = \Pages::findFirstById($page_id);
         if (!$page) {
@@ -138,7 +148,7 @@ class PagesController extends ControllerBase
         $this->view->page = $page;
         $form = $this->form;
         $form->title = '';
-        $form->submitButton = 'Add';
+        $form->submitButton = 'Add to ID: <span class="selected-section">0</span>';
         $form->cancelHref = 'admin/pages';
 
         $form
@@ -206,16 +216,25 @@ class PagesController extends ControllerBase
      * Remove the parent_id from a piece of content
      * @param int $content_id
      */
-    public function emancipateAction($content_id)
+    public function movecontentAction($content_id, $parent_id)
     {
         $content = \Contents::findFirstById($content_id);
         if ($content) {
-            $content->parent_id = null;
-            $content->save();
-            $this->auth->redirect('admin/pages/manage/' . $content->pages->id, 'success', 'Section Emancipated.');
+            $parent = \Contents::findFirstById($parent_id);
+            if (!$parent) {
+                $parent_id = null;
+            }
+            if ($parent->parent_id != $content->id) {
+                $content->parent_id = $parent_id;
+                $content->save();
+                $this->auth->redirect('admin/pages/manage/' . $content->pages->id, 'success', "Section ID: {$content->id} Moved to ID: {$parent->id}.");
+            }
+            else {
+                $this->auth->redirect('admin/pages/manage/' . $content->pages->id, 'error', "You cannot move a parent into one of it's own children.");
+            }
         }
     }
-    
+
     /**
      * Edit contents
      * @param int $content_id
@@ -228,23 +247,25 @@ class PagesController extends ControllerBase
             $this->auth->redirect('admin/pages', 'error', 'Invalid Page ID.');
         }
         $this->view->contents = $content;
-        
+
         $form = $this->form;
         $form->title = 'Edit Content: #' . $content->id;
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/pages/manage/' . $content->pages->id;
-        
+
         $form
-        ->addField(new \Forms\Fields\Textarea([
+        ->addField(new \Forms\Fields\Aceditor([
             'key' => 'content',
             'label' => 'Content',
             'default' => $content->content
         ]));
-        
-        if ($form->validate()) {
+
+        if ($this->request->isAjax()) {
             $content = $form->addToModel($content);
-            $content->save();
-            $this->auth->redirect('admin/pages/manage/' . $content->pages->id, 'success', 'Content Edited.');
+            if ($content->save()) {
+                echo json_encode(['status' => 1, 'redirect' => '/admin/pages/manage/' . $content->pages->id]);
+                die;
+            }
         }
         $form->render();
     }

@@ -56,8 +56,8 @@ class Formdatas extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->belongsTo("field_id", "Formfields", "id", array('alias' => 'Formfields'));
-        $this->belongsTo("formentry_id", "Formentrys", "id", array('alias' => 'Formentrys'));
+        $this->belongsTo("field_id", "Formfields", "id", ['alias' => 'Formfields']);
+        $this->belongsTo("formentry_id", "Formentrys", "id", ['alias' => 'Formentrys']);
     }
 
     /**
@@ -65,12 +65,12 @@ class Formdatas extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'formentry_id' => 'formentry_id',
             'field_id' => 'field_id',
             'value' => 'value'
-        );
+        ];
     }
 
 }

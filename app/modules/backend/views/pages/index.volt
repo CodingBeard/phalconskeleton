@@ -25,6 +25,7 @@ copyright (c) 2015, Tim Marshall
 			<tr>
 			  <td>ID</td>
 			  <td>Name</td>
+			  <td>Title</td>
 			  <td>Standalone</td>
 			  <td>Url</td>
 			  <td>Action</td>
@@ -36,6 +37,7 @@ copyright (c) 2015, Tim Marshall
 					<tr>
 					  <td>{{ page.id|e }}</td>
 					  <td>{{ page.name|e }}</td>
+					  <td>{{ page.title|e }}</td>
 					  <td>
 						{% if page.standalone %}
 							Yes

@@ -61,8 +61,8 @@ class Emailchanges extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->belongsTo("authtoken_id", "Authtokens", "id", array('alias' => 'Authtokens'));
-        $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
+        $this->belongsTo("authtoken_id", "Authtokens", "id", ['alias' => 'Authtokens']);
+        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
     }
 
     /**
@@ -70,13 +70,13 @@ class Emailchanges extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'user_id' => 'user_id',
             'authtoken_id' => 'authtoken_id',
             'date' => 'date',
             'oldEmail' => 'oldEmail'
-        );
+        ];
     }
 
 }

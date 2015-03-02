@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Error Pages
+ * Error Handler
  *
  * @category 
  * @package phalconskeleton
@@ -9,45 +9,8 @@
  * @copyright (c) 2015, Tim Marshall
  * @version 
  */
-class ErrorPages extends \Phalcon\Mvc\User\Component
+class ErrorHandler extends \Phalcon\Mvc\User\Component
 {
-
-    /**
-     * 
-     * @param \Phalcon\DI $di
-     */
-    public function __construct($di)
-    {
-        $this->_dependencyInjector = $di;
-    }
-
-    /**
-     * Redirect to a 404 or 500 page if we catch an exception
-     * @param \Phalcon\Events\Event $event
-     * @param \Phalcon\Mvc\Dispatcher $dispatcher
-     * @param \Phalcon\Mvc\Dispatcher\Exception $exception
-     * @return boolean
-     */
-    public function beforeException($event, $dispatcher, $exception)
-    {
-        switch ($exception->getCode()) {
-            case \Phalcon\Mvc\Dispatcher::EXCEPTION_HANDLER_NOT_FOUND:
-            case \Phalcon\Mvc\Dispatcher::EXCEPTION_ACTION_NOT_FOUND:
-                $dispatcher->forward([
-                    'controller' => 'error',
-                    'action' => 'notFound',
-                ]);
-                return false;
-            default:
-                if (!$this->config->application->showErrors) {
-                    $dispatcher->forward([
-                        'controller' => 'error',
-                        'action' => 'index',
-                    ]);
-                    return false;
-                }
-        }
-    }
 
     /**
      * Register shutdown functions that deal with errors

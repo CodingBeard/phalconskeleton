@@ -52,7 +52,17 @@ class Formentrys extends \Phalcon\Mvc\Model
      * Contains array of field [Keys] => full field names
      * @var array
      */
-    public $fields = array();
+    public $fields = [];
+
+    /**
+     * Returns the data set to the key privided
+     * @param string $key
+     * @return string
+     */
+    public function getField($key)
+    {
+        return $this->$key;
+    }
 
     /**
      * Populate $this->fields with the fields this form has after fetching data,
@@ -70,24 +80,6 @@ class Formentrys extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Clean up relationship dependant rows
-     */
-    public function beforeDelete()
-    {
-        $this->formdatas->delete();
-    }
-
-    /**
-     * Returns the data set to the key privided
-     * @param string $key
-     * @return string
-     */
-    public function getField($key)
-    {
-        return $this->$key;
-    }
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -95,9 +87,9 @@ class Formentrys extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany("id", "Formdatas", "formentry_id", array('alias' => 'Formdatas'));
-        $this->belongsTo("form_id", "Qukforms", "id", array('alias' => 'Qukforms'));
-        $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
+        $this->hasMany("id", "Formdatas", "formentry_id", ['alias' => 'Formdatas']);
+        $this->belongsTo("form_id", "Qukforms", "id", ['alias' => 'Qukforms']);
+        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
     }
 
     /**
@@ -105,12 +97,12 @@ class Formentrys extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'date' => 'date',
             'user_id' => 'user_id',
             'form_id' => 'form_id'
-        );
+        ];
     }
 
 }

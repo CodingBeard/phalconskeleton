@@ -6,6 +6,7 @@
   CREATE TABLE `pages` (
   `id` INT NULL AUTO_INCREMENT DEFAULT NULL,
   `name` VARCHAR(255) NULL DEFAULT NULL,
+  `title` VARCHAR(255) NULL DEFAULT NULL,
   `standalone` TINYINT NULL DEFAULT NULL,
   `url` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -34,6 +35,12 @@ class Pages extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var string
+     */
+    public $title;
+
+    /**
+     *
      * @var integer
      */
     public $standalone;
@@ -51,24 +58,28 @@ class Pages extends \Phalcon\Mvc\Model
     public $widthCount = 0;
     
     /**
-     *
+     * Start of row
      * @var string
      */
-    public $start = '<div class="row"><div class="sortable">';
+    public $start = '<div class="row">';
     
     /**
-     *
+     * End of row
      * @var string
      */
-    public $end = '</div><a href="#"><i class="fa fa-arrows-v right"></i></a></div>';
+    public $end = '</div>';
     
     /**
      * 
      * @param \Contents $content
      * @return string
      */
-    public function newRow($content)
+    public function newRow($content, $sort = false)
     {
+        if ($sort) {
+            $this->start = '<div class="row"><div class="sortable">';
+            $this->end = '</div><a href="#"><i class="fa fa-arrows-v right"></i></a></div>';
+        }
         $string = '';
         if ($this->widthCount + ($content->offset + $content->width) > 12) {
             $this->widthCount = 0;
@@ -93,6 +104,17 @@ class Pages extends \Phalcon\Mvc\Model
             return $this->end;
         }
     }
+    
+    /**
+     * Ensure consistancy
+     */
+    public function beforeSave()
+    {
+        $this->url = strtolower($this->url);
+        if ($this->url[0] == '/') {
+            $this->url = substr($this->url, 1);
+        }
+    }
 
     /**
      * Initialize method for model.
@@ -102,7 +124,7 @@ class Pages extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Contents', 'page_id', array('alias' => 'Contents'));
+        $this->hasMany('id', 'Contents', 'page_id', ['alias' => 'Contents']);
     }
 
     /**
@@ -110,12 +132,13 @@ class Pages extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'name' => 'name',
+            'title' => 'title',
             'standalone' => 'standalone',
             'url' => 'url'
-        );
+        ];
     }
     
     public function setWidthCount($value)

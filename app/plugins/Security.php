@@ -84,7 +84,20 @@ class Security extends Plugin
         $controller = strtolower($dispatcher->getControllerName());
         $action = strtolower($dispatcher->getActionName());
 
+        /**
+         * If we're accessing the pagecontents system, change the controller/action
+         * to the URI params so we can query the db for the page's permissions
+         * instead of the pagecontents/view default permissions.
+         * Also filter for case-insensitivity/hyphens
+         */
+        if ($controller == 'pagecontents' && $action == 'view') {
+            $controller = str_replace('-', '', strtolower($this->router->getControllerName()));
+            $action = str_replace('-', '', strtolower($this->router->getActionName()));
+        }
 
+        /**
+         * If not logged in, check for cookie tokens to auto login
+         */
         if (!$auth->loggedIn) {
             if (($user = $auth->checkAuthCookie())) {
                 $auth->logUserIn($user);

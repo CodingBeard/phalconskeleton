@@ -20,6 +20,7 @@ use Phalcon\Loader,
 
 class Module implements ModuleDefinitionInterface
 {
+
     /**
      * Name of Module
      * @var string 
@@ -58,14 +59,15 @@ class Module implements ModuleDefinitionInterface
             /*
              * Add plugins to the dispatcher to listen for events
              */
+            
+            $errors = new \DispatchingExceptionHandler();
+            $eventsManager->attach('dispatch', $errors);
+            
             $security = new \Security($di, $this->module);
             $eventsManager->attach('dispatch', $security);
 
             $assets = new \Assets($di, $this->module);
             $eventsManager->attach('dispatch', $assets);
-
-            $errors = new \ErrorPages($di);
-            $eventsManager->attach('dispatch', $errors);
 
             /*
              * Filter and standardize controller/action names to make case insensitive and allow for hyphens
@@ -87,34 +89,39 @@ class Module implements ModuleDefinitionInterface
         /*
          * Set up Volt Engine
          */
-        $view = function () use ($di, $config)
+        $volt = function ($view, $di) use ($config)
+        {
+            $volt = new VoltEngine($view, $di);
+            $volt->setOptions([
+                'compiledPath' => $config->view[$this->module]->compileDir,
+                'compiledSeparator' => '_',
+                'compileAlways' => $config->view[$this->module]->alwaysCompile
+            ]);
+            $compiler = $volt->getCompiler();
+            foreach ($config->view->filters as $filter) {
+                $compiler->addFilter($filter[0], $filter[1]);
+            }
+            foreach ($config->view->functions as $function) {
+                $compiler->addFunction($function[0], $function[1]);
+            }
+            return $volt;
+        };
+        $view = function () use ($di, $volt, $config)
         {
             $view = new View();
             $view->setViewsDir($config->view[$this->module]->viewsDir);
             $view->registerEngines([
-                '.volt' => function ($view, $di) use ($config)
-                {
-                    $volt = new VoltEngine($view, $di);
-                    $volt->setOptions([
-                        'compiledPath' => $config->view[$this->module]->compileDir,
-                        'compiledSeparator' => '_',
-                        'compileAlways' => $config->view[$this->module]->alwaysCompile
-                    ]);
-                    $compiler = $volt->getCompiler();
-                    foreach ($config->view->filters as $filter) {
-                        $compiler->addFilter($filter[0], $filter[1]);
-                    }
-                    foreach ($config->view->functions as $function) {
-                        $compiler->addFunction($function[0], $function[1]);
-                    }
-                    return $volt;
-                },
-                '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
+            '.volt' => $volt,
+            '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
             ]);
             return $view;
         };
         $di->set('view', $view, true);
         $di->set('formview', $view, true);
+        $di->set('compiler', function () use ($volt)
+        {
+            return $volt()->getCompiler();
+        }, true);
     }
 
 }

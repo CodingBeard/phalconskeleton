@@ -60,7 +60,7 @@ class Logins extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->belongsTo('user_id', 'Users', 'id', array('alias' => 'Users'));
+        $this->belongsTo('user_id', 'Users', 'id', ['alias' => 'Users']);
     }
 
     /**
@@ -68,13 +68,13 @@ class Logins extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'user_id' => 'user_id',
             'ip' => 'ip',
             'attempt' => 'attempt',
             'success' => 'success'
-        );
+        ];
     }
 
 }

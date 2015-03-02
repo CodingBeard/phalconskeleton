@@ -67,13 +67,6 @@ class Audits extends \Phalcon\Mvc\Model
      * @var string
      */
     public $date;
-    
-    public function beforeDelete()
-    {
-        if ($this->auditfields) {
-            $this->auditfields->delete();
-        }
-    }
      
     /**
      * Initialize method for model.

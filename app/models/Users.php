@@ -86,6 +86,9 @@ class Users extends \Phalcon\Mvc\Model
                 }
             }
         }
+        if (!is_array($roleNames)) {
+            $roleNames = [];
+        }
         if ($this->roles->count()) {
             foreach ($this->roles as $role) {
                 if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
@@ -179,10 +182,10 @@ class Users extends \Phalcon\Mvc\Model
     public static function getUsersByRole($roleName)
     {
         if (is_int(abs($roleName))) {
-            $role = \Roles::findFirstById($roleName);
+            $role = \Roles::findById($roleName);
         }
         else {
-            $role = \Roles::findFirstByName($roleName);
+            $role = \Roles::findByName($roleName);
         }
 
         if (!$role) {
@@ -190,24 +193,6 @@ class Users extends \Phalcon\Mvc\Model
         }
 
         return $role->users;
-    }
-
-    /**
-     * Initialize model
-     */
-    public function initialize()
-    {
-        $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
-        $this->useDynamicUpdate(true);
-        $this->hasManyToMany(
-        "id", "Userroles", "user_id", "role_id", "Roles", "id", ['alias' => 'Roles']
-        );
-        $this->hasMany("id", "Userroles", "user_id", ['alias' => 'Userroles']);
-        $this->hasMany("id", "Usertokens", "user_id", ['alias' => 'Usertokens']);
-        $this->hasMany("id", "Audits", "user_id", ['alias' => 'Audits']);
-        $this->hasMany("id", "Logins", "user_id", ['alias' => 'Logins']);
-        $this->hasMany("id", "Emailchanges", "user_id", ['alias' => 'Emailchanges']);
     }
 
     /**
@@ -226,6 +211,24 @@ class Users extends \Phalcon\Mvc\Model
     public function checkPass($password)
     {
         return password_verify($password, $this->password);
+    }
+
+    /**
+     * Initialize model
+     */
+    public function initialize()
+    {
+        $this->keepSnapshots(true);
+        $this->addBehavior(new \Blameable());
+        $this->useDynamicUpdate(true);
+        $this->hasManyToMany(
+        "id", "Userroles", "user_id", "role_id", "Roles", "id", ['alias' => 'Roles']
+        );
+        $this->hasMany("id", "Userroles", "user_id", ['alias' => 'Userroles']);
+        $this->hasMany("id", "Usertokens", "user_id", ['alias' => 'Usertokens']);
+        $this->hasMany("id", "Audits", "user_id", ['alias' => 'Audits']);
+        $this->hasMany("id", "Logins", "user_id", ['alias' => 'Logins']);
+        $this->hasMany("id", "Emailchanges", "user_id", ['alias' => 'Emailchanges']);
     }
 
     /**

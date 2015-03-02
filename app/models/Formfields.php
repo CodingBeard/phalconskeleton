@@ -54,8 +54,8 @@ class Formfields extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany("id", "Formdatas", "field_id", array('alias' => 'Formdatas'));
-        $this->belongsTo("form_id", "Qukforms", "id", array('alias' => 'Qukforms'));
+        $this->hasMany("id", "Formdatas", "field_id", ['alias' => 'Formdatas']);
+        $this->belongsTo("form_id", "Qukforms", "id", ['alias' => 'Qukforms']);
     }
 
     /**
@@ -63,12 +63,12 @@ class Formfields extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'form_id' => 'form_id',
             'fieldKey' => 'fieldKey',
             'fieldName' => 'fieldName'
-        );
+        ];
     }
 
 }

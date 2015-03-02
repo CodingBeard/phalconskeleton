@@ -45,7 +45,7 @@ class Blameable extends Behavior implements BehaviorInterface
         }
 
         if ($eventType == 'beforeDelete') {
-            return $this->auditAfterDelete($model);
+            return $this->auditBeforeDelete($model);
         }
     }
 
@@ -131,7 +131,7 @@ class Blameable extends Behavior implements BehaviorInterface
      * @param  \Phalcon\Mvc\ModelInterface $model
      * @return boolean
      */
-    public function auditAfterDelete(ModelInterface $model)
+    public function auditBeforeDelete(ModelInterface $model)
     {
         $audit = $this->createAudit('D', $model);
 
@@ -144,7 +144,18 @@ class Blameable extends Behavior implements BehaviorInterface
         }
         $audit->auditfields = $fields;
 
-        return $audit->save();
+        $audit->save();
+        
+        /**
+         * Cascade deletes, potentially very dangerous.
+         */
+        $manager = $model->getModelsManager();
+        foreach ($manager->getHasOneAndHasMany($model) as $relation) {
+            $children = $model->getRelated($relation->getOptions()['alias']);
+            if ($children->count()) {
+                $children->delete();
+            }
+        }
     }
 
 }

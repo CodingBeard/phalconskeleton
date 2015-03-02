@@ -70,9 +70,9 @@ class Looseforms extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany("id", "Formentrys", "form_id", array('alias' => 'Entries'));
-        $this->hasMany("id", "Formfields", "form_id", array('alias' => 'Formfields'));
-        $this->belongsTo("user_id", "Users", "id", array('alias' => 'Users'));
+        $this->hasMany("id", "Formentrys", "form_id", ['alias' => 'Entries']);
+        $this->hasMany("id", "Formfields", "form_id", ['alias' => 'Formfields']);
+        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
     }
 
     /**
@@ -80,12 +80,12 @@ class Looseforms extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'name' => 'name',
             'user_id' => 'user_id',
             'private' => 'private'
-        );
+        ];
     }
 
 }

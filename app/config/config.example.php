@@ -18,8 +18,8 @@ return new \Phalcon\Config([
         'dbname' => '',
     ],
     'application' => [
-        'name' => '',
-        'domain' => '',
+        'name' => 'Phalcon Skeleton',
+        'domain' => 'phalconskeleton.codingbeard.com',
         'https' => false,
         'modelsDir' => __DIR__ . '/../models/',
         'publicDir' => __DIR__ . '/../../public/',
@@ -136,6 +136,8 @@ return new \Phalcon\Config([
             ['round', 'round'],
             ['nl2br', 'nl2br'],
             ['stripos', 'stripos'],
+            ['slashes', 'addslashes'],
+            ['preg_replace', 'preg_replace'],
         ],
     ],
     'captcha' => [
@@ -147,5 +149,9 @@ return new \Phalcon\Config([
     ],
     'beanstalk' => [
         'host' => '127.0.0.1',
+    ],
+    'pagecontents' => [
+        'allowVolt' => true,
+        'voltDir' => 'contents/',
     ],
 ]);

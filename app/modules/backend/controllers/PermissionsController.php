@@ -122,6 +122,16 @@ class PermissionsController extends ControllerBase
                 }
             }
         }
+        $standalonePages = \Pages::findByStandalone(1);
+        if ($standalonePages) {
+            $router = clone $this->router;
+            foreach ($standalonePages as $page) {
+                $router->handle('/' . $page->url);
+                if ($router->wasMatched()) {
+                    $controllersActions[$router->getModuleName()][$router->getControllerName()][] = $router->getActionName();
+                }
+            }
+        }
         return $controllersActions;
     }
 

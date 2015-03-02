@@ -20,7 +20,7 @@ copyright (c) 2015, Tim Marshall
 		<div class="col s{{ content.width }} offset-s{{ content.offset }}">
 		  <div class="card-panel white">
 			<input type="hidden" name="ordering[]" value="{{ content.id }}" />
-			<a href="#" data-selectID="{{ content.id }}" class="green-text selectable left">Select</a>
+			<a href="/admin/pages/content/{{ content.id }}" class="blue-text edit-section left">Edit</a>
 			<a href="#" class="right"><i  class="fa fa-arrows-h"></i></a>
 			<div class="row">
 			  <div class="center"><strong>ID {{ content.id }}</strong></div>
@@ -33,9 +33,9 @@ copyright (c) 2015, Tim Marshall
 			</div>
 			<div class="divider"></div>
 			<div class="center">
-			  <a href="/admin/pages/content/{{ content.id }}" class="blue-text edit-section left" target="_blank">Edit</a>
-			  <a href="/admin/pages/emancipate/{{ content.id }}" data-message="Are you sure you want to remove this as a child?" class="confirm red-text delete-section">Emancipate</a>
-			  <a href="/admin/pages/deletecontent/{{ content.id }}" data-message="Are you sure you want to delete that?" class="confirm red-text delete-section right">Delete</a>
+			  <a href="#" data-ID="{{ content.id }}" class="green-text selectable left">Select</a>
+			  - <a href="/admin/pages/movecontent/{{ content.id }}" data-ID="{{ content.id }}" class="purple-text move">Move into ID: <span class="selected-section">0</span></a> -
+			  <a href="/admin/pages/deletecontent/{{ content.id }}" data-message="Are you sure you want to delete that?" class="confirm red-text delete-section right">X</a>
 			</div>
 		  </div>
 		</div>
@@ -43,16 +43,16 @@ copyright (c) 2015, Tim Marshall
 		<div class="col s{{ content.width }} offset-s{{ content.offset }}">
 		  <div class="card-panel white">
 			<input type="hidden" name="ordering[]" value="{{ content.id }}" />
-			<a href="#" data-selectID="{{ content.id }}" class="green-text selectable left">Select</a>
+			<a href="/admin/pages/content/{{ content.id }}" class="blue-text edit-section left">Edit</a>
 			<a href="#" class="right"><i  class="fa fa-arrows-h"></i></a>
 			<div class="center"><strong>ID {{ content.id }}</strong></div>
 			<div class="divider"></div>
-			<p>{{ content.content }}</p>
+			<p>{{ content.getContent() }}</p>
 			<div class="divider"></div>
 			<div class="center">
-			  <a href="/admin/pages/content/{{ content.id }}" class="blue-text edit-section left" target="_blank">Edit</a>
-			  <a href="/admin/pages/emancipate/{{ content.id }}" data-message="Are you sure you want to remove this as a child?" class="confirm red-text delete-section">Emancipate</a>
-			  <a href="/admin/pages/deletecontent/{{ content.id }}" data-message="Are you sure you want to delete that?" class="confirm red-text delete-section right">Delete</a>
+			  <a href="#" data-ID="{{ content.id }}" class="green-text selectable left">Select</a>
+			  - <a href="/admin/pages/movecontent/{{ content.id }}" data-ID="{{ content.id }}" class="purple-text move">Move into ID: <span class="selected-section">0</span></a> -
+			  <a href="/admin/pages/deletecontent/{{ content.id }}" data-message="Are you sure you want to delete that?" class="confirm red-text delete-section right">X</a>
 			</div>
 		  </div>
 		</div>
@@ -72,14 +72,16 @@ copyright (c) 2015, Tim Marshall
 	<div class="row">
 	  <div class="col s12">
 		<div class="designer">
-		  <a href="#" class="green-text selectable left" data-selectID="0">Select</a>
+		  <div class="left">
+			<a href="#" class="green-text selectable" data-selectID="0">Select</a>
+		  </div>
 		  <div class="row">
 			<div class="center"><strong>ID 0</strong></div>
 		  </div>
 		  <div class="sortable row">
 			{% if page.contents is iterable %}
 				{% for content in page.getContents(['parent_id IS NULL', 'order': 'ordering']) %}
-					{{ page.newRow(content) }}
+					{{ page.newRow(content, true) }}
 					{{ getPanel(page, content) }}
 					{{ page.endRow(content) }}
 				{% endfor %}
@@ -90,7 +92,7 @@ copyright (c) 2015, Tim Marshall
 	</div>
 	<div class="row">
 	  <div class="col s12">
-		<h5>Add section to: ID <span class="selected-section">0</span></h5>
+		<h5>Selected ID: <span class="selected-section">0</span></h5>
 		{{ form.getHtml() }}
 	  </div>
 	</div>
@@ -100,13 +102,32 @@ copyright (c) 2015, Tim Marshall
 	<script type="text/javascript">
 		$(function () {
 	  {{ form.getJs() }}
+			  
+			$('.move').each(function () {
+			  if ($(this).parents('.card-panel').length === 1) {
+				$(this).hide();
+			  }
+			});
+
 			$('.selectable').click(function (e) {
 			  e.preventDefault();
-			  $('.selected-section').html($(this).attr('data-selectID'));
-			  $('.selectable').parent().css({"border": "2px transparent dashed"});
-			  $(this).parent().css({"border": "2px black dashed"});
-			  $('input[name="parent_id"]').val($(this).attr('data-selectID'));
+			  e.stopPropagation();
+			  var ID = $(this).attr('data-ID');
+			  $('.selected-section').html(ID);
+			  $('.selectable').parent().parent().css({"border": "2px transparent dashed"});
+			  $(this).parent().parent().css({"border": "2px black dashed"});
+			  $('input[name="parent_id"]').val(ID);
+			  $('.move[data-ID="' + ID + '"]').hide();
+			  $('.move[data-ID!="' + ID + '"]').show();
+
 			});
+
+			$('.move').click(function (e) {
+			  e.preventDefault();
+			  e.stopPropagation();
+			  window.location.href = $(this).attr('href') + '/' + $('input[name="parent_id"]').val();
+			});
+
 			$(".sortable").sortable({
 			  helper: function (e, tr) {
 				var $originals = tr.children();

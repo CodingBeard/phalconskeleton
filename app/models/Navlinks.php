@@ -91,16 +91,6 @@ class Navlinks extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Cleanup before delete
-     */
-    public function beforeDelete()
-    {
-        if ($this->children) {
-            $this->children->delete();
-        }
-    }
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -108,10 +98,9 @@ class Navlinks extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Navlinks', 'parent_id', array('alias' => 'Children'));
-        $this->belongsTo('permission_id', 'Permissions', 'id', array('alias' => 'Permissions'));
-        $this->belongsTo('navbar_id', 'Navbars', 'id', array('alias' => 'Navbars'));
-        $this->belongsTo('parent_id', 'Navlinks', 'id', array('alias' => 'Parent'));
+        $this->hasMany('id', 'Navlinks', 'parent_id', ['alias' => 'Children']);
+        $this->belongsTo('navbar_id', 'Navbars', 'id', ['alias' => 'Navbars']);
+        $this->belongsTo('parent_id', 'Navlinks', 'id', ['alias' => 'Parent']);
     }
 
     /**
@@ -119,14 +108,14 @@ class Navlinks extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'navbar_id' => 'navbar_id',
             'level' => 'level',
             'label' => 'label',
             'link' => 'link',
             'parent_id' => 'parent_id',
-        );
+        ];
     }
 
 }

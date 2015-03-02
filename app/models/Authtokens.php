@@ -166,8 +166,8 @@ class Authtokens extends \Phalcon\Mvc\Model
         $this->keepSnapshots(true);
         $this->addBehavior(new \Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Emailchanges', 'authtoken_id', array('alias' => 'Emailchanges'));
-        $this->belongsTo('user_id', 'Users', 'id', array('alias' => 'Users'));
+        $this->hasMany('id', 'Emailchanges', 'authtoken_id', ['alias' => 'Emailchanges']);
+        $this->belongsTo('user_id', 'Users', 'id', ['alias' => 'Users']);
     }
 
     /**
@@ -175,7 +175,7 @@ class Authtokens extends \Phalcon\Mvc\Model
      */
     public function columnMap()
     {
-        return array(
+        return [
             'id' => 'id',
             'user_id' => 'user_id',
             'issued' => 'issued',
@@ -183,7 +183,7 @@ class Authtokens extends \Phalcon\Mvc\Model
             'type' => 'type',
             'tokenKey' => 'tokenKey',
             'token' => 'token'
-        );
+        ];
     }
 
 }
