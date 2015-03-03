@@ -30,7 +30,7 @@ class Module implements ModuleDefinitionInterface
     /**
      * Autoloader
      */
-    public function registerAutoloaders()
+    public function registerAutoloaders(\Phalcon\DiInterface $di = NULL)
     {
         $loader = new Loader();
         $loader->registerNamespaces([
@@ -43,7 +43,7 @@ class Module implements ModuleDefinitionInterface
      * Register services for the module
      * @param \Phalcon\DI $di
      */
-    public function registerServices($di)
+    public function registerServices(\Phalcon\DiInterface $di = NULL)
     {
         $config = $di->getShared('config');
 
@@ -98,10 +98,11 @@ class Module implements ModuleDefinitionInterface
                 'compileAlways' => $config->view[$this->module]->alwaysCompile
             ]);
             $compiler = $volt->getCompiler();
-            foreach ($config->view->filters as $filter) {
+            $viewConfig = $config->view->toArray();
+            foreach ($viewConfig['filters'] as $filter) {
                 $compiler->addFilter($filter[0], $filter[1]);
             }
-            foreach ($config->view->functions as $function) {
+            foreach ($viewConfig['functions'] as $function) {
                 $compiler->addFunction($function[0], $function[1]);
             }
             return $volt;

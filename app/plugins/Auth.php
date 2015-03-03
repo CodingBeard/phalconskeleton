@@ -269,7 +269,7 @@ class Auth extends \Phalcon\Mvc\User\Component
         $authtoken = \Authtokens::newToken(['user_id' => $this->user_id, 'type' => 'cookie_RMT', 'expires' => 7, 'unique' => true]);
         $domain = $this->config->application->domain;
         $https = $this->config->application->https;
-        $this->cookies->set("RMT", $authtoken->string, time() + 604800, '/', $domain, $https, $https);
+        $this->cookies->set("RMT", $authtoken->string, time() + 604800, '/', $https, $domain, true);
     }
 
     /**
@@ -307,7 +307,7 @@ class Auth extends \Phalcon\Mvc\User\Component
             }
             $domain = $this->config->application->domain;
             $https = $this->config->application->https;
-            $this->cookies->set("RMT", null, time() - 3600, '/', $domain, $https, $https);
+            $this->cookies->set("RMT", null, time() - 3600, '/', $https, $domain, true);
         }
     }
 

@@ -62,7 +62,7 @@ class Contents extends \Phalcon\Mvc\Model
     {
         $di = $this->getDI();
         if ($di->get('config')->pagecontents->allowVolt) {
-            $file = $di->get('config')->pagecontents->voldDir . "content-{$this->id}.volt";
+            $file = $di->get('config')->pagecontents->voltDir . "content-{$this->id}.volt";
             $view = $di->get('view');
             file_put_contents($view->getViewsDir() . $file, $this->content);
             return $view->partial(substr($file, 0, -5));

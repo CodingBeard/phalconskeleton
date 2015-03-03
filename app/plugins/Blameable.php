@@ -34,7 +34,7 @@ class Blameable extends Behavior implements BehaviorInterface
      * @param string                      $eventType
      * @param \Phalcon\Mvc\ModelInterface $model
      */
-    public function notify($eventType, $model)
+    public function notify($eventType, \Phalcon\Mvc\ModelInterface $model)
     {
         if ($eventType == 'afterCreate') {
             return $this->auditAfterCreate($model);

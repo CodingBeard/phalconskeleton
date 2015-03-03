@@ -41,7 +41,7 @@ class Security extends Plugin
      */
     public function getAcl()
     {
-        if (!isset($this->persistent->acl)) {
+        if (!isset($this->session->get('acl')[$this->module])) {
 
             $acl = new \Phalcon\Acl\Adapter\Memory();
 
@@ -63,9 +63,15 @@ class Security extends Plugin
                     $acl->allow($role->name, strtolower($permission->controller), strtolower($permission->action));
                 }
             }
-            $this->session->acl[$this->module] = $acl;
+            
+            if ($this->session->has('acl')) {
+                $modules = $this->session->get('acl');
+            }
+            
+            $modules[$this->module] = $acl;
+            $this->session->set('acl', $modules);
         }
-        return $this->session->acl[$this->module];
+        return $this->session->get('acl')[$this->module];
     }
 
     /**

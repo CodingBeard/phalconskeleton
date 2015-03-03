@@ -96,7 +96,7 @@ class FormBuilder extends \Phalcon\Mvc\User\Component
     public function renderFile($file, $variables)
     {
         $view = clone $this->formview;
-        $view->setViewsDir(__DIR__);
+        $view->setViewsDir(__DIR__ . '/');
         foreach ($variables as $key => $value) {
             $view->setVar($key, $value);
         }
