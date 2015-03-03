@@ -3,7 +3,7 @@
 /**
  * Session controller, url: /session
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -33,17 +33,17 @@ class SessionController extends ControllerBase
         $form->cancelHref = 'register';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'email',
-            'label' => 'Email',
-            'required' => true,
-        ]))
-        ->addField(new Password([
-            'key' => 'password',
-            'label' => 'Password',
-            'sublabel' => '<a href="/account/reset-pass">Forgotten password?</a>',
-            'required' => true,
-        ]));
+            ->addField(new Textbox([
+                'key' => 'email',
+                'label' => 'Email',
+                'required' => true,
+            ]))
+            ->addField(new Password([
+                'key' => 'password',
+                'label' => 'Password',
+                'sublabel' => '<a href="/account/reset-pass">Forgotten password?</a>',
+                'required' => true,
+            ]));
 
         if (($user = $this->auth->checkAuthCookie())) {
             $this->auth->logUserIn($user);
@@ -75,8 +75,7 @@ class SessionController extends ControllerBase
 
             if ($this->request->get('continue')) {
                 return $this->auth->redirect($this->request->get('continue'), 'success', 'Welcome back ' . $this->escaper->escapeHtml($user->firstName) . '.');
-            }
-            else {
+            } else {
                 return $this->auth->redirect('', 'success', 'Welcome back ' . $this->escaper->escapeHtml($user->firstName) . '.');
             }
         }
@@ -94,5 +93,6 @@ class SessionController extends ControllerBase
         $this->auth->removeAuthCookie();
         return $this->auth->redirect('', 'success', 'Logged out.');
     }
+
 
 }

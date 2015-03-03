@@ -6,7 +6,7 @@ use CodingBeard\Auth;
 use CodingBeard\BeanstalkWithSerialize;
 use CodingBeard\DispatchingExceptionHandler;
 use CodingBeard\Forms\FormBuilder;
-use Emails\SiteEmails;
+use CodingBeard\Emails\SiteEmails;
 use Google\Captcha;
 use Phalcon\Cache\Backend\File;
 use Phalcon\Cache\Frontend\Output;

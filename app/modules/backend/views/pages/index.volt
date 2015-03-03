@@ -58,6 +58,7 @@
 		</table>
 	  </div>
 	</div>
+
 {% endblock %}
 
 {% block javascripts %}
