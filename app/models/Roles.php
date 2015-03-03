@@ -3,7 +3,7 @@
 /**
  * Roles
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -51,11 +51,11 @@ class Roles extends Model
         $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
         $this->hasManyToMany(
-        "id", "models\Userroles", "role_id", "user_id", "models\Users", "id", ['alias' => 'Users']
+            "id", "models\Userroles", "role_id", "user_id", "models\Users", "id", ['alias' => 'Users']
         );
         $this->hasMany("id", "models\Userroles", "role_id", ['alias' => 'Userroles']);
         $this->hasManyToMany(
-        "id", "models\Permissionroles", "role_id", "permission_id", "models\Permissions", "id", ['alias' => 'Permissions']
+            "id", "models\Permissionroles", "role_id", "permission_id", "models\Permissions", "id", ['alias' => 'Permissions']
         );
         $this->hasMany("id", "models\Permissionroles", "role_id", ['alias' => 'Permissionroles']);
     }

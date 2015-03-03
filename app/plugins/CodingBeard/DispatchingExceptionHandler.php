@@ -3,7 +3,7 @@
 /**
  * Error Pages
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -22,7 +22,7 @@ class DispatchingExceptionHandler extends Component
 {
 
     /**
-     * Serve pagecontents system or 
+     * Serve pagecontents system or
      * Redirect to a 404 or 500 page if we catch an exception
      * @param Event $event
      * @param Dispatcher $dispatcher

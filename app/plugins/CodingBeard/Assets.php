@@ -2,27 +2,27 @@
 
 /**
  * Assets manager
- * 
- * Config file example:
-    'assets' => [
-        'frontend' => [
-            'minify' => false,
-            'sourcePath' => __DIR__ . '/../assets/',
-            'revisionPath' => __DIR__ . '/../modules/frontend/assetRevision',
-            'cssPath' => 'css/main.min.css',
-            'cssPaths' => [
-                'css/normalize.css',
-                'css/style.css',
-            ],
-            'jsPath' => 'js/main.min.js',
-            'jsPaths' => [
-                'js/jquery-1.11.1.min.js',
-                'js/main.js',
-            ],
-        ],
-    ],
  *
- * @category 
+ * Config file example:
+ * 'assets' => [
+ * 'frontend' => [
+ * 'minify' => false,
+ * 'sourcePath' => __DIR__ . '/../assets/',
+ * 'revisionPath' => __DIR__ . '/../modules/frontend/assetRevision',
+ * 'cssPath' => 'css/main.min.css',
+ * 'cssPaths' => [
+ * 'css/normalize.css',
+ * 'css/style.css',
+ * ],
+ * 'jsPath' => 'js/main.min.js',
+ * 'jsPaths' => [
+ * 'js/jquery-1.11.1.min.js',
+ * 'js/main.js',
+ * ],
+ * ],
+ * ],
+ *
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -148,10 +148,10 @@ class Assets extends Plugin
         }
 
         $this->assets->collection('css')
-        ->join(true)
-        ->setTargetPath($this->cssPath)
-        ->setTargetUri($this->addRevision($this->cssPath, $cssLastModified))
-        ->addFilter($filter);
+            ->join(true)
+            ->setTargetPath($this->cssPath)
+            ->setTargetUri($this->addRevision($this->cssPath, $cssLastModified))
+            ->addFilter($filter);
 
         if ($cssNeedsRefreshing) {
             $this->assets->outputCss();
@@ -165,10 +165,10 @@ class Assets extends Plugin
         }
 
         $this->assets->collection('js')
-        ->join(true)
-        ->setTargetPath($this->jsPath)
-        ->setTargetUri($this->addRevision($this->jsPath, $jsLastModified))
-        ->addFilter($filter);
+            ->join(true)
+            ->setTargetPath($this->jsPath)
+            ->setTargetUri($this->addRevision($this->jsPath, $jsLastModified))
+            ->addFilter($filter);
 
         if ($jsNeedsRefreshing) {
             $this->assets->outputJs();

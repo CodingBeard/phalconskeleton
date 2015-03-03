@@ -2,12 +2,12 @@
 
 /**
  * Authentication
- * 
+ *
  * User/Role functions require models: User, Userroles, Roles
  * Login functions require models: Logins
  * Cookie functions require models: Authtokens
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -45,13 +45,13 @@ class Auth extends Component
 
     /**
      * Array of Roles user has - Empty until User and Roles set
-     * @var array 
+     * @var array
      */
     public $roles;
 
     /**
      * If user is Administrator
-     * @var bool 
+     * @var bool
      */
     public $isAdmin;
 
@@ -63,7 +63,7 @@ class Auth extends Component
 
     /**
      * Anti-CRSF token value
-     * @var string 
+     * @var string
      */
     public $token;
 
@@ -84,7 +84,7 @@ class Auth extends Component
                 'tokenKey' => Text::random(Text::RANDOM_ALNUM, 20),
                 'token' => Text::random(Text::RANDOM_ALNUM, 20),
             ];
-            $this->session->set('auth', (object) $auth);
+            $this->session->set('auth', (object)$auth);
         }
         $this->initialize();
     }

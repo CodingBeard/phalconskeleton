@@ -5,7 +5,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 /**
  * Bootstrap
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall

@@ -3,14 +3,17 @@
 /**
  * Cli
  *
- * @category 
- * @package 
+ * @category
+ * @package
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2014, Tim Marshall
  * @license New BSD License
  */
+use CodingBeard\BeanstalkWithSerialize;
+use CodingBeard\Emails\SiteEmails;
 use Phalcon\DI\FactoryDefault\CLI as CliDI,
     Phalcon\CLI\Console as ConsoleApp;
+use Phalcon\Mvc\View;
 
 try {
     $config = include __DIR__ . "/../app/config/config.php";
@@ -26,8 +29,7 @@ try {
     $di = new CliDI();
 
     $di->set('config', $config);
-    $di->set('db', function () use ($config)
-    {
+    $di->set('db', function () use ($config) {
         return new Phalcon\Db\Adapter\Pdo\Mysql([
             'adapter' => $config->database->adapter,
             'host' => $config->database->host,
@@ -36,45 +38,47 @@ try {
             'dbname' => $config->database->dbname,
         ]);
     });
-    $di->set('mandrill', function() use ($config)
-    {
+    $di->set('mandrill', function () use ($config) {
         return new \Tartan\Mandrill($config->mail->mandrillKey);
     });
-    $di->set('emails', function()
-    {
-        return new \Emails\SiteEmails();
+    $di->set('emails', function () {
+        return new SiteEmails();
     }, true);
-    $di->set('queue', function() use ($config)
-    {
-        return new \BeanstalkWithSerialize(array(
+    $di->set('queue', function () use ($config) {
+        return new BeanstalkWithSerialize(array(
             'host' => $config->beanstalk->host
         ));
     }, true);
-    $di->set('view', function () use ($config)
-    {
-        $view = new \Phalcon\Mvc\View();
-        $view->setViewsDir($config->view->frontend->viewsDir);
+    $volt = function ($view, $di) use ($config, $module) {
+        $volt = new Volt($view, $di);
+        $volt->setOptions([
+            'compiledPath' => $config->application->cacheDir,
+            'compiledSeparator' => '.',
+            'compileAlways' => $config->view[$module]->alwaysCompile,
+            'prefix' => 'cache'
+        ]);
+        $compiler = $volt->getCompiler();
+        $viewConfig = $config->view->toArray();
+        foreach ($viewConfig['filters'] as $filter) {
+            $compiler->addFilter($filter[0], $filter[1]);
+        }
+        foreach ($viewConfig['functions'] as $function) {
+            $compiler->addFunction($function[0], $function[1]);
+        }
+        return $volt;
+    };
+
+    $view = function () use ($volt, $config, $module) {
+        $view = new View();
+        $view->setViewsDir($config->view[$module]->viewsDir);
         $view->registerEngines([
-            '.volt' => function ($view, $di) use ($config)
-            {
-                $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di);
-                $volt->setOptions([
-                    'compiledPath' => __DIR__ . '/cache/',
-                    'compiledSeparator' => '_',
-                    'compileAlways' => true
-                ]);
-                $compiler = $volt->getCompiler();
-                foreach ($config->view->frontend->filters as $filter) {
-                    $compiler->addFilter($filter[0], $filter[1]);
-                }
-                foreach ($config->view->frontend->functions as $function) {
-                    $compiler->addFunction($function[0], $function[1]);
-                }
-                return $volt;
-            }
+            '.volt' => $volt,
+            '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
         ]);
         return $view;
-    }, true);
+    };
+
+    $di->set('view', $view, true);
 
     /**
      * Process the console arguments
@@ -102,7 +106,6 @@ try {
 
     define('CURRENT_TASK', (isset($argv[1]) ? $argv[1] : null));
     define('CURRENT_ACTION', (isset($argv[2]) ? $argv[2] : null));
-
 
 
     $console->handle($arguments);

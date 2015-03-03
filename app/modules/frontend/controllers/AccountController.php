@@ -3,7 +3,7 @@
 /**
  * Account controller, url: /account
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -37,32 +37,32 @@ class AccountController extends ControllerBase
         $form->submitButton = 'Create';
 
         $form
-        ->addField(new Textbox(['key' => 'firstName', 'label' => 'First Name', 'required' => true, 'size' => 6]))
-        ->addField(new Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
-        ->addField(new Textbox([
-            'key' => 'email',
-            'label' => 'Email',
-            'required' => true,
-            'unique' => ['model' => '\Users', 'field' => 'email', 'message' => 'That email is already registered'],
-            'repeat' => true,
-            'size' => 6
-        ]))
-        ->addField(new Password([
-            'key' => 'password',
-            'label' => 'Password',
-            'sublabel' => 'Minimum of 8 characters',
-            'required' => true,
-            'repeat' => true,
-            'pattern' => '^.{8,1000}$',
-            'size' => 6
-        ]))
-        ->addField(new Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]))
-        ->addField(new Checkbox([
-            'key' => 'tos',
-            'label' => 'I have read and agree to the <a href="/site/terms">Terms</a>',
-            'required' => true
-        ]))
-        ->addField(new Captcha());
+            ->addField(new Textbox(['key' => 'firstName', 'label' => 'First Name', 'required' => true, 'size' => 6]))
+            ->addField(new Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
+            ->addField(new Textbox([
+                'key' => 'email',
+                'label' => 'Email',
+                'required' => true,
+                'unique' => ['model' => '\Users', 'field' => 'email', 'message' => 'That email is already registered'],
+                'repeat' => true,
+                'size' => 6
+            ]))
+            ->addField(new Password([
+                'key' => 'password',
+                'label' => 'Password',
+                'sublabel' => 'Minimum of 8 characters',
+                'required' => true,
+                'repeat' => true,
+                'pattern' => '^.{8,1000}$',
+                'size' => 6
+            ]))
+            ->addField(new Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]))
+            ->addField(new Checkbox([
+                'key' => 'tos',
+                'label' => 'I have read and agree to the <a href="/site/terms">Terms</a>',
+                'required' => true
+            ]))
+            ->addField(new Captcha());
 
         if ($form->validate()) {
             $user = $form->addToModel(new Users());
@@ -76,8 +76,7 @@ class AccountController extends ControllerBase
                 $authtoken = Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
                 $token = $authtoken->string;
 
-                $this->queue->addJob(function () use ($user, $token)
-                {
+                $this->queue->addJob(function () use ($user, $token) {
                     $this->emails->emailVerification($user, $token);
                 });
 
@@ -132,22 +131,21 @@ class AccountController extends ControllerBase
         $form->cancelHref = '/';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'email',
-            'label' => 'Email',
-            'sublabel' => 'The address you registered with',
-            'required' => true,
-            'exists' => ['model' => '\Users', 'field' => 'email', 'message' => 'That account does not exists'],
-        ]))
-        ->addField(new Captcha());
+            ->addField(new Textbox([
+                'key' => 'email',
+                'label' => 'Email',
+                'sublabel' => 'The address you registered with',
+                'required' => true,
+                'exists' => ['model' => '\Users', 'field' => 'email', 'message' => 'That account does not exists'],
+            ]))
+            ->addField(new Captcha());
 
         if ($form->validate()) {
             $user = Users::findFirstByEmail($this->request->getPost('email', 'trim'));
             $authtoken = Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
             $token = $authtoken->string;
 
-            $this->queue->addJob(function ($that) use ($user, $token)
-            {
+            $this->queue->addJob(function ($that) use ($user, $token) {
                 $that->emails->resetPass($user, $token);
             });
             $this->auth->redirect('account/reset-pass', 'success', 'Password reset email sent, please check your spam folder if you cannot find it.');
@@ -169,23 +167,23 @@ class AccountController extends ControllerBase
 
         if (!$this->session->has('reset-pass')) {
             $form
-            ->addField(new Password([
-                'key' => 'oldpassword',
-                'label' => 'Old Password',
-                'required' => true,
-            ]));
+                ->addField(new Password([
+                    'key' => 'oldpassword',
+                    'label' => 'Old Password',
+                    'required' => true,
+                ]));
         }
 
         $form
-        ->addField(new Password([
-            'key' => 'password',
-            'label' => 'New Password',
-            'sublabel' => 'Minimum of 8 characters',
-            'required' => true,
-            'repeat' => true,
-            'pattern' => '^.{8,1000}$',
-            'size' => 6
-        ]));
+            ->addField(new Password([
+                'key' => 'password',
+                'label' => 'New Password',
+                'sublabel' => 'Minimum of 8 characters',
+                'required' => true,
+                'repeat' => true,
+                'pattern' => '^.{8,1000}$',
+                'size' => 6
+            ]));
 
         if ($form->validate()) {
             $user = $this->auth->getUser();
@@ -222,19 +220,19 @@ class AccountController extends ControllerBase
         $form->cancelHref = 'account';
 
         $form
-        ->addField(new Password([
-            'key' => 'password',
-            'label' => 'Current Password',
-            'required' => true,
-        ]))
-        ->addField(new Textbox([
-            'key' => 'email',
-            'label' => 'New Email',
-            'required' => true,
-            'unique' => ['model' => '\Users', 'field' => 'email', 'message' => 'That email is already registered'],
-            'repeat' => true,
-            'size' => 6
-        ]));
+            ->addField(new Password([
+                'key' => 'password',
+                'label' => 'Current Password',
+                'required' => true,
+            ]))
+            ->addField(new Textbox([
+                'key' => 'email',
+                'label' => 'New Email',
+                'required' => true,
+                'unique' => ['model' => '\Users', 'field' => 'email', 'message' => 'That email is already registered'],
+                'repeat' => true,
+                'size' => 6
+            ]));
 
         if ($form->validate()) {
             $user = $this->auth->getUser();
@@ -256,8 +254,7 @@ class AccountController extends ControllerBase
             $user->email = $this->request->getPost('email', 'trim');
             $user->save();
 
-            $this->queue->addJob(function ($that) use ($user, $change, $token)
-            {
+            $this->queue->addJob(function ($that) use ($user, $change, $token) {
                 $that->emails->changeEmail($user, $change, $token);
             });
 
@@ -300,26 +297,26 @@ class AccountController extends ControllerBase
         $form->cancelHref = 'account';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'firstName',
-            'label' => 'First Name',
-            'required' => true,
-            'default' => $this->auth->getUser()->firstName,
-            'size' => 6
-        ]))
-        ->addField(new Textbox([
-            'key' => 'lastName',
-            'label' => 'Last Name',
-            'required' => true,
-            'default' => $this->auth->getUser()->lastName,
-            'size' => 6
-        ]))
-        ->addField(new Dateselect([
-            'key' => 'DoB',
-            'label' => 'Date of birth',
-            'required' => true,
-            'default' => $this->auth->getUser()->DoB,
-        ]));
+            ->addField(new Textbox([
+                'key' => 'firstName',
+                'label' => 'First Name',
+                'required' => true,
+                'default' => $this->auth->getUser()->firstName,
+                'size' => 6
+            ]))
+            ->addField(new Textbox([
+                'key' => 'lastName',
+                'label' => 'Last Name',
+                'required' => true,
+                'default' => $this->auth->getUser()->lastName,
+                'size' => 6
+            ]))
+            ->addField(new Dateselect([
+                'key' => 'DoB',
+                'label' => 'Date of birth',
+                'required' => true,
+                'default' => $this->auth->getUser()->DoB,
+            ]));
 
         if ($form->validate()) {
             $user = $form->addToModel($this->auth->getUser());

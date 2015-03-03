@@ -3,7 +3,7 @@
 /**
  * Navigation controller, url: /admin/navigation
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -44,11 +44,11 @@ class NavbarsController extends ControllerBase
         $form->cancelHref = 'admin/navbars';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'name',
-            'label' => 'Name',
-            'required' => true,
-        ]));
+            ->addField(new Textbox([
+                'key' => 'name',
+                'label' => 'Name',
+                'required' => true,
+            ]));
 
         if ($form->validate()) {
             $role = $form->addToModel(new Navbars());
@@ -77,12 +77,12 @@ class NavbarsController extends ControllerBase
         $form->cancelHref = 'admin/navbars';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'name',
-            'label' => 'Name',
-            'required' => true,
-            'default' => $navbar->name
-        ]));
+            ->addField(new Textbox([
+                'key' => 'name',
+                'label' => 'Name',
+                'required' => true,
+                'default' => $navbar->name
+            ]));
 
         if ($form->validate()) {
             $role = $form->addToModel($navbar);
@@ -113,38 +113,37 @@ class NavbarsController extends ControllerBase
         $form->cancelHref = 'admin/navbars';
 
         $form
-        ->addField(new Sortable([
-            'key' => 'links',
-            'size' => 12,
-            'headers' => ['Level', 'Name', 'Link'],
-            'options' => function () use ($navbar)
-            {
-                if ($navbar->navlinks->count()) {
-                    $options = [];
-                    foreach ($navbar->navlinks as $navlink) {
-                        $options[] = [
-                            new Radio(['key' => 'level', 'inline' => true, 'options' => [
+            ->addField(new Sortable([
+                'key' => 'links',
+                'size' => 12,
+                'headers' => ['Level', 'Name', 'Link'],
+                'options' => function () use ($navbar) {
+                    if ($navbar->navlinks->count()) {
+                        $options = [];
+                        foreach ($navbar->navlinks as $navlink) {
+                            $options[] = [
+                                new Radio(['key' => 'level', 'inline' => true, 'options' => [
                                     ['value' => '0', 'default' => is_null($navlink->parent_id)],
                                     ['value' => '1', 'default' => !is_null($navlink->parent_id)],
                                     ['value' => '2', 'default' => !is_null($navlink->parent->parent_id)],
                                 ]]),
-                            new Textbox(['key' => 'label', 'required' => true, 'default' => $navlink->label]),
-                            new Textbox(['key' => 'link', 'required' => true, 'default' => $navlink->link]),
-                        ];
+                                new Textbox(['key' => 'label', 'required' => true, 'default' => $navlink->label]),
+                                new Textbox(['key' => 'link', 'required' => true, 'default' => $navlink->link]),
+                            ];
+                        }
+                        return $options;
                     }
-                    return $options;
-                }
-                return [[
+                    return [[
                         new Radio(['key' => 'level', 'inline' => true, 'options' => [
-                                ['value' => '0', 'default' => true],
-                                ['value' => '1', 'default' => false],
-                                ['value' => '2', 'default' => false],
-                            ]]),
+                            ['value' => '0', 'default' => true],
+                            ['value' => '1', 'default' => false],
+                            ['value' => '2', 'default' => false],
+                        ]]),
                         new Textbox(['key' => 'label', 'required' => true]),
                         new Textbox(['key' => 'link', 'required' => true]),
-                ]];
-            }
-        ]));
+                    ]];
+                }
+            ]));
 
         if ($form->validate()) {
             if ($this->request->getPost('links')[0]['level'] == 0) {
@@ -170,7 +169,7 @@ class NavbarsController extends ControllerBase
 
                     /**
                      * Check to see if the link is in the permissions table,
-                     * if so attach it to the navlink object. Used for hiding 
+                     * if so attach it to the navlink object. Used for hiding
                      * inaccessible links from people
                      */
                     $router = $this->router;

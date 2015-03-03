@@ -29,7 +29,7 @@ use Tartan\Mandrill;
 /**
  * Services setup
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -48,16 +48,13 @@ $di->set('config', $config);
 
 $module = $router->getModuleName();
 
-$di->set('module', function() use ($module)
-{
+$di->set('module', function () use ($module) {
     return $module;
 });
 
-$di->set('showErrors', function() use ($config)
-{
+$di->set('showErrors', function () use ($config) {
     return $config->application->showErrors;
 }, true);
-
 
 
 /**
@@ -65,8 +62,7 @@ $di->set('showErrors', function() use ($config)
  */
 $di->set('router', $router);
 
-$di->set('dispatcher', function() use ($di, $module)
-{
+$di->set('dispatcher', function () use ($di, $module) {
     $eventsManager = $di->getShared('eventsManager');
 
     $errors = new DispatchingExceptionHandler();
@@ -81,8 +77,7 @@ $di->set('dispatcher', function() use ($di, $module)
     /*
      * Filter and standardize controller/action names to make case insensitive and allow for hyphens
      */
-    $eventsManager->attach("dispatch:beforeDispatchLoop", function($event, $dispatcher)
-    {
+    $eventsManager->attach("dispatch:beforeDispatchLoop", function ($event, $dispatcher) {
         $controller = strtolower(str_replace('-', '', $dispatcher->getControllerName()));
         $action = strtolower(str_replace('-', '', $dispatcher->getActionName()));
         $dispatcher->setControllerName($controller);
@@ -96,13 +91,10 @@ $di->set('dispatcher', function() use ($di, $module)
 });
 
 
-
-
 /**
  * Database
  */
-$di->set('db', function () use ($config)
-{
+$di->set('db', function () use ($config) {
     return new Mysql([
         'adapter' => $config->database->adapter,
         'host' => $config->database->host,
@@ -112,19 +104,15 @@ $di->set('db', function () use ($config)
     ]);
 });
 
-$di->set('modelsMetadata', function ()
-{
+$di->set('modelsMetadata', function () {
     return new Memory();
 });
-
-
 
 
 /*
  * Views
  */
-$volt = function ($view, $di) use ($config, $module)
-{
+$volt = function ($view, $di) use ($config, $module) {
     $volt = new Volt($view, $di);
     $volt->setOptions([
         'compiledPath' => $config->application->cacheDir,
@@ -143,8 +131,7 @@ $volt = function ($view, $di) use ($config, $module)
     return $volt;
 };
 
-$view = function () use ($volt, $config, $module)
-{
+$view = function () use ($volt, $config, $module) {
     $view = new View();
     $view->setViewsDir($config->view[$module]->viewsDir);
     $view->registerEngines([
@@ -158,21 +145,18 @@ $di->set('view', $view, true);
 
 $di->set('formview', $view, true);
 
-$di->set('compiler', function () use ($volt)
-{
+$di->set('compiler', function () use ($volt) {
     return $volt()->getCompiler();
 }, true);
 
-$di->set('url', function () use ($config)
-{
+$di->set('url', function () use ($config) {
     $url = new Url();
     $url->setBaseUri($config->application->baseUri);
 
     return $url;
 }, true);
 
-$di->set('viewCache', function () use ($config)
-{
+$di->set('viewCache', function () use ($config) {
     return new File(new Output(["lifetime" => 86400]), [
         "prefix" => "cache.view.",
         "cacheDir" => $config->application->cacheDir
@@ -180,51 +164,43 @@ $di->set('viewCache', function () use ($config)
 }, true);
 
 
-
 /**
  * Misc
  */
 
-$di->set('security', function()
-{
+$di->set('security', function () {
     $security = new Security();
     $security->setWorkFactor(12);
     return $security;
 }, true);
 
-$di->set('filter', function()
-{
+$di->set('filter', function () {
     return new Filter();
 }, true);
 
-$di->set('crypt', function() use ($config)
-{
+$di->set('crypt', function () use ($config) {
     $crypt = new Crypt();
     $crypt->setKey($config->application->cipher);
     return $crypt;
 });
 
-$di->set('cookies', function()
-{
+$di->set('cookies', function () {
     $cookies = new Cookies();
     $cookies->useEncryption(false);
     return $cookies;
 });
 
 
-
 /**
  * Session
  */
-$di->set('session', function ()
-{
+$di->set('session', function () {
     $session = new Files();
     $session->start();
     return $session;
 }, true);
 
-$di->set('flashSession', function()
-{
+$di->set('flashSession', function () {
     $flash = new Session([
         'error' => 'alert alert-danger alert-dismissible',
         'success' => 'alert alert-success alert-dismissible',
@@ -235,37 +211,30 @@ $di->set('flashSession', function()
 });
 
 
-
 /**
  * Plugins
  */
-$di->set('mandrill', function() use ($config)
-{
+$di->set('mandrill', function () use ($config) {
     return new Mandrill($config->mail->mandrillKey);
 });
 
-$di->set('auth', function()
-{
+$di->set('auth', function () {
     return new Auth();
 }, true);
 
-$di->set('form', function() use ($di)
-{
+$di->set('form', function () use ($di) {
     return new FormBuilder($di);
 }, true);
 
-$di->set('captcha', function() use ($config)
-{
+$di->set('captcha', function () use ($config) {
     return new Captcha($config->captcha->publicKey, $config->captcha->privateKey);
 }, true);
 
-$di->set('emails', function()
-{
+$di->set('emails', function () {
     return new SiteEmails();
 }, true);
 
-$di->set('queue', function() use ($config)
-{
+$di->set('queue', function () use ($config) {
     return new BeanstalkWithSerialize(array(
         'host' => $config->beanstalk->host
     ));

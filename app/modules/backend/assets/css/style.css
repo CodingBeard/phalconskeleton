@@ -81,30 +81,33 @@ header, main, footer {
 }
 
 main {
-	padding-right: 10px;
+    padding-right: 10px;
 }
 
 .logo, .brand-logo {
-	height: 90px !important;
-	padding-left: 0 !important;
+    height: 90px !important;
+    padding-left: 0 !important;
 }
+
 .brand-logo {
-	padding-top: 10px !important;
+    padding-top: 10px !important;
 }
+
 .h-logo {
-	padding: 0px !important;
-	height: 45px;
-	width: auto;
+    padding: 0px !important;
+    height: 45px;
+    width: auto;
 }
+
 .logo img {
-	float: left;
+    float: left;
 }
 
 .designer {
-	min-height: 200px;
-	background-color: rgb(245, 248, 249);
-	padding: 10px;
-	border: 2px black dashed;
+    min-height: 200px;
+    background-color: rgb(245, 248, 249);
+    padding: 10px;
+    border: 2px black dashed;
 }
 
 /* ==========================================================================
@@ -254,7 +257,6 @@ main {
     /*
      * Don't show links for images, or javascript/internal links
      */
-
     .ir a:after,
     a[href^="javascript:"]:after,
     a[href^="#"]:after {

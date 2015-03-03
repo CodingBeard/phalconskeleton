@@ -3,7 +3,7 @@
 /**
  * Beanstalk task
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -22,12 +22,11 @@ class BeanstalkTask extends \Phalcon\CLI\Task
             }
         }
         file_put_contents(__DIR__ . '/../pids/beanstalk.pid', getmypid());
-        
+
         /**
          * Remove pid when done
          */
-        register_shutdown_function(function ()
-        {
+        register_shutdown_function(function () {
             unlink(__DIR__ . '/../pids/beanstalk.pid');
         });
 
@@ -36,12 +35,11 @@ class BeanstalkTask extends \Phalcon\CLI\Task
         while (($job = $this->queue->reserve())) {
 
             $details = $job->getBody();
-            
+
             /**
              * If fatal error or execption, remove job and log error
              */
-            register_shutdown_function(function () use ($details, $job)
-            {
+            register_shutdown_function(function () use ($details, $job) {
                 if (is_array(error_get_last())) {
                     if (error_get_last()['type'] == 1 || error_get_last()['type'] == 4096) {
                         $details['error'] = error_get_last();
@@ -52,13 +50,13 @@ class BeanstalkTask extends \Phalcon\CLI\Task
                 }
                 $job->delete();
             });
-            
+
             $unserialized = $serializer->unserialize($details['function']);
 
             if (is_callable($unserialized)) {
                 $unserialized($this);
                 $job->delete();
-                
+
                 /**
                  * If error, log
                  */
@@ -71,7 +69,7 @@ class BeanstalkTask extends \Phalcon\CLI\Task
                     }
                 }
             }
-            
+
         }
     }
 

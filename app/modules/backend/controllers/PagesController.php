@@ -3,7 +3,7 @@
 /**
  * Pages controller, url: /admin/pages/
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -45,31 +45,30 @@ class PagesController extends ControllerBase
         $form->cancelHref = 'admin/pages';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'name',
-            'label' => 'Name',
-            'required' => true,
-            'size' => 6
-        ]))
-        ->addField(new Textbox([
-            'key' => 'title',
-            'label' => 'Page Title',
-            'required' => true,
-            'size' => 6
-        ]))
-        ->addField(new Switchbox([
-            'key' => 'standalone',
-            'label' => 'Standalone page',
-            'toggleRequired' => ['url'],
-        ]))
-        ->addField(new Textbox([
-            'key' => 'url',
-            'label' => 'Url',
-            'required' => function ()
-            {
-                return ($this->request->getPost('standalone', 'trim') == 'on') ? true : false;
-            },
-        ]));
+            ->addField(new Textbox([
+                'key' => 'name',
+                'label' => 'Name',
+                'required' => true,
+                'size' => 6
+            ]))
+            ->addField(new Textbox([
+                'key' => 'title',
+                'label' => 'Page Title',
+                'required' => true,
+                'size' => 6
+            ]))
+            ->addField(new Switchbox([
+                'key' => 'standalone',
+                'label' => 'Standalone page',
+                'toggleRequired' => ['url'],
+            ]))
+            ->addField(new Textbox([
+                'key' => 'url',
+                'label' => 'Url',
+                'required' => function () {
+                    return ($this->request->getPost('standalone', 'trim') == 'on') ? true : false;
+                },
+            ]));
 
         if ($form->validate()) {
             $page = $form->addToModel(new Pages());
@@ -98,38 +97,37 @@ class PagesController extends ControllerBase
         $form->cancelHref = 'admin/pages';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'name',
-            'label' => 'Name',
-            'required' => true,
-            'default' => $page->name,
-            'size' => 6
-        ]))
-        ->addField(new Textbox([
-            'key' => 'title',
-            'label' => 'Page Title',
-            'required' => true,
-            'default' => $page->title,
-            'size' => 6
-        ]))
-        ->addField(new Switchbox([
-            'key' => 'standalone',
-            'label' => 'Standalone page',
-            'toggleRequired' => ['url'],
-            'default' => $page->standalone,
-        ]))
-        ->addField(new Textbox([
-            'key' => 'url',
-            'label' => 'Url',
-            'default' => $page->url,
-            'required' => function () use ($page)
-            {
-                if ($this->request->isPost()) {
-                    return ($this->request->getPost('standalone', 'trim') == 'on') ? true : false;
-                }
-                return $page->standalone;
-            },
-        ]));
+            ->addField(new Textbox([
+                'key' => 'name',
+                'label' => 'Name',
+                'required' => true,
+                'default' => $page->name,
+                'size' => 6
+            ]))
+            ->addField(new Textbox([
+                'key' => 'title',
+                'label' => 'Page Title',
+                'required' => true,
+                'default' => $page->title,
+                'size' => 6
+            ]))
+            ->addField(new Switchbox([
+                'key' => 'standalone',
+                'label' => 'Standalone page',
+                'toggleRequired' => ['url'],
+                'default' => $page->standalone,
+            ]))
+            ->addField(new Textbox([
+                'key' => 'url',
+                'label' => 'Url',
+                'default' => $page->url,
+                'required' => function () use ($page) {
+                    if ($this->request->isPost()) {
+                        return ($this->request->getPost('standalone', 'trim') == 'on') ? true : false;
+                    }
+                    return $page->standalone;
+                },
+            ]));
 
         if ($form->validate()) {
             $page = $form->addToModel($page);
@@ -160,37 +158,35 @@ class PagesController extends ControllerBase
         $form->cancelHref = 'admin/pages';
 
         $form
-        ->addField(
-        new Select([
-            'key' => 'offset',
-            'label' => 'Left Offset',
-            'class' => 'browser-default',
-            'options' => function ()
-            {
-                $options = [];
-                foreach (range(0, 12) as $value) {
-                    $options[] = ['value' => $value, 'label' => $value, 'default' => false];
-                }
-                return $options;
-            },
-            'size' => 6
-        ]))
-        ->addField(
-        new Select([
-            'key' => 'width',
-            'label' => 'Width',
-            'class' => 'browser-default',
-            'options' => function ()
-            {
-                $options = [];
-                foreach (range(12, 1) as $value) {
-                    $options[] = ['value' => $value, 'label' => $value, 'default' => false];
-                }
-                return $options;
-            },
-            'size' => 6
-        ]))
-        ->addField(new Hidden(['key' => 'parent_id', 'default' => null]));
+            ->addField(
+                new Select([
+                    'key' => 'offset',
+                    'label' => 'Left Offset',
+                    'class' => 'browser-default',
+                    'options' => function () {
+                        $options = [];
+                        foreach (range(0, 12) as $value) {
+                            $options[] = ['value' => $value, 'label' => $value, 'default' => false];
+                        }
+                        return $options;
+                    },
+                    'size' => 6
+                ]))
+            ->addField(
+                new Select([
+                    'key' => 'width',
+                    'label' => 'Width',
+                    'class' => 'browser-default',
+                    'options' => function () {
+                        $options = [];
+                        foreach (range(12, 1) as $value) {
+                            $options[] = ['value' => $value, 'label' => $value, 'default' => false];
+                        }
+                        return $options;
+                    },
+                    'size' => 6
+                ]))
+            ->addField(new Hidden(['key' => 'parent_id', 'default' => null]));
 
         if ($form->validate()) {
             $content = $form->addToModel(new Contents());
@@ -262,11 +258,11 @@ class PagesController extends ControllerBase
         $form->cancelHref = 'admin/pages/manage/' . $content->pages->id;
 
         $form
-        ->addField(new Aceditor([
-            'key' => 'content',
-            'label' => 'Content',
-            'default' => $content->content
-        ]));
+            ->addField(new Aceditor([
+                'key' => 'content',
+                'label' => 'Content',
+                'default' => $content->content
+            ]));
 
         if ($this->request->isAjax()) {
             $content = $form->addToModel($content);

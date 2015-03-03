@@ -3,7 +3,7 @@
 /**
  * Site Emails
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -68,7 +68,7 @@ class SiteEmails extends Component
             $inliner->setHTML($split[0]);
             $html = $inliner->convert();
 
-            $result = (object) ['html' => $html, 'text' => $split[1]];
+            $result = (object)['html' => $html, 'text' => $split[1]];
         }
         else {
             $inliner->setHTML($content);
@@ -78,7 +78,7 @@ class SiteEmails extends Component
             $links = preg_replace('~<a.*?href="(https?://[^"]+)".*?>.*?</a>~', '$1', $newlines);
             $text = preg_replace('/[ |\t]+/', " ", $links);
 
-            $result = (object) ['html' => $html, 'text' => $text];
+            $result = (object)['html' => $html, 'text' => $text];
         }
 
         if ($testView) {

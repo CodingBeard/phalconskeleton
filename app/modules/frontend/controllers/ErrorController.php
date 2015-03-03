@@ -3,7 +3,7 @@
 /**
  * Error controller, url: /error/
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2014, Tim Marshall

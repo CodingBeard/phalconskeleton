@@ -2,10 +2,10 @@
 
 /**
  * Beanstalk
- * 
+ *
  * This extends the normal beanstalk queue to allow for anonymous functions to be queued
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall

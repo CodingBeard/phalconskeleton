@@ -2,10 +2,10 @@
 
 /**
  * Blameable
- * 
+ *
  * Creates an auditing trail for all model CRUD actions models required: Audits, Auditfields
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -36,7 +36,7 @@ class Blameable extends Behavior implements BehaviorInterface
     /**
      * {@inheritdoc}
      *
-     * @param string                      $eventType
+     * @param string $eventType
      * @param ModelInterface $model
      */
     public function notify($eventType, ModelInterface $model)
@@ -57,7 +57,7 @@ class Blameable extends Behavior implements BehaviorInterface
     /**
      * Creates an Audit isntance based on the current enviroment
      *
-     * @param  string                      $type
+     * @param  string $type
      * @param  ModelInterface $model
      * @return Audits
      */

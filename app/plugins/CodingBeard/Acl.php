@@ -2,10 +2,10 @@
 
 /**
  * Security/ACL plugin
- * 
+ *
  * Requires models: User, Userroles, Roles, Permissionroles, Permissions
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -29,12 +29,12 @@ class Acl extends Plugin
 
     /**
      * Name of module initialized in
-     * @var string 
+     * @var string
      */
     public $module;
 
     /**
-     * 
+     *
      * @param DI $dependencyInjector
      * @param string $module
      */

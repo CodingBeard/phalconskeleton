@@ -3,7 +3,7 @@
 /**
  * Error Handler
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -25,8 +25,7 @@ class ErrorHandler extends Component
     public static function registerShutdown($showErrors = false)
     {
         if ($showErrors) {
-            register_shutdown_function(function ()
-            {
+            register_shutdown_function(function () {
                 if (is_array(error_get_last())) {
                     if (error_get_last()['type'] == 8) {
                         return;
@@ -40,8 +39,7 @@ class ErrorHandler extends Component
             });
         }
         else {
-            register_shutdown_function(function ()
-            {
+            register_shutdown_function(function () {
                 if (is_array(error_get_last())) {
                     if (error_get_last()['type'] == 8) {
                         return;

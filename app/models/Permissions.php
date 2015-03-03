@@ -3,7 +3,7 @@
 /**
  * Permissions
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -136,7 +136,7 @@ class Permissions extends Model
         $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
         $this->hasManyToMany(
-        "id", "models\Permissionroles", "permission_id", "role_id", "models\Roles", "id", ['alias' => 'Roles']
+            "id", "models\Permissionroles", "permission_id", "role_id", "models\Roles", "id", ['alias' => 'Roles']
         );
         $this->hasMany("id", "models\Permissionroles", "permission_id", ['alias' => 'Permissionroles']);
     }

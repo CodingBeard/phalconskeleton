@@ -3,7 +3,7 @@
 /**
  * Users controller, url: /admin/users/
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -49,52 +49,51 @@ class UsersController extends ControllerBase
         $form->cancelHref = 'admin/users';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'firstName',
-            'label' => 'First Name',
-            'required' => true,
-            'default' => $user->firstName,
-            'size' => 6
-        ]))
-        ->addField(new Textbox([
-            'key' => 'lastName',
-            'label' => 'Last Name',
-            'required' => true,
-            'default' => $user->lastName,
-            'size' => 6
-        ]))
-        ->addField(new Textbox([
-            'key' => 'email',
-            'label' => 'Email',
-            'required' => true,
-            'default' => $user->email,
-            'size' => 6
-        ]))
-        ->addField(new Dateselect([
-            'key' => 'DoB',
-            'label' => 'Date of birth',
-            'required' => true,
-            'default' => $user->DoB,
-            'size' => 6
-        ]))
-        ->addField(new Tagbox([
-            'key' => 'userroles',
-            'label' => 'User Roles',
-            'required' => true,
-            'size' => 12,
-            'autocompleteOnFocus' => true,
-            'options' => function () use ($user)
-            {
-                $roles = [];
-                foreach (Roles::find() as $role) {
-                    $roles[$role->id] = ['value' => $role->id, 'label' => $role->name, 'default' => false];
+            ->addField(new Textbox([
+                'key' => 'firstName',
+                'label' => 'First Name',
+                'required' => true,
+                'default' => $user->firstName,
+                'size' => 6
+            ]))
+            ->addField(new Textbox([
+                'key' => 'lastName',
+                'label' => 'Last Name',
+                'required' => true,
+                'default' => $user->lastName,
+                'size' => 6
+            ]))
+            ->addField(new Textbox([
+                'key' => 'email',
+                'label' => 'Email',
+                'required' => true,
+                'default' => $user->email,
+                'size' => 6
+            ]))
+            ->addField(new Dateselect([
+                'key' => 'DoB',
+                'label' => 'Date of birth',
+                'required' => true,
+                'default' => $user->DoB,
+                'size' => 6
+            ]))
+            ->addField(new Tagbox([
+                'key' => 'userroles',
+                'label' => 'User Roles',
+                'required' => true,
+                'size' => 12,
+                'autocompleteOnFocus' => true,
+                'options' => function () use ($user) {
+                    $roles = [];
+                    foreach (Roles::find() as $role) {
+                        $roles[$role->id] = ['value' => $role->id, 'label' => $role->name, 'default' => false];
+                    }
+                    foreach ($user->roles as $role) {
+                        $roles[$role->id]['default'] = true;
+                    }
+                    return $roles;
                 }
-                foreach ($user->roles as $role) {
-                    $roles[$role->id]['default'] = true;
-                }
-                return $roles;
-            }
-        ]));
+            ]));
 
         if ($form->validate()) {
             $user = $form->addToModel($user);
@@ -131,23 +130,23 @@ class UsersController extends ControllerBase
         $form->cancelHref = 'admin/users/roles';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'name',
-            'label' => 'Name',
-            'required' => true,
-            'size' => 6
-        ]))
-        ->addField(new Textbox([
-            'key' => 'level',
-            'label' => 'Level',
-            'default' => 100,
-            'size' => 6
-        ]))
-        ->addField(new Textarea([
-            'key' => 'description',
-            'label' => 'Description',
-            'size' => 12
-        ]));
+            ->addField(new Textbox([
+                'key' => 'name',
+                'label' => 'Name',
+                'required' => true,
+                'size' => 6
+            ]))
+            ->addField(new Textbox([
+                'key' => 'level',
+                'label' => 'Level',
+                'default' => 100,
+                'size' => 6
+            ]))
+            ->addField(new Textarea([
+                'key' => 'description',
+                'label' => 'Description',
+                'size' => 12
+            ]));
 
         if ($form->validate()) {
             $role = $form->addToModel(new Roles());
@@ -176,25 +175,25 @@ class UsersController extends ControllerBase
         $form->cancelHref = 'admin/users/roles';
 
         $form
-        ->addField(new Textbox([
-            'key' => 'name',
-            'label' => 'Name',
-            'required' => true,
-            'default' => $role->name,
-            'size' => 6
-        ]))
-        ->addField(new Textbox([
-            'key' => 'level',
-            'label' => 'Level',
-            'default' => $role->level,
-            'size' => 6
-        ]))
-        ->addField(new Textarea([
-            'key' => 'description',
-            'label' => 'Description',
-            'default' => $role->description,
-            'size' => 12
-        ]));
+            ->addField(new Textbox([
+                'key' => 'name',
+                'label' => 'Name',
+                'required' => true,
+                'default' => $role->name,
+                'size' => 6
+            ]))
+            ->addField(new Textbox([
+                'key' => 'level',
+                'label' => 'Level',
+                'default' => $role->level,
+                'size' => 6
+            ]))
+            ->addField(new Textarea([
+                'key' => 'description',
+                'label' => 'Description',
+                'default' => $role->description,
+                'size' => 12
+            ]));
 
         if ($form->validate()) {
             $role = $form->addToModel($role);
