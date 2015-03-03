@@ -7,9 +7,9 @@
  *
  * @category 
  * @package phalconskeleton
- * @author Tim Marshall
+ * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
- * @version 
+ * @license New BSD License
  */
 use Phalcon\Mvc\Model\Behavior;
 use Phalcon\Mvc\Model\BehaviorInterface;

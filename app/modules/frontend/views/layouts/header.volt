@@ -1,7 +1,8 @@
 {# 
-phalconskeleton
-author Tim Marshall
-copyright (c) 2015, Tim Marshall
+@package: phalconskeleton
+@author: Tim Marshall <Tim@CodingBeard.com>
+@copyright: (c) 2015, Tim Marshall
+@license: New BSD License
 #}
 <div class="supernav">
   <div class="container">

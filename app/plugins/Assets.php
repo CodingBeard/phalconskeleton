@@ -24,9 +24,9 @@
  *
  * @category 
  * @package phalconskeleton
- * @author Tim Marshall
+ * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
- * @version 
+ * @license New BSD License
  */
 
 class Assets extends Phalcon\Mvc\User\Plugin
@@ -93,15 +93,13 @@ class Assets extends Phalcon\Mvc\User\Plugin
     public function beforeExecuteRoute()
     {
         $css = $this->assets->collection('css');
-        $css->setSourcePath($this->sourcePath);
         foreach ($this->cssPaths as $cssPath) {
-            $css->addCss($cssPath);
+            $css->addCss($this->sourcePath . $cssPath);
         }
 
         $js = $this->assets->collection('js');
-        $js->setSourcePath($this->sourcePath);
         foreach ($this->jsPaths as $jsPath) {
-            $js->addJs($jsPath);
+            $js->addJs($this->sourcePath . $jsPath);
         }
     }
 
@@ -117,7 +115,7 @@ class Assets extends Phalcon\Mvc\User\Plugin
         $cssLastModified = filemtime($this->config->application->publicDir . $this->cssPath);
         foreach ($this->assets->get('css')->getResources() as $resource) {
             if ($resource->getLocal()) {
-                if (($lastmod = filemtime($this->sourcePath . $resource->getPath())) > $cssLastModified) {
+                if (($lastmod = filemtime($resource->getPath())) > $cssLastModified) {
                     $cssNeedsRefreshing = true;
                     $cssLastModified = $lastmod;
                 }
@@ -127,7 +125,7 @@ class Assets extends Phalcon\Mvc\User\Plugin
         $jsLastModified = filemtime($this->config->application->publicDir . $this->jsPath);
         foreach ($this->assets->get('js')->getResources() as $resource) {
             if ($resource->getLocal()) {
-                if (($lastmod = filemtime($this->sourcePath . $resource->getPath())) > $jsLastModified) {
+                if (($lastmod = filemtime($resource->getPath())) > $jsLastModified) {
                     $jsNeedsRefreshing = true;
                     $jsLastModified = $lastmod;
                 }

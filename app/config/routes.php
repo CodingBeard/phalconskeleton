@@ -5,9 +5,9 @@
  *
  * @category 
  * @package phalconskeleton
- * @author Tim Marshall
+ * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
- * @version 
+ * @license New BSD License
  */
 /**
  * Usage: [$uriPattern => $array/$shortSyntax], http://docs.phalconphp.com/en/latest/reference/routing.html

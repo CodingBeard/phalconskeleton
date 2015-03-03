@@ -5,9 +5,9 @@
  *
  * @category 
  * @package phalconskeleton
- * @author Tim Marshall
+ * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2014, Tim Marshall
- * @version 
+ * @license New BSD License
  */
 
 namespace frontend\controllers;
