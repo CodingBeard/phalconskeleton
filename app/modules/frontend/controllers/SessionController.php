@@ -12,6 +12,11 @@
 
 namespace frontend\controllers;
 
+use CodingBeard\Forms\Fields\Captcha;
+use CodingBeard\Forms\Fields\Password;
+use CodingBeard\Forms\Fields\Textbox;
+use models\Users;
+
 class SessionController extends ControllerBase
 {
 
@@ -28,12 +33,12 @@ class SessionController extends ControllerBase
         $form->cancelHref = 'register';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'email',
             'label' => 'Email',
             'required' => true,
         ]))
-        ->addField(new \Forms\Fields\Password([
+        ->addField(new Password([
             'key' => 'password',
             'label' => 'Password',
             'sublabel' => '<a href="/account/reset-pass">Forgotten password?</a>',
@@ -47,10 +52,10 @@ class SessionController extends ControllerBase
         }
 
         if ($this->auth->loginCaptcha()) {
-            $form->addField(new \Forms\Fields\Captcha());
+            $form->addField(new Captcha());
         }
         if ($form->validate()) {
-            $user = \Users::findFirstByEmail($this->request->getPost('email', 'email'));
+            $user = Users::findFirstByEmail($this->request->getPost('email', 'email'));
             if (!$user) {
                 $this->auth->attemptThrolling(null);
                 return $this->auth->redirect('login', 'error', 'That email is not registered with us.');

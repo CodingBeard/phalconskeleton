@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Logins extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Logins extends Model
 {
 
     /**
@@ -48,9 +54,9 @@ class Logins extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->belongsTo('user_id', 'Users', 'id', ['alias' => 'Users']);
+        $this->belongsTo('user_id', 'models\Users', 'id', ['alias' => 'Users']);
     }
 
     /**

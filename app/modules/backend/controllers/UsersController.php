@@ -12,6 +12,13 @@
 
 namespace backend\controllers;
 
+use CodingBeard\Forms\Fields\Dateselect;
+use CodingBeard\Forms\Fields\Tagbox;
+use CodingBeard\Forms\Fields\Textarea;
+use CodingBeard\Forms\Fields\Textbox;
+use models\Roles;
+use models\Users;
+
 class UsersController extends ControllerBase
 {
 
@@ -21,7 +28,7 @@ class UsersController extends ControllerBase
     public function indexAction()
     {
         $this->tag->appendTitle("Users");
-        $this->view->users = \Users::find();
+        $this->view->users = Users::find();
     }
 
     /**
@@ -31,7 +38,7 @@ class UsersController extends ControllerBase
     public function editAction($user_id)
     {
         $this->tag->appendTitle("Edit User");
-        $user = \Users::findFirstById($user_id);
+        $user = Users::findFirstById($user_id);
         if (!$user) {
             $this->auth->redirect('admin/users', 'error', 'Invalid User ID.');
         }
@@ -42,35 +49,35 @@ class UsersController extends ControllerBase
         $form->cancelHref = 'admin/users';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'firstName',
             'label' => 'First Name',
             'required' => true,
             'default' => $user->firstName,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'lastName',
             'label' => 'Last Name',
             'required' => true,
             'default' => $user->lastName,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'email',
             'label' => 'Email',
             'required' => true,
             'default' => $user->email,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Dateselect([
+        ->addField(new Dateselect([
             'key' => 'DoB',
             'label' => 'Date of birth',
             'required' => true,
             'default' => $user->DoB,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Tagbox([
+        ->addField(new Tagbox([
             'key' => 'userroles',
             'label' => 'User Roles',
             'required' => true,
@@ -79,7 +86,7 @@ class UsersController extends ControllerBase
             'options' => function () use ($user)
             {
                 $roles = [];
-                foreach (\Roles::find() as $role) {
+                foreach (Roles::find() as $role) {
                     $roles[$role->id] = ['value' => $role->id, 'label' => $role->name, 'default' => false];
                 }
                 foreach ($user->roles as $role) {
@@ -107,7 +114,7 @@ class UsersController extends ControllerBase
     public function rolesAction()
     {
         $this->tag->appendTitle("User Roles");
-        $this->view->roles = \Roles::find(['order' => 'level']);
+        $this->view->roles = Roles::find(['order' => 'level']);
     }
 
     /**
@@ -124,26 +131,26 @@ class UsersController extends ControllerBase
         $form->cancelHref = 'admin/users/roles';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'name',
             'label' => 'Name',
             'required' => true,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'level',
             'label' => 'Level',
             'default' => 100,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textarea([
+        ->addField(new Textarea([
             'key' => 'description',
             'label' => 'Description',
             'size' => 12
         ]));
 
         if ($form->validate()) {
-            $role = $form->addToModel(new \Roles());
+            $role = $form->addToModel(new Roles());
             if ($role->save()) {
                 $this->auth->redirect('admin/users/roles', 'success', 'Role Created.');
             }
@@ -158,7 +165,7 @@ class UsersController extends ControllerBase
     public function editroleAction($role_id)
     {
         $this->tag->appendTitle("Edit Role");
-        $role = \Roles::findFirstById($role_id);
+        $role = Roles::findFirstById($role_id);
         if (!$role) {
             $this->auth->redirect('admin/users/roles', 'error', 'Invalid User ID.');
         }
@@ -169,20 +176,20 @@ class UsersController extends ControllerBase
         $form->cancelHref = 'admin/users/roles';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'name',
             'label' => 'Name',
             'required' => true,
             'default' => $role->name,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'level',
             'label' => 'Level',
             'default' => $role->level,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textarea([
+        ->addField(new Textarea([
             'key' => 'description',
             'label' => 'Description',
             'default' => $role->description,

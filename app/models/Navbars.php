@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Navbars extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Navbars extends Model
 {
 
     /**
@@ -30,9 +36,9 @@ class Navbars extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Navlinks', 'navbar_id', ['alias' => 'Navlinks']);
+        $this->hasMany('id', 'models\Navlinks', 'navbar_id', ['alias' => 'Navlinks']);
     }
 
     /**

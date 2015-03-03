@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Pages extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Pages extends Model
 {
 
     /**
@@ -41,28 +47,28 @@ class Pages extends \Phalcon\Mvc\Model
      * @var string
      */
     public $url;
-    
+
     /**
      * Internal counter of the grid width
      * @var int
      */
     public $widthCount = 0;
-    
+
     /**
      * Start of row
      * @var string
      */
     public $start = '<div class="row">';
-    
+
     /**
      * End of row
      * @var string
      */
     public $end = '</div>';
-    
+
     /**
      * 
-     * @param \Contents $content
+     * @param Contents $content
      * @return string
      */
     public function newRow($content, $sort = false)
@@ -81,10 +87,10 @@ class Pages extends \Phalcon\Mvc\Model
         }
         return $string;
     }
-    
+
     /**
      * 
-     * @param \Contents $content
+     * @param Contents $content
      * @return string
      */
     public function endRow($content)
@@ -95,7 +101,7 @@ class Pages extends \Phalcon\Mvc\Model
             return $this->end;
         }
     }
-    
+
     /**
      * Ensure consistancy
      */
@@ -113,9 +119,9 @@ class Pages extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Contents', 'page_id', ['alias' => 'Contents']);
+        $this->hasMany('id', 'models\Contents', 'page_id', ['alias' => 'Contents']);
     }
 
     /**
@@ -131,7 +137,7 @@ class Pages extends \Phalcon\Mvc\Model
             'url' => 'url'
         ];
     }
-    
+
     public function setWidthCount($value)
     {
         $this->widthCount = $value;

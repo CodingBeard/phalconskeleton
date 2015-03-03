@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Emailchanges extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Emailchanges extends Model
 {
 
     /**
@@ -48,10 +54,10 @@ class Emailchanges extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->belongsTo("authtoken_id", "Authtokens", "id", ['alias' => 'Authtokens']);
-        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
+        $this->belongsTo("authtoken_id", "models\Authtokens", "id", ['alias' => 'Authtokens']);
+        $this->belongsTo("user_id", "models\Users", "id", ['alias' => 'Users']);
     }
 
     /**

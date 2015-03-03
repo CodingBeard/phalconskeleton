@@ -10,7 +10,12 @@
  * @license New BSD License
  */
 
-class Userroles extends \Phalcon\Mvc\Model
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Userroles extends Model
 {
 
     /**
@@ -37,10 +42,10 @@ class Userroles extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->belongsTo("role_id", "Roles", "id", ['alias' => 'Roles']);
-        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
+        $this->belongsTo("role_id", "models\Roles", "id", ['alias' => 'Roles']);
+        $this->belongsTo("user_id", "models\Users", "id", ['alias' => 'Users']);
     }
 
     /**

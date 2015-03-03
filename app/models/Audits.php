@@ -10,7 +10,11 @@
  * @license New BSD License
  */
 
-class Audits extends \Phalcon\Mvc\Model
+namespace models;
+
+use Phalcon\Mvc\Model;
+
+class Audits extends Model
 {
 
     /**
@@ -18,51 +22,50 @@ class Audits extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $id;
-     
+
     /**
      *
      * @var string
      */
     public $modelName;
-     
+
     /**
      *
      * @var integer
      */
     public $row_id;
-     
+
     /**
      *
      * @var integer
      */
     public $user_id;
-     
+
     /**
      *
      * @var string
      */
     public $ip;
-     
+
     /**
      *
      * @var string
      */
     public $type;
-     
+
     /**
      *
      * @var string
      */
     public $date;
-     
+
     /**
      * Initialize method for model.
      */
     public function initialize()
     {
-		$this->hasMany("id", "Auditfields", "audit_id", ['alias' => 'Auditfields']);
-		$this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
-
+        $this->hasMany("id", "models\Auditfields", "audit_id", ['alias' => 'Auditfields']);
+        $this->belongsTo("user_id", "models\Users", "id", ['alias' => 'Users']);
     }
 
     /**
@@ -71,12 +74,12 @@ class Audits extends \Phalcon\Mvc\Model
     public function columnMap()
     {
         return [
-            'id' => 'id', 
-            'modelName' => 'modelName', 
-            'row_id' => 'row_id', 
-            'user_id' => 'user_id', 
-            'ip' => 'ip', 
-            'type' => 'type', 
+            'id' => 'id',
+            'modelName' => 'modelName',
+            'row_id' => 'row_id',
+            'user_id' => 'user_id',
+            'ip' => 'ip',
+            'type' => 'type',
             'date' => 'date'
         ];
     }

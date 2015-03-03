@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Permissions extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Permissions extends Model
 {
 
     /**
@@ -72,7 +78,7 @@ class Permissions extends \Phalcon\Mvc\Model
             return false;
         }
 
-        $role = \Roles::findFirstById($role_id);
+        $role = Roles::findFirstById($role_id);
 
         if (!$role) {
             return false;
@@ -101,7 +107,7 @@ class Permissions extends \Phalcon\Mvc\Model
     /**
      * Check for the existance of a role which can access this page
      * @param int $role_id
-     * @return boolean|\Permissionroles
+     * @return boolean|Permissionroles
      */
     public function hasRole($role_id)
     {
@@ -127,12 +133,12 @@ class Permissions extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
         $this->hasManyToMany(
-        "id", "Permissionroles", "permission_id", "role_id", "Roles", "id"
+        "id", "models\Permissionroles", "permission_id", "role_id", "models\Roles", "id", ['alias' => 'Roles']
         );
-        $this->hasMany("id", "Permissionroles", "permission_id", ['alias' => 'Permissionroles']);
+        $this->hasMany("id", "models\Permissionroles", "permission_id", ['alias' => 'Permissionroles']);
     }
 
     /**

@@ -12,6 +12,10 @@
 
 namespace backend\controllers;
 
+use models\Pages;
+use models\Permissions;
+use models\Roles;
+
 class PermissionsController extends ControllerBase
 {
 
@@ -21,19 +25,19 @@ class PermissionsController extends ControllerBase
     public function indexAction()
     {
         $this->tag->appendTitle("Permissions");
-        $roles = \Roles::find(array('order' => 'level'));
-        
+        $roles = Roles::find(array('order' => 'level'));
+
         foreach ($roles as $role) {
             if ($role->id == 1)
                 continue;
             $tagValues[$role->name] = $role->id;
             $tagLabels[] = $role->name;
         }
-        
+
         $this->view->tagValues = $tagValues;
         $this->view->tagLabels = $tagLabels;
-        
-        $this->view->permissions = \Permissions::find(['order' => 'module, controller, action']);
+
+        $this->view->permissions = Permissions::find(['order' => 'module, controller, action']);
     }
 
     /**
@@ -47,7 +51,7 @@ class PermissionsController extends ControllerBase
             return;
         }
 
-        $permission = \Permissions::findFirstById($id);
+        $permission = Permissions::findFirstById($id);
         if (!$permission) {
             echo json_encode(['status' => 'NOK', 'message' => 'Permission does not exist']);
             return;
@@ -70,7 +74,7 @@ class PermissionsController extends ControllerBase
         $modules = $this->getControllersActions();
 
         $permissionsInDb = [];
-        foreach (\Permissions::find() as $permission) {
+        foreach (Permissions::find() as $permission) {
             $permissionsInDb[($permission->module . $permission->controller . $permission->action)] = $permission;
         }
 
@@ -82,7 +86,7 @@ class PermissionsController extends ControllerBase
                     $inFolders[($module . $controller . $action)] = ($module . $controller . $action);
 
                     if (!array_key_exists(($module . $controller . $action), $permissionsInDb)) {
-                        $permission = new \Permissions();
+                        $permission = new Permissions();
                         $permission->module = $module;
                         $permission->controller = $controller;
                         $permission->action = $action;
@@ -122,7 +126,7 @@ class PermissionsController extends ControllerBase
                 }
             }
         }
-        $standalonePages = \Pages::findByStandalone(1);
+        $standalonePages = Pages::findByStandalone(1);
         if ($standalonePages) {
             $router = clone $this->router;
             foreach ($standalonePages as $page) {

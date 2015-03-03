@@ -12,6 +12,14 @@
 
 namespace backend\controllers;
 
+use CodingBeard\Forms\Fields\Aceditor;
+use CodingBeard\Forms\Fields\Hidden;
+use CodingBeard\Forms\Fields\Switchbox;
+use CodingBeard\Forms\Fields\Textbox;
+use models\Contents;
+use models\Pages;
+use Phalcon\Tag\Select;
+
 class PagesController extends ControllerBase
 {
 
@@ -21,7 +29,7 @@ class PagesController extends ControllerBase
     public function indexAction()
     {
         $this->tag->appendTitle("Pages");
-        $this->view->pages = \Pages::find();
+        $this->view->pages = Pages::find();
     }
 
     /**
@@ -37,24 +45,24 @@ class PagesController extends ControllerBase
         $form->cancelHref = 'admin/pages';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'name',
             'label' => 'Name',
             'required' => true,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'title',
             'label' => 'Page Title',
             'required' => true,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Switchbox([
+        ->addField(new Switchbox([
             'key' => 'standalone',
             'label' => 'Standalone page',
             'toggleRequired' => ['url'],
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'url',
             'label' => 'Url',
             'required' => function ()
@@ -64,7 +72,7 @@ class PagesController extends ControllerBase
         ]));
 
         if ($form->validate()) {
-            $page = $form->addToModel(new \Pages());
+            $page = $form->addToModel(new Pages());
 
             if ($page->save()) {
                 $this->auth->redirect('admin/pages', 'success', 'Page created.');
@@ -80,7 +88,7 @@ class PagesController extends ControllerBase
     public function editAction($page_id)
     {
         $this->tag->appendTitle("Edit Page");
-        $page = \Pages::findFirstById($page_id);
+        $page = Pages::findFirstById($page_id);
         if (!$page) {
             $this->auth->redirect('admin/pages', 'error', 'Invalid Page ID.');
         }
@@ -90,27 +98,27 @@ class PagesController extends ControllerBase
         $form->cancelHref = 'admin/pages';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'name',
             'label' => 'Name',
             'required' => true,
             'default' => $page->name,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'title',
             'label' => 'Page Title',
             'required' => true,
             'default' => $page->title,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Switchbox([
+        ->addField(new Switchbox([
             'key' => 'standalone',
             'label' => 'Standalone page',
             'toggleRequired' => ['url'],
             'default' => $page->standalone,
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'url',
             'label' => 'Url',
             'default' => $page->url,
@@ -141,7 +149,7 @@ class PagesController extends ControllerBase
     {
         $this->view->getViewsDir();
         $this->tag->appendTitle("Manage Page");
-        $page = \Pages::findFirstById($page_id);
+        $page = Pages::findFirstById($page_id);
         if (!$page) {
             $this->auth->redirect('admin/pages', 'error', 'Invalid Page ID.');
         }
@@ -153,7 +161,7 @@ class PagesController extends ControllerBase
 
         $form
         ->addField(
-        new \Forms\Fields\Select([
+        new Select([
             'key' => 'offset',
             'label' => 'Left Offset',
             'class' => 'browser-default',
@@ -168,7 +176,7 @@ class PagesController extends ControllerBase
             'size' => 6
         ]))
         ->addField(
-        new \Forms\Fields\Select([
+        new Select([
             'key' => 'width',
             'label' => 'Width',
             'class' => 'browser-default',
@@ -182,10 +190,10 @@ class PagesController extends ControllerBase
             },
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Hidden(['key' => 'parent_id', 'default' => null]));
+        ->addField(new Hidden(['key' => 'parent_id', 'default' => null]));
 
         if ($form->validate()) {
-            $content = $form->addToModel(new \Contents());
+            $content = $form->addToModel(new Contents());
             $content->page_id = $page->id;
             $content->content = 'Edit Me';
             $content->save();
@@ -200,10 +208,10 @@ class PagesController extends ControllerBase
      */
     public function reorderAction($page_id)
     {
-        $page = \Pages::findFirstById($page_id);
+        $page = Pages::findFirstById($page_id);
         if ($page) {
             foreach ($this->request->getPost('ordering') as $order => $content_id) {
-                $content = \Contents::findFirstById($content_id);
+                $content = Contents::findFirstById($content_id);
                 if ($content) {
                     $content->ordering = $order;
                     $content->save();
@@ -218,9 +226,9 @@ class PagesController extends ControllerBase
      */
     public function movecontentAction($content_id, $parent_id)
     {
-        $content = \Contents::findFirstById($content_id);
+        $content = Contents::findFirstById($content_id);
         if ($content) {
-            $parent = \Contents::findFirstById($parent_id);
+            $parent = Contents::findFirstById($parent_id);
             if (!$parent) {
                 $parent_id = null;
             }
@@ -242,7 +250,7 @@ class PagesController extends ControllerBase
     public function contentAction($content_id)
     {
         $this->tag->appendTitle("Edit Content");
-        $content = \Contents::findFirstById($content_id);
+        $content = Contents::findFirstById($content_id);
         if (!$content) {
             $this->auth->redirect('admin/pages', 'error', 'Invalid Page ID.');
         }
@@ -254,7 +262,7 @@ class PagesController extends ControllerBase
         $form->cancelHref = 'admin/pages/manage/' . $content->pages->id;
 
         $form
-        ->addField(new \Forms\Fields\Aceditor([
+        ->addField(new Aceditor([
             'key' => 'content',
             'label' => 'Content',
             'default' => $content->content
@@ -276,7 +284,7 @@ class PagesController extends ControllerBase
      */
     public function deletecontentAction($content_id)
     {
-        $content = \Contents::findFirstById($content_id);
+        $content = Contents::findFirstById($content_id);
         if (!$content) {
             $this->auth->redirect('admin/pages', 'error', 'Invalid Page ID.');
         }

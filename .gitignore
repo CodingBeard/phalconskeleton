@@ -3,7 +3,8 @@
 logs/*.log
 .sass-cache
 vendor
-app/cache/*.php
+app/cache/*
+!app/cache/.gitignore
 app/config/config.php
 app/modules/frontend/assets/css/materialize*
 app/modules/frontend/views/content/*.volt

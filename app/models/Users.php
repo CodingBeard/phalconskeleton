@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Users extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Users extends Model
 {
 
     /**
@@ -109,10 +115,10 @@ class Users extends \Phalcon\Mvc\Model
         }
 
         if (is_int(abs($roleName))) {
-            $role = \Roles::findFirstById($roleName);
+            $role = Roles::findFirstById($roleName);
         }
         else {
-            $role = \Roles::findFirstByName($roleName);
+            $role = Roles::findFirstByName($roleName);
         }
 
         if (!$role) {
@@ -147,10 +153,10 @@ class Users extends \Phalcon\Mvc\Model
     public function hasRole($roleName)
     {
         if (is_int(abs($roleName))) {
-            $role = \Roles::findFirstById($roleName);
+            $role = Roles::findFirstById($roleName);
         }
         else {
-            $role = \Roles::findFirstByName($roleName);
+            $role = Roles::findFirstByName($roleName);
         }
 
         if (!$role) {
@@ -171,10 +177,10 @@ class Users extends \Phalcon\Mvc\Model
     public static function getUsersByRole($roleName)
     {
         if (is_int(abs($roleName))) {
-            $role = \Roles::findById($roleName);
+            $role = Roles::findById($roleName);
         }
         else {
-            $role = \Roles::findByName($roleName);
+            $role = Roles::findByName($roleName);
         }
 
         if (!$role) {
@@ -208,16 +214,16 @@ class Users extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
         $this->hasManyToMany(
-        "id", "Userroles", "user_id", "role_id", "Roles", "id", ['alias' => 'Roles']
+        "id", "models\Userroles", "user_id", "role_id", "models\Roles", "id", ['alias' => 'Roles']
         );
-        $this->hasMany("id", "Userroles", "user_id", ['alias' => 'Userroles']);
-        $this->hasMany("id", "Usertokens", "user_id", ['alias' => 'Usertokens']);
-        $this->hasMany("id", "Audits", "user_id", ['alias' => 'Audits']);
-        $this->hasMany("id", "Logins", "user_id", ['alias' => 'Logins']);
-        $this->hasMany("id", "Emailchanges", "user_id", ['alias' => 'Emailchanges']);
+        $this->hasMany("id", "models\Userroles", "user_id", ['alias' => 'Userroles']);
+        $this->hasMany("id", "models\Usertokens", "user_id", ['alias' => 'Usertokens']);
+        $this->hasMany("id", "models\Audits", "user_id", ['alias' => 'Audits']);
+        $this->hasMany("id", "models\Logins", "user_id", ['alias' => 'Logins']);
+        $this->hasMany("id", "models\Emailchanges", "user_id", ['alias' => 'Emailchanges']);
     }
 
     /**

@@ -12,6 +12,13 @@
 
 namespace backend\controllers;
 
+use CodingBeard\Forms\Fields\Radio;
+use CodingBeard\Forms\Fields\Sortable;
+use CodingBeard\Forms\Fields\Textbox;
+use models\Navbars;
+use models\Navlinks;
+use models\Permissions;
+
 class NavbarsController extends ControllerBase
 {
 
@@ -21,7 +28,7 @@ class NavbarsController extends ControllerBase
     public function indexAction()
     {
         $this->tag->appendTitle("Navigation manager");
-        $this->view->navbars = \Navbars::find();
+        $this->view->navbars = Navbars::find();
     }
 
     /**
@@ -37,14 +44,14 @@ class NavbarsController extends ControllerBase
         $form->cancelHref = 'admin/navbars';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'name',
             'label' => 'Name',
             'required' => true,
         ]));
 
         if ($form->validate()) {
-            $role = $form->addToModel(new \Navbars());
+            $role = $form->addToModel(new Navbars());
             if ($role->save()) {
                 $this->auth->redirect('admin/navbars', 'success', 'Navbar Created.');
             }
@@ -59,7 +66,7 @@ class NavbarsController extends ControllerBase
     public function editAction($navbar_id)
     {
         $this->tag->appendTitle("Edit Navbar");
-        $navbar = \Navbars::findFirstById($navbar_id);
+        $navbar = Navbars::findFirstById($navbar_id);
         if (!$navbar) {
             $this->auth->redirect('admin/navbars', 'error', 'Invalid Navbar ID.');
         }
@@ -70,7 +77,7 @@ class NavbarsController extends ControllerBase
         $form->cancelHref = 'admin/navbars';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'name',
             'label' => 'Name',
             'required' => true,
@@ -92,7 +99,7 @@ class NavbarsController extends ControllerBase
      */
     public function manageAction($navbar_id)
     {
-        $navbar = \Navbars::findFirstById($navbar_id);
+        $navbar = Navbars::findFirstById($navbar_id);
 
         if (!$navbar) {
             $this->auth->redirect('admin/navbars', 'error', 'Invalid navbar ID.');
@@ -106,7 +113,7 @@ class NavbarsController extends ControllerBase
         $form->cancelHref = 'admin/navbars';
 
         $form
-        ->addField(new \Forms\Fields\Sortable([
+        ->addField(new Sortable([
             'key' => 'links',
             'size' => 12,
             'headers' => ['Level', 'Name', 'Link'],
@@ -116,25 +123,25 @@ class NavbarsController extends ControllerBase
                     $options = [];
                     foreach ($navbar->navlinks as $navlink) {
                         $options[] = [
-                            new \Forms\Fields\Radio(['key' => 'level', 'inline' => true, 'options' => [
+                            new Radio(['key' => 'level', 'inline' => true, 'options' => [
                                     ['value' => '0', 'default' => is_null($navlink->parent_id)],
                                     ['value' => '1', 'default' => !is_null($navlink->parent_id)],
                                     ['value' => '2', 'default' => !is_null($navlink->parent->parent_id)],
                                 ]]),
-                            new \Forms\Fields\Textbox(['key' => 'label', 'required' => true, 'default' => $navlink->label]),
-                            new \Forms\Fields\Textbox(['key' => 'link', 'required' => true, 'default' => $navlink->link]),
+                            new Textbox(['key' => 'label', 'required' => true, 'default' => $navlink->label]),
+                            new Textbox(['key' => 'link', 'required' => true, 'default' => $navlink->link]),
                         ];
                     }
                     return $options;
                 }
                 return [[
-                        new \Forms\Fields\Radio(['key' => 'level', 'inline' => true, 'options' => [
+                        new Radio(['key' => 'level', 'inline' => true, 'options' => [
                                 ['value' => '0', 'default' => true],
                                 ['value' => '1', 'default' => false],
                                 ['value' => '2', 'default' => false],
                             ]]),
-                        new \Forms\Fields\Textbox(['key' => 'label', 'required' => true]),
-                        new \Forms\Fields\Textbox(['key' => 'link', 'required' => true]),
+                        new Textbox(['key' => 'label', 'required' => true]),
+                        new Textbox(['key' => 'link', 'required' => true]),
                 ]];
             }
         ]));
@@ -147,7 +154,7 @@ class NavbarsController extends ControllerBase
                     if ($link['link'][0] == '/') {
                         $link['link'] = substr($link['link'], 1);
                     }
-                    $navlink = new \Navlinks();
+                    $navlink = new Navlinks();
                     $navlink->level = $link['level'];
                     $navlink->label = $link['label'];
                     $navlink->link = $link['link'];
@@ -173,7 +180,7 @@ class NavbarsController extends ControllerBase
                         foreach ([$router->getModuleName(), $router->getControllerName(), $router->getActionName()] as $value) {
                             $bind[] = strtolower(str_replace('-', '', $value));
                         }
-                        $permission = \Permissions::findFirst([
+                        $permission = Permissions::findFirst([
                             'module = ?0 AND controller = ?1 AND action = ?2',
                             'bind' => $bind
                         ]);

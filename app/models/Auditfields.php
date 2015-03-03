@@ -10,7 +10,11 @@
  * @license New BSD License
  */
 
-class Auditfields extends \Phalcon\Mvc\Model
+namespace models;
+
+use Phalcon\Mvc\Model;
+
+class Auditfields extends Model
 {
 
     /**
@@ -18,38 +22,37 @@ class Auditfields extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $id;
-     
+
     /**
      *
      * @var integer
      */
     public $audit_id;
-     
+
     /**
      *
      * @var string
      */
     public $fieldName;
-     
+
     /**
      *
      * @var string
      */
     public $oldValue;
-     
+
     /**
      *
      * @var string
      */
     public $newValue;
-     
+
     /**
      * Initialize method for model.
      */
     public function initialize()
     {
-		$this->belongsTo("audit_id", "Audits", "id", ['alias' => 'Audits']);
-
+        $this->belongsTo("audit_id", "models\Audits", "id", ['alias' => 'Audits']);
     }
 
     /**
@@ -58,10 +61,10 @@ class Auditfields extends \Phalcon\Mvc\Model
     public function columnMap()
     {
         return [
-            'id' => 'id', 
-            'audit_id' => 'audit_id', 
-            'fieldName' => 'fieldName', 
-            'oldValue' => 'oldValue', 
+            'id' => 'id',
+            'audit_id' => 'audit_id',
+            'fieldName' => 'fieldName',
+            'oldValue' => 'oldValue',
             'newValue' => 'newValue'
         ];
     }

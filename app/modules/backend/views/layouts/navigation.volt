@@ -10,26 +10,19 @@
 	{# Header sub nav (level 3) #}
 	{% for navlink in _backendnav.getNavlinks('level = 1') %}
 		{% if navlink.inUrl(_SERVER['REQUEST_URI']) and navlink.children is iterable %}
-			{% set active = '' %}
-			{% if navlink.isUrl(_SERVER['REQUEST_URI']) %}
-				{% set active = 'active' %}
-			{% endif %}
-			<li class="{{ active }}">
-			  <a class="{{ active }}" href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
+			<li>
+			  <a href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
 			</li>
 			{% for child in navlink.children %}
-				{% set active = '' %}
-				{% if child.inUrl(_SERVER['REQUEST_URI']) %}
-					{% set active = 'active' %}
-				{% endif %}
-				<li class="{{ active }}">
-				  <a class="{{ active }}" href="{{ url(child.link) }}">{{ child.label }}</a>
+				<li>
+				  <a href="{{ url(child.link) }}">{{ child.label }}</a>
 				</li>
 			{% endfor %}
 			{% break %}
 		{% endif %}
 	{% endfor %}
   </ul>
+  {% cache "backend_navbar" 3600 %}
   <div class="container">
 	{# Replace (level 3) nav with logo/name on mobile #}
 	<div class="hide-on-large-only">
@@ -50,26 +43,18 @@
 	  <div class="hide-on-med-and-down">
 		{% if _backendnav.id %}
 			{% for navlink in _backendnav.getNavlinks('level = 0') %}
-				{% set active = '' %}
 				{% if navlink.children is iterable %}
 					{% for child in navlink.children %}
-						{% if child.inUrl(_SERVER['REQUEST_URI']) %}
-							{% set active = 'active' %}
-						{% endif %}
 					{% endfor %}
 					<li class="no-padding">
 					  <ul class="collapsible">
-						<li class="bold {{ active }}">
-						  <a class="collapsible-header {{ active }}" data-activates="collapse1">{{ navlink.label }}</a>
+						<li class="bold">
+						  <a class="collapsible-header" data-activates="collapse1">{{ navlink.label }}</a>
 						  <div id="collapse1" class="collapsible-body">
 							<ul>
 							  {% for child in navlink.children %}
-								  {% set active = '' %}
-								  {% if child.inUrl(_SERVER['REQUEST_URI']) %}
-									  {% set active = 'active' %}
-								  {% endif %}
-								  <li class="{{ active }}">
-									<a class="{{ active }}" href="{{ url(child.link) }}">{{ child.label }}</a>
+								  <li>
+									<a href="{{ url(child.link) }}">{{ child.label }}</a>
 								  </li>
 							  {% endfor %}
 							</ul>
@@ -78,11 +63,8 @@
 					  </ul>
 					</li>
 				{% else %}
-					{% if navlink.inUrl(_SERVER['REQUEST_URI']) %}
-						{% set active = 'active' %}
-					{% endif %}
-					<li class="bold {{ active }}">
-					  <a class="{{ active }}" href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
+					<li class="bold">
+					  <a href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
 					</li>
 				{% endif %}
 			{% endfor %}
@@ -94,27 +76,16 @@
 			  {% if navlink.children is iterable %}
 				  {% for child in navlink.children %}
 					  {% if child.children is iterable %}
-						  {% if child.inUrl(_SERVER['REQUEST_URI']) %}
-							  {% set active = 'active' %}
-						  {% endif %}
 						  <li class="no-padding">
 							<ul class="collapsible">
-							  <li class="bold {{ active }}">
-								<a class="collapsible-header {{ active }}" data-activates="collapse2">{{ child.label }}</a>
+							  <li class="bold">
+								<a class="collapsible-header" data-activates="collapse2">{{ child.label }}</a>
 								<div id="collapse2" class="collapsible-body">
 								  <ul>
-									{% set active = '' %}
-									{% if child.isUrl(_SERVER['REQUEST_URI']) %}
-										{% set active = 'active' %}
-									{% endif %}
-									<li class="{{ active }}">
-									  <a class="{{ active }}" href="{{ url(child.link) }}">Index</a>
+									<li>
+									  <a href="{{ url(child.link) }}">Index</a>
 									</li>
 									{% for subchild in child.children %}
-										{% set active = '' %}
-										{% if subchild.inUrl(_SERVER['REQUEST_URI']) %}
-											{% set active = 'active' %}
-										{% endif %}
 										<li class="{{ active }}">
 										  <a class="{{ active }}" href="{{ url(subchild.link) }}">{{ subchild.label }}</a>
 										</li>
@@ -125,21 +96,14 @@
 							</ul>
 						  </li>
 					  {% else %}
-						  {% set active = '' %}
-						  {% if child.inUrl(_SERVER['REQUEST_URI']) %}
-							  {% set active = 'active' %}
-						  {% endif %}
-						  <li class="{{ active }}">
-							<a class="{{ active }}" href="{{ url(child.link) }}">{{ child.label }}</a>
+						  <li>
+							<a href="{{ url(child.link) }}">{{ child.label }}</a>
 						  </li>
 					  {% endif %}
 				  {% endfor %}
 			  {% else %}
-				  {% if navlink.inUrl(_SERVER['REQUEST_URI']) %}
-					  {% set active = 'active' %}
-				  {% endif %}
-				  <li class="bold {{ active }}">
-					<a class="{{ active }}" href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
+				  <li class="bold">
+					<a href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
 				  </li>
 			  {% endif %}
 		  {% endfor %}
@@ -178,3 +142,4 @@
 	<a href="#" data-activates="nav-mobile" class="button-collapse white-text"><i class="mdi-navigation-menu"></i></a>
   </div>
 </nav>
+{% endcache %}

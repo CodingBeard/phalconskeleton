@@ -12,6 +12,8 @@
 
 namespace frontend\controllers;
 
+use models\Pages;
+
 class PagecontentsController extends ControllerBase
 {
 
@@ -21,7 +23,7 @@ class PagecontentsController extends ControllerBase
      */
     public function viewAction($page_id)
     {
-        $page = \Pages::findFirstById($page_id);
+        $page = Pages::findFirstById($page_id);
         if ($page) {
             $this->tag->appendTitle($page->title);
             $this->view->page = $page;

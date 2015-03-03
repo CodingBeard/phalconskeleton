@@ -10,7 +10,12 @@
  * @license New BSD License
  */
 
-class Roles extends \Phalcon\Mvc\Model
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Roles extends Model
 {
 
     /**
@@ -18,13 +23,13 @@ class Roles extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $id;
-     
+
     /**
      *
      * @var string
      */
     public $name;
-     
+
     /**
      *
      * @var string
@@ -36,33 +41,23 @@ class Roles extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $level;
-     
+
     /**
      * Initialize method for model.
      */
     public function initialize()
     {
-		$this->keepSnapshots(true);
-		$this->addBehavior(new \Blameable());
+        $this->keepSnapshots(true);
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
         $this->hasManyToMany(
-            "id",
-            "Userroles",
-            "role_id", "user_id",
-            "Users",
-            "id",
-            ['alias' => 'users']
+        "id", "models\Userroles", "role_id", "user_id", "models\Users", "id", ['alias' => 'Users']
         );
-        $this->hasMany("id", "Userroles", "role_id", ['alias' => 'Userroles']);
+        $this->hasMany("id", "models\Userroles", "role_id", ['alias' => 'Userroles']);
         $this->hasManyToMany(
-            "id",
-            "Permissionroles",
-            "role_id", "permission_id",
-            "Permissions",
-            "id"
+        "id", "models\Permissionroles", "role_id", "permission_id", "models\Permissions", "id", ['alias' => 'Permissions']
         );
-        $this->hasMany("id", "Permissionroles", "role_id", ['alias' => 'Permissionroles']);
-
+        $this->hasMany("id", "models\Permissionroles", "role_id", ['alias' => 'Permissionroles']);
     }
 
     /**
@@ -71,11 +66,11 @@ class Roles extends \Phalcon\Mvc\Model
     public function columnMap()
     {
         return [
-            'id' => 'id', 
-            'name' => 'name', 
+            'id' => 'id',
+            'name' => 'name',
             'description' => 'description',
-            'image_id' => 'image_id', 
-            'level' => 'level', 
+            'image_id' => 'image_id',
+            'level' => 'level',
         ];
     }
 

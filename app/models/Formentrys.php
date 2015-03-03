@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Formentrys extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Formentrys extends Model
 {
 
     /**
@@ -73,11 +79,11 @@ class Formentrys extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany("id", "Formdatas", "formentry_id", ['alias' => 'Formdatas']);
-        $this->belongsTo("form_id", "Qukforms", "id", ['alias' => 'Qukforms']);
-        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
+        $this->hasMany("id", "Formdatas", "models\formentry_id", ['alias' => 'Formdatas']);
+        $this->belongsTo("form_id", "models\Looseforms", "id", ['alias' => 'Looseforms']);
+        $this->belongsTo("user_id", "models\Users", "id", ['alias' => 'Users']);
     }
 
     /**

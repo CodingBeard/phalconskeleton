@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+
 /**
  * Bootstrap
  *
@@ -9,25 +11,28 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+use CodingBeard\ErrorHandler;
+use Phalcon\Loader;
+use Phalcon\Mvc\Application;
+
 try {
 
     $config = include __DIR__ . "/../app/config/config.php";
-    
+
     $routes = include __DIR__ . "/../app/config/routes.php";
 
-    $loader = new \Phalcon\Loader();
+    $loader = new Loader();
     $loader->registerDirs($config->loader->dirs->toArray());
     $loader->registerNamespaces($config->loader->namespaces->toArray());
     $loader->register();
-    
+
     include __DIR__ . "/../vendor/autoload.php";
-    
-    \ErrorHandler::registerShutdown($config->application->showErrors);
+
+    ErrorHandler::registerShutdown($config->application->showErrors);
 
     include __DIR__ . "/../app/config/services.php";
 
-    $application = new \Phalcon\Mvc\Application($di);
+    $application = new Application($di);
 
     $modules = [];
     foreach ($config->modules->files as $name => $path) {
@@ -39,6 +44,6 @@ try {
     $application->registerModules($modules);
 
     echo $application->handle()->getContent();
-} catch (\Exception $e) {
-    \ErrorHandler::handleException($e, $config->application->showErrors);
+} catch (Exception $e) {
+    ErrorHandler::handleException($e, $config->application->showErrors);
 }

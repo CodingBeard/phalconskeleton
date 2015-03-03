@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Looseforms extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Looseforms extends Model
 {
 
     /**
@@ -58,11 +64,11 @@ class Looseforms extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany("id", "Formentrys", "form_id", ['alias' => 'Entries']);
-        $this->hasMany("id", "Formfields", "form_id", ['alias' => 'Formfields']);
-        $this->belongsTo("user_id", "Users", "id", ['alias' => 'Users']);
+        $this->hasMany("id", "models\Formentrys", "form_id", ['alias' => 'Entries']);
+        $this->hasMany("id", "models\Formfields", "form_id", ['alias' => 'Formfields']);
+        $this->belongsTo("user_id", "models\Users", "id", ['alias' => 'Users']);
     }
 
     /**

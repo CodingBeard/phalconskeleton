@@ -12,6 +12,15 @@
 
 namespace frontend\controllers;
 
+use CodingBeard\Forms\Fields\Captcha;
+use CodingBeard\Forms\Fields\Checkbox;
+use CodingBeard\Forms\Fields\Dateselect;
+use CodingBeard\Forms\Fields\Password;
+use CodingBeard\Forms\Fields\Textbox;
+use models\Authtokens;
+use models\Emailchanges;
+use models\Users;
+
 class AccountController extends ControllerBase
 {
 
@@ -28,9 +37,9 @@ class AccountController extends ControllerBase
         $form->submitButton = 'Create';
 
         $form
-        ->addField(new \Forms\Fields\Textbox(['key' => 'firstName', 'label' => 'First Name', 'required' => true, 'size' => 6]))
-        ->addField(new \Forms\Fields\Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox(['key' => 'firstName', 'label' => 'First Name', 'required' => true, 'size' => 6]))
+        ->addField(new Textbox(['key' => 'lastName', 'label' => 'Last Name', 'required' => true, 'size' => 6]))
+        ->addField(new Textbox([
             'key' => 'email',
             'label' => 'Email',
             'required' => true,
@@ -38,7 +47,7 @@ class AccountController extends ControllerBase
             'repeat' => true,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Password([
+        ->addField(new Password([
             'key' => 'password',
             'label' => 'Password',
             'sublabel' => 'Minimum of 8 characters',
@@ -47,16 +56,16 @@ class AccountController extends ControllerBase
             'pattern' => '^.{8,1000}$',
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]))
-        ->addField(new \Forms\Fields\Checkbox([
+        ->addField(new Dateselect(['key' => 'DoB', 'label' => 'Date of birth', 'required' => true]))
+        ->addField(new Checkbox([
             'key' => 'tos',
             'label' => 'I have read and agree to the <a href="/site/terms">Terms</a>',
             'required' => true
         ]))
-        ->addField(new \Forms\Fields\Captcha());
+        ->addField(new Captcha());
 
         if ($form->validate()) {
-            $user = $form->addToModel(new \Users());
+            $user = $form->addToModel(new Users());
             $user->hashPass();
             $user->active = 1;
 
@@ -64,7 +73,7 @@ class AccountController extends ControllerBase
                 $user->addRole('Member');
                 $user->addRole('Unverified Email');
 
-                $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
+                $authtoken = Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
                 $token = $authtoken->string;
 
                 $this->queue->addJob(function () use ($user, $token)
@@ -89,7 +98,7 @@ class AccountController extends ControllerBase
             return $this->auth->redirect('', 'error', 'Token is missing.');
         }
 
-        if (!($authtoken = \Authtokens::checkToken('emailverification', $token))) {
+        if (!($authtoken = Authtokens::checkToken('emailverification', $token))) {
             sleep(1);
             return $this->auth->redirect('', 'error', 'That token is not valid.');
         }
@@ -111,7 +120,7 @@ class AccountController extends ControllerBase
         $this->tag->appendTitle("Reset Password");
 
         if ($token) {
-            if (($authtoken = \Authtokens::checkToken('passreset', $token))) {
+            if (($authtoken = Authtokens::checkToken('passreset', $token))) {
                 $this->auth->logUserIn($authtoken->users);
                 $this->session->set('reset-pass', true);
                 return $this->auth->redirect('account/change-pass', 'success', 'Please set a new password.');
@@ -123,18 +132,18 @@ class AccountController extends ControllerBase
         $form->cancelHref = '/';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'email',
             'label' => 'Email',
             'sublabel' => 'The address you registered with',
             'required' => true,
             'exists' => ['model' => '\Users', 'field' => 'email', 'message' => 'That account does not exists'],
         ]))
-        ->addField(new \Forms\Fields\Captcha());
+        ->addField(new Captcha());
 
         if ($form->validate()) {
-            $user = \Users::findFirstByEmail($this->request->getPost('email', 'trim'));
-            $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
+            $user = Users::findFirstByEmail($this->request->getPost('email', 'trim'));
+            $authtoken = Authtokens::newToken(['user_id' => $user->id, 'type' => 'passreset', 'unique' => true, 'expires' => 1]);
             $token = $authtoken->string;
 
             $this->queue->addJob(function ($that) use ($user, $token)
@@ -160,7 +169,7 @@ class AccountController extends ControllerBase
 
         if (!$this->session->has('reset-pass')) {
             $form
-            ->addField(new \Forms\Fields\Password([
+            ->addField(new Password([
                 'key' => 'oldpassword',
                 'label' => 'Old Password',
                 'required' => true,
@@ -168,7 +177,7 @@ class AccountController extends ControllerBase
         }
 
         $form
-        ->addField(new \Forms\Fields\Password([
+        ->addField(new Password([
             'key' => 'password',
             'label' => 'New Password',
             'sublabel' => 'Minimum of 8 characters',
@@ -213,12 +222,12 @@ class AccountController extends ControllerBase
         $form->cancelHref = 'account';
 
         $form
-        ->addField(new \Forms\Fields\Password([
+        ->addField(new Password([
             'key' => 'password',
             'label' => 'Current Password',
             'required' => true,
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'email',
             'label' => 'New Email',
             'required' => true,
@@ -234,10 +243,10 @@ class AccountController extends ControllerBase
                 return $this->auth->redirect('account/change-email', 'error', 'Incorrect password.');
             }
 
-            $authtoken = \Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailchangerevoke', 'unique' => true, 'expires' => 7]);
+            $authtoken = Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailchangerevoke', 'unique' => true, 'expires' => 7]);
             $token = $authtoken->string;
 
-            $change = new \Emailchanges();
+            $change = new Emailchanges();
             $change->user_id = $user->id;
             $change->authtoken_id = $authtoken->id;
             $change->date = date('Y-m-d H:i:s');
@@ -265,9 +274,9 @@ class AccountController extends ControllerBase
     public function revokeemailchangeAction($token = false)
     {
         if ($token) {
-            if (($authtoken = \Authtokens::checkToken('emailchangerevoke', $token))) {
+            if (($authtoken = Authtokens::checkToken('emailchangerevoke', $token))) {
                 $user = $authtoken->users;
-                $change = \Emailchanges::findFirstByAuthtoken_id($authtoken->id);
+                $change = Emailchanges::findFirstByAuthtoken_id($authtoken->id);
 
                 $user->email = $change->oldEmail;
                 $user->save();
@@ -291,21 +300,21 @@ class AccountController extends ControllerBase
         $form->cancelHref = 'account';
 
         $form
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'firstName',
             'label' => 'First Name',
             'required' => true,
             'default' => $this->auth->getUser()->firstName,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Textbox([
+        ->addField(new Textbox([
             'key' => 'lastName',
             'label' => 'Last Name',
             'required' => true,
             'default' => $this->auth->getUser()->lastName,
             'size' => 6
         ]))
-        ->addField(new \Forms\Fields\Dateselect([
+        ->addField(new Dateselect([
             'key' => 'DoB',
             'label' => 'Date of birth',
             'required' => true,

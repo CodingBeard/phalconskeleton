@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Navlinks extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Navlinks extends Model
 {
 
     /**
@@ -84,11 +90,11 @@ class Navlinks extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Navlinks', 'parent_id', ['alias' => 'Children']);
-        $this->belongsTo('navbar_id', 'Navbars', 'id', ['alias' => 'Navbars']);
-        $this->belongsTo('parent_id', 'Navlinks', 'id', ['alias' => 'Parent']);
+        $this->hasMany('id', 'models\Navlinks', 'parent_id', ['alias' => 'Children']);
+        $this->belongsTo('navbar_id', 'models\Navbars', 'id', ['alias' => 'Navbars']);
+        $this->belongsTo('parent_id', 'models\Navlinks', 'id', ['alias' => 'Parent']);
     }
 
     /**

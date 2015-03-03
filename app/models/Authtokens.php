@@ -9,7 +9,14 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Authtokens extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+use Phalcon\Text;
+
+class Authtokens extends Model
 {
 
     /**
@@ -64,7 +71,7 @@ class Authtokens extends \Phalcon\Mvc\Model
      * Create an authtoken object and return it
      * $properties = ['user_id' => 1, 'type' => '', 'unique' => false, 'expires' => 1]
      * @param array $properties
-     * @return \Authtokens
+     * @return Authtokens
      */
     public static function newToken($properties)
     {
@@ -72,7 +79,7 @@ class Authtokens extends \Phalcon\Mvc\Model
             $properties['expires'] = 1;
 
         if ($properties['unique']) {
-            $tokens = \Authtokens::find([
+            $tokens = Authtokens::find([
                 'user_id = :a: AND type = :b:',
                 'bind' => ['a' => $properties['user_id'], 'b' => $properties['type']]
             ]);
@@ -84,9 +91,9 @@ class Authtokens extends \Phalcon\Mvc\Model
             }
         }
 
-        $string = \Phalcon\Text::random(\Phalcon\Text::RANDOM_ALNUM, 20);
+        $string = Text::random(Text::RANDOM_ALNUM, 20);
 
-        $authtoken = new \Authtokens();
+        $authtoken = new Authtokens();
         $authtoken->user_id = $properties['user_id'];
         $authtoken->issued = date('Y-m-d H:i:s');
         $authtoken->expires = date('Y-m-d H:i:s', time() + (60 * 60 * 24 * $properties['expires']));
@@ -122,7 +129,7 @@ class Authtokens extends \Phalcon\Mvc\Model
      */
     public static function checkToken($type, $token, $user_id = false)
     {
-        $authtoken = \Authtokens::findFirst([
+        $authtoken = Authtokens::findFirst([
             'type = :a: AND tokenKey = :b: AND expires >= :c:',
             'bind' => [
                 'a' => $type,
@@ -152,10 +159,10 @@ class Authtokens extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Emailchanges', 'authtoken_id', ['alias' => 'Emailchanges']);
-        $this->belongsTo('user_id', 'Users', 'id', ['alias' => 'Users']);
+        $this->hasMany('id', 'models\Emailchanges', 'authtoken_id', ['alias' => 'Emailchanges']);
+        $this->belongsTo('user_id', 'models\Users', 'id', ['alias' => 'Users']);
     }
 
     /**

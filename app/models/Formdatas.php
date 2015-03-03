@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Formdatas extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Formdatas extends Model
 {
 
     /**
@@ -42,10 +48,10 @@ class Formdatas extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->belongsTo("field_id", "Formfields", "id", ['alias' => 'Formfields']);
-        $this->belongsTo("formentry_id", "Formentrys", "id", ['alias' => 'Formentrys']);
+        $this->belongsTo("field_id", "models\Formfields", "id", ['alias' => 'Formfields']);
+        $this->belongsTo("formentry_id", "models\Formentrys", "id", ['alias' => 'Formentrys']);
     }
 
     /**

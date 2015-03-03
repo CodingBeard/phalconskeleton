@@ -9,7 +9,13 @@
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-class Contents extends \Phalcon\Mvc\Model
+
+namespace models;
+
+use CodingBeard\Blameable;
+use Phalcon\Mvc\Model;
+
+class Contents extends Model
 {
 
     /**
@@ -78,11 +84,11 @@ class Contents extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->keepSnapshots(true);
-        $this->addBehavior(new \Blameable());
+        $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
-        $this->hasMany('id', 'Contents', 'parent_id', ['alias' => 'Children']);
-        $this->belongsTo('parent_id', 'Contents', 'id', ['alias' => 'Parent']);
-        $this->belongsTo('page_id', 'Pages', 'id', ['alias' => 'Pages']);
+        $this->hasMany('id', 'models\Contents', 'parent_id', ['alias' => 'Children']);
+        $this->belongsTo('parent_id', 'models\Contents', 'id', ['alias' => 'Parent']);
+        $this->belongsTo('page_id', 'models\Pages', 'id', ['alias' => 'Pages']);
     }
 
     /**

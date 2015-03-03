@@ -12,6 +12,7 @@
 
 namespace frontend\controllers;
 
+use models\Navbars;
 use Phalcon\Mvc\Controller;
 
 class ControllerBase extends Controller
@@ -23,7 +24,7 @@ class ControllerBase extends Controller
     public function initialize()
     {
         $this->tag->setTitle($this->config->application->name . ' - ');
-        $this->view->navbarObject = new \Navbars();
+        $this->view->navbarObject = new Navbars();
     }
 
 }
