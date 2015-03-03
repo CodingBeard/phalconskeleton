@@ -139,7 +139,7 @@ class FormBuilder extends Component
 
     /**
      * Add a field to the form
-     * @param CosingBeard\Forms\Field $field
+     * @param $field
      * @return FormBuilder $this
      */
     public function addField($field)

@@ -41,7 +41,7 @@
 					  <td>
 						<form class="update-permission" method="POST" action="/admin/permissions/set/{{ permission.id }}">
 						  <ul class="roles">
-							{% for role in permission.getRoles(['order': 'Roles.id']) %}
+							{% for role in permission.getRoles(['order': 'models\Roles.id']) %}
 								<li>{{ role.name }}</li>
 								{% endfor %}
 						  </ul>

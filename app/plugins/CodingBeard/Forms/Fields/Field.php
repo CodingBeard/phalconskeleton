@@ -68,7 +68,7 @@ class Field extends FormBuilder
     public function __construct($properties)
     {
         foreach ($properties as $key => $value) {
-            if (is_callable($value) && $value instanceof Closure) {
+            if (is_callable($value) && $value instanceof \Closure) {
                 $value = $value();
             }
             $this->$key = $value;

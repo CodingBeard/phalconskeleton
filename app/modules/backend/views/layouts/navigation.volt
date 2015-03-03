@@ -11,7 +11,7 @@
 	{% for navlink in _backendnav.getNavlinks('level = 1') %}
 		{% if navlink.inUrl(_SERVER['REQUEST_URI']) and navlink.children is iterable %}
 			<li>
-			  <a href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
+			  <a data-group="{{ navlink.parent.id }}" data-parent="{{ navlink.id }}" href="{{ url(navlink.link) }}">{{ navlink.label }}</a>
 			</li>
 			{% for child in navlink.children %}
 				<li>
@@ -44,16 +44,14 @@
 		{% if _backendnav.id %}
 			{% for navlink in _backendnav.getNavlinks('level = 0') %}
 				{% if navlink.children is iterable %}
-					{% for child in navlink.children %}
-					{% endfor %}
 					<li class="no-padding">
 					  <ul class="collapsible">
 						<li class="bold">
-						  <a class="collapsible-header" data-activates="collapse1">{{ navlink.label }}</a>
+						  <a data-id="{{ navlink.id }}" class="collapsible-header" data-activates="collapse1">{{ navlink.label }}</a>
 						  <div id="collapse1" class="collapsible-body">
 							<ul>
 							  {% for child in navlink.children %}
-								  <li>
+								  <li data-id="{{ child.id }}">
 									<a href="{{ url(child.link) }}">{{ child.label }}</a>
 								  </li>
 							  {% endfor %}
@@ -72,7 +70,6 @@
 		{# Mobile nav #}
 		<div class="hide-on-med-and-up">
 		  {% for navlink in _backendnav.getNavlinks('level = 0') %}
-			  {% set active = '' %}
 			  {% if navlink.children is iterable %}
 				  {% for child in navlink.children %}
 					  {% if child.children is iterable %}
@@ -86,8 +83,8 @@
 									  <a href="{{ url(child.link) }}">Index</a>
 									</li>
 									{% for subchild in child.children %}
-										<li class="{{ active }}">
-										  <a class="{{ active }}" href="{{ url(subchild.link) }}">{{ subchild.label }}</a>
+										<li>
+										  <a href="{{ url(subchild.link) }}">{{ subchild.label }}</a>
 										</li>
 									{% endfor %}
 								  </ul>

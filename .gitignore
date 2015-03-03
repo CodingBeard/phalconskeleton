@@ -1,3 +1,4 @@
+.idea
 *.sql
 !app/config/initialize.sql
 logs/*.log

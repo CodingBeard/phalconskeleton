@@ -2,8 +2,8 @@
 
 /**
  * Users
- * 
- * @category 
+ *
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -86,17 +86,21 @@ class Users extends Model
         }
         if ($this->roles->count()) {
             foreach ($this->roles as $role) {
-                if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
-                    $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
-                    continue;
-                }
                 if ($int) {
                     if (!in_array($role->id, $roleNames)) {
+                        if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
+                            $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
+                            continue;
+                        }
                         $this->removeRole($role->id);
                     }
                 }
                 else {
                     if (!in_array($role->name, $roleNames)) {
+                        if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
+                            $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
+                            continue;
+                        }
                         $this->removeRole($role->name);
                     }
                 }
@@ -172,7 +176,7 @@ class Users extends Model
     /**
      * Returns all users with a specific role
      * @param string $roleName
-     * @return 
+     * @return
      */
     public static function getUsersByRole($roleName)
     {
@@ -217,7 +221,7 @@ class Users extends Model
         $this->addBehavior(new Blameable());
         $this->useDynamicUpdate(true);
         $this->hasManyToMany(
-        "id", "models\Userroles", "user_id", "role_id", "models\Roles", "id", ['alias' => 'Roles']
+            "id", "models\Userroles", "user_id", "role_id", "models\Roles", "id", ['alias' => 'Roles']
         );
         $this->hasMany("id", "models\Userroles", "user_id", ['alias' => 'Userroles']);
         $this->hasMany("id", "models\Usertokens", "user_id", ['alias' => 'Usertokens']);

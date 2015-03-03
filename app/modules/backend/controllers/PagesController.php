@@ -14,11 +14,11 @@ namespace backend\controllers;
 
 use CodingBeard\Forms\Fields\Aceditor;
 use CodingBeard\Forms\Fields\Hidden;
+use CodingBeard\Forms\Fields\Select;
 use CodingBeard\Forms\Fields\Switchbox;
 use CodingBeard\Forms\Fields\Textbox;
 use models\Contents;
 use models\Pages;
-use Phalcon\Tag\Select;
 
 class PagesController extends ControllerBase
 {
