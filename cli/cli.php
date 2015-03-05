@@ -18,9 +18,11 @@ use Phalcon\Mvc\View;
 try {
     $config = include __DIR__ . "/../app/config/config.php";
 
+    $dirs = $config->loader->dirs->toArray();
+    $dirs[] = __DIR__ . '/tasks/';
+
     $loader = new \Phalcon\Loader();
-    $config->loader->dirs[] = __DIR__ . '/tasks/';
-    $loader->registerDirs($config->loader->dirs->toArray());
+    $loader->registerDirs($dirs);
     $loader->registerNamespaces($config->loader->namespaces->toArray());
     $loader->register();
 
@@ -49,12 +51,12 @@ try {
             'host' => $config->beanstalk->host
         ));
     }, true);
-    $volt = function ($view, $di) use ($config, $module) {
+    $volt = function ($view, $di) use ($config) {
         $volt = new Volt($view, $di);
         $volt->setOptions([
             'compiledPath' => $config->application->cacheDir,
             'compiledSeparator' => '.',
-            'compileAlways' => $config->view[$module]->alwaysCompile,
+            'compileAlways' => true,
             'prefix' => 'cache'
         ]);
         $compiler = $volt->getCompiler();
@@ -68,9 +70,8 @@ try {
         return $volt;
     };
 
-    $view = function () use ($volt, $config, $module) {
+    $view = function () use ($volt, $config) {
         $view = new View();
-        $view->setViewsDir($config->view[$module]->viewsDir);
         $view->registerEngines([
             '.volt' => $volt,
             '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
