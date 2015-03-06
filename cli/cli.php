@@ -9,11 +9,15 @@
  * @copyright (c) 2014, Tim Marshall
  * @license New BSD License
  */
+
 use CodingBeard\BeanstalkWithSerialize;
 use CodingBeard\Emails\SiteEmails;
-use Phalcon\DI\FactoryDefault\CLI as CliDI,
-    Phalcon\CLI\Console as ConsoleApp;
+use Phalcon\Cli\Console;
+use Phalcon\Db\Adapter\Pdo\Mysql;
+use Phalcon\Di\FactoryDefault\Cli;
 use Phalcon\Mvc\View;
+use Phalcon\Mvc\View\Engine\Volt;
+use Tartan\Mandrill;
 
 try {
     $config = include __DIR__ . "/../app/config/config.php";
@@ -28,11 +32,11 @@ try {
 
     include __DIR__ . "/../vendor/autoload.php";
 
-    $di = new CliDI();
+    $di = new Cli();
 
     $di->set('config', $config);
     $di->set('db', function () use ($config) {
-        return new Phalcon\Db\Adapter\Pdo\Mysql([
+        return new Mysql([
             'adapter' => $config->database->adapter,
             'host' => $config->database->host,
             'username' => $config->database->username,
@@ -41,7 +45,7 @@ try {
         ]);
     });
     $di->set('mandrill', function () use ($config) {
-        return new \Tartan\Mandrill($config->mail->mandrillKey);
+        return new Mandrill($config->mail->mandrillKey);
     });
     $di->set('emails', function () {
         return new SiteEmails();
@@ -100,7 +104,7 @@ try {
     /**
      * Create a console application
      */
-    $console = new ConsoleApp();
+    $console = new Console();
     $di->setShared('console', $console);
     $console->setDI($di);
 

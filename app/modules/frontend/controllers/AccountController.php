@@ -43,7 +43,7 @@ class AccountController extends ControllerBase
                 'key' => 'email',
                 'label' => 'Email',
                 'required' => true,
-                'unique' => ['model' => '\Users', 'field' => 'email', 'message' => 'That email is already registered'],
+                'unique' => ['model' => '\models\Users', 'field' => 'email', 'message' => 'That email is already registered'],
                 'repeat' => true,
                 'size' => 6
             ]))
@@ -76,11 +76,11 @@ class AccountController extends ControllerBase
                 $authtoken = Authtokens::newToken(['user_id' => $user->id, 'type' => 'emailverification']);
                 $token = $authtoken->string;
 
-                $this->queue->addJob(function () use ($user, $token) {
-                    $this->emails->emailVerification($user, $token);
+                $this->queue->addJob(function ($that) use ($user, $token) {
+                    $that->emails->emailVerification($user, $token);
                 });
 
-                return $this->auth->redirect('account/login', 'success', 'Account created successfully, please login.');
+                return $this->auth->redirect('login', 'success', 'Account created successfully, please login.');
             }
         }
         $form->render();

@@ -481,7 +481,8 @@ INSERT INTO `navlinks` VALUES
 (24,7,0,'Logout','logout',NULL),
 (25,3,0,'Content','#',NULL),
 (26,3,1,'Pages','admin/pages',25),
-(27,3,2,'New','admin/pages/new',26);
+  (27, 3, 2, 'New', 'admin/pages/new', 26),
+  (28, 3, 2, 'Clear Cache', 'admin/cache/clear', 7);
 
 
 INSERT INTO `pages` VALUES
