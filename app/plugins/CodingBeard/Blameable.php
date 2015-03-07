@@ -16,6 +16,7 @@ namespace CodingBeard;
 
 use models\Auditfields;
 use models\Audits;
+use models\Users;
 use Phalcon\Mvc\Model\Behavior;
 use Phalcon\Mvc\Model\BehaviorInterface;
 use Phalcon\Mvc\ModelInterface;
@@ -161,6 +162,125 @@ class Blameable extends Behavior implements BehaviorInterface
                 $children->delete();
             }
         }
+    }
+
+    /**
+     * Catcher for the Blameable functions all models will inherit
+     * @param ModelInterface $model
+     * @param $method
+     * @param null $arguments
+     * @return bool|Users|string
+     */
+    public function missingMethod(ModelInterface $model, $method, $arguments = null)
+    {
+        switch ($method) {
+            case "_createdAt":
+                return $this->getCreatedAt($model);
+            case "_modifiedAt":
+                return $this->getModifiedAt($model);
+            case "_creator":
+                return $this->getCreator($model);
+            case "_modifier":
+                return $this->getModifier($model);
+            case "_history":
+                return $this->getHistory($model);
+        }
+    }
+
+    /**
+     * Get creation date
+     * @param ModelInterface $model
+     * @return bool|string
+     */
+    public function getCreatedAt(ModelInterface $model)
+    {
+        $created = Audits::findFirst([
+            'modelName = ?0 AND row_id = ?1 AND type = "C"',
+            'bind' => [get_class($model), $model->id]
+        ]);
+        if ($created) {
+            return $created->date;
+        }
+        return false;
+    }
+
+    /**
+     * Get last modification date
+     * @param ModelInterface $model
+     * @return bool|string
+     */
+    public function getModifiedAt(ModelInterface $model)
+    {
+        $modified = Audits::findFirst([
+            'modelName = ?0 AND row_id = ?1 AND type = "U"',
+            'bind' => [get_class($model), $model->id],
+            'order' => 'date DESC'
+        ]);
+        if ($modified) {
+            return $modified->date;
+        }
+        return $this->getCreated($model);
+    }
+
+    /**
+     * Get the user which created the row
+     * @param ModelInterface $model
+     * @return bool|Users
+     */
+    public function getCreator(ModelInterface $model)
+    {
+        $created = Audits::findFirst([
+            'modelName = ?0 AND row_id = ?1 AND type = "C"',
+            'bind' => [get_class($model), $model->id]
+        ]);
+        if ($created) {
+            $user = $created->users;
+            if ($user) {
+                return $user;
+            }
+            return new Users();
+        }
+        return false;
+    }
+
+    /**
+     * Get the last user to modify the row
+     * @param ModelInterface $model
+     * @return bool|Users
+     */
+    public function getModifier(ModelInterface $model)
+    {
+        $modified = Audits::findFirst([
+            'modelName = ?0 AND row_id = ?1 AND type = "U"',
+            'bind' => [get_class($model), $model->id],
+            'order' => 'date DESC'
+        ]);
+        if ($modified) {
+            $user = $modified->users;
+            if ($user) {
+                return $user;
+            }
+            return new Users();
+        }
+        return $this->getCreator($model);
+    }
+
+    /**
+     * Get the history for a model
+     * @param ModelInterface $model
+     * @return bool|\Phalcon\Mvc\Model\ResultsetInterface
+     */
+    public function getHistory(ModelInterface $model)
+    {
+        $audits = Audits::find([
+            'modelName = ?0 AND row_id = ?1',
+            'bind' => [get_class($model), $model->id],
+            'order' => 'date'
+        ]);
+        if ($audits) {
+            return $audits;
+        }
+        return false;
     }
 
 }

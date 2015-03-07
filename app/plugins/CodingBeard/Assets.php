@@ -184,9 +184,8 @@ class Assets extends Plugin
      */
     public function addRevision($path, $revision)
     {
-        $split = explode('.', $path);
-        $extension = array_pop($split);
-        return str_replace('.' . $extension, '.' . $revision . '.' . $extension, $path);
+        $info = pathinfo($path);
+        return $info['dirname'] . '/' . $info['filename'] . '.' . $revision . '.' . $info['extension'];
     }
 
 }

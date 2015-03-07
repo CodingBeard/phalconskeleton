@@ -69,11 +69,6 @@ class Users extends Model
      */
     public function setRoles($roleNames)
     {
-        $int = false;
-        if (is_int(abs($roleNames[0]))) {
-            $int = true;
-        }
-
         if (is_array($roleNames)) {
             foreach ($roleNames as $roleName) {
                 if (!$this->hasRole($roleName)) {
@@ -86,23 +81,12 @@ class Users extends Model
         }
         if ($this->roles->count()) {
             foreach ($this->roles as $role) {
-                if ($int) {
-                    if (!in_array($role->id, $roleNames)) {
-                        if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
-                            $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
-                            continue;
-                        }
-                        $this->removeRole($role->id);
+                if (!in_array($role->id, $roleNames) || !in_array($role->name, $roleNames)) {
+                    if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
+                        $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
+                        continue;
                     }
-                }
-                else {
-                    if (!in_array($role->name, $roleNames)) {
-                        if ($role->id == 1 && $this->id == $this->getDI()->get('auth')->audit_id) {
-                            $this->getDI()->get('flashSession')->error('You cannot remove Root Admin from yourself');
-                            continue;
-                        }
-                        $this->removeRole($role->name);
-                    }
+                    $this->removeRole($role->id);
                 }
             }
         }
@@ -118,10 +102,9 @@ class Users extends Model
             return false;
         }
 
-        if (is_int(abs($roleName))) {
-            $role = Roles::findFirstById($roleName);
-        }
-        else {
+        $role = Roles::findFirstById($roleName);
+
+        if (!$role) {
             $role = Roles::findFirstByName($roleName);
         }
 
@@ -156,10 +139,9 @@ class Users extends Model
      */
     public function hasRole($roleName)
     {
-        if (is_int(abs($roleName))) {
-            $role = Roles::findFirstById($roleName);
-        }
-        else {
+        $role = Roles::findFirstById($roleName);
+
+        if (!$role) {
             $role = Roles::findFirstByName($roleName);
         }
 
@@ -180,11 +162,10 @@ class Users extends Model
      */
     public static function getUsersByRole($roleName)
     {
-        if (is_int(abs($roleName))) {
-            $role = Roles::findById($roleName);
-        }
-        else {
-            $role = Roles::findByName($roleName);
+        $role = Roles::findFirstById($roleName);
+
+        if (!$role) {
+            $role = Roles::findFirstByName($roleName);
         }
 
         if (!$role) {
@@ -244,6 +225,15 @@ class Users extends Model
             'email' => 'email',
             'password' => 'password'
         ];
+    }
+
+    /**
+     * To string
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getName();
     }
 
 }
