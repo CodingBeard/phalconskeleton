@@ -3,7 +3,7 @@
 /**
  * Hidden
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -28,7 +28,7 @@ class Hidden extends Field
      * @var string
      */
     public $key = 'key';
-    
+
     /**
      * 0 width
      * @var int

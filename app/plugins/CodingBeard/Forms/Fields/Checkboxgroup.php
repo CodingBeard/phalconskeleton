@@ -3,7 +3,7 @@
 /**
  * Group of checkboxes
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -22,6 +22,12 @@ class Checkboxgroup extends Field
      * @var string
      */
     public $template = 'checkboxgroup';
+
+    /**
+     * Field key
+     * @var string
+     */
+    public $key = 'key';
 
     /**
      * Field Label
@@ -77,12 +83,19 @@ class Checkboxgroup extends Field
     {
         parent::__construct($properties);
         foreach ($this->options as $key => $option) {
-            $this->options[$key] = (object) $option;
+            $this->options[$key] = (object)$option;
         }
         foreach ($this->options as $key => $option) {
             if ($option->default) {
                 $this->setDefault($option->key, $option->default);
             }
+        }
+        $matches = [];
+        if (preg_match("#^(.+)\[(.*)\]$#is", $this->options[0]->key, $matches)) {
+            $this->key = $matches[1];
+        }
+        else {
+            $this->key = $this->options[0]->key;
         }
     }
 

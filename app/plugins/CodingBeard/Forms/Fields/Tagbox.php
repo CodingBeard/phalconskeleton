@@ -3,7 +3,7 @@
 /**
  * Tagbox
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -87,13 +87,13 @@ class Tagbox extends Field
      * Array of the labels:values
      * @var array
      */
-    public $tagValues = array();
+    public $tagValues = [];
 
     /**
      * Array of the labels for auto-complete
      * @var array
      */
-    public $tagLabels = array();
+    public $tagLabels = [];
 
     /**
      * Create a select dropdown
@@ -116,13 +116,13 @@ class Tagbox extends Field
     {
         parent::__construct($properties);
         foreach ($this->options as $key => $option) {
-            $this->options[$key] = (object) $option;
+            $this->options[$key] = (object)$option;
         }
         foreach ($this->options as $key => $option) {
             $this->tagValues[$option->label] = $option->value;
             $this->tagLabels[] = $option->label;
         }
-        
+
         if ($this->autocompleteOnFocus) {
             $this->autocompleteOnFocus = 'true';
             $this->minLength = 0;
@@ -137,7 +137,7 @@ class Tagbox extends Field
             }
         }
     }
-    
+
     /**
      * Validate the post data for this field
      * @param type $POST
@@ -151,9 +151,11 @@ class Tagbox extends Field
         if ($this->required) {
             if (!count($POST[$this->key])) {
                 $this->errorMessage = 'Field is required';
+
                 return false;
             }
         }
+
         return true;
     }
 

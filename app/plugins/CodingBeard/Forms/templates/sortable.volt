@@ -3,7 +3,13 @@ phalconskeleton
 author Tim Marshall
 copyright (c) 2015, Tim Marshall
 #}
-<div class="col l{{ size|escape_attr }} m12 s12">
+{% if size is not defined %}
+  {% set size = 12 %}
+{% endif %}
+{% if indent is not defined %}
+  {% set indent = 0 %}
+{% endif %}
+<div class="col offset-l{{ indent }} l{{ size }} m12 s12">
   {% if errorMessage %}
     <div class="alert alert-danger alert-dismissible">
       {{ errorMessage }}

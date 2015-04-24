@@ -3,7 +3,7 @@
 /**
  * Dateselect
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -99,7 +99,7 @@ class Dateselect extends Field
 
         $years = [];
         foreach ($this->ranges['year'] as $year) {
-            $years[] = (object) ['value' => $year, 'default' => false];
+            $years[] = (object)['value' => $year, 'default' => false,];
         }
         $this->ranges['year'] = $years;
         $months = [];
@@ -107,7 +107,7 @@ class Dateselect extends Field
             if ($month < 10) {
                 $month = str_pad($month, 2, '0', STR_PAD_LEFT);
             }
-            $months[] = (object) ['value' => $month, 'default' => false];
+            $months[] = (object)['value' => $month, 'default' => false,];
         }
         $this->ranges['month'] = $months;
         $days = [];
@@ -115,10 +115,10 @@ class Dateselect extends Field
             if ($day < 10) {
                 $day = str_pad($day, 2, '0', STR_PAD_LEFT);
             }
-            $days[] = (object) ['value' => $day, 'default' => false];
+            $days[] = (object)['value' => $day, 'default' => false,];
         }
         $this->ranges['day'] = $days;
-        $this->ranges = (object) $this->ranges;
+        $this->ranges = (object)$this->ranges;
 
         if ($this->default) {
             $this->setDefault($this->default);
@@ -166,6 +166,7 @@ class Dateselect extends Field
             }
             else {
                 $this->errorMessage = 'That date is not valid';
+
                 return false;
             }
         }
@@ -175,9 +176,11 @@ class Dateselect extends Field
         if ($this->required) {
             if (!strlen(trim($POST[$this->key]))) {
                 $this->errorMessage = 'Field is required';
+
                 return false;
             }
         }
+
         return true;
     }
 

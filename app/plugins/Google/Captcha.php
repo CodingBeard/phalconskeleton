@@ -2,10 +2,6 @@
 
 namespace Google;
 
-use Phalcon\Mvc\User\Component;
-
-
-
 /**
  * This is a PHP library that handles calling reCAPTCHA.
  *    - Documentation and latest version
@@ -36,7 +32,7 @@ use Phalcon\Mvc\User\Component;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-class Captcha extends Component
+class Captcha
 {
 
     private static $siteVerifyUrl = "https://www.google.com/recaptcha/api/siteverify?";
@@ -65,6 +61,7 @@ class Captcha extends Component
         }
         // Cut the last '&'
         $req = substr($req, 0, strlen($req) - 1);
+
         return $req;
     }
 
@@ -72,7 +69,7 @@ class Captcha extends Component
      * Submits an HTTP GET to a reCAPTCHA server.
      *
      * @param string $path url path to recaptcha server.
-     * @param array  $data array of parameters to be sent.
+     * @param array $data array of parameters to be sent.
      *
      * @return array response
      */
@@ -80,6 +77,7 @@ class Captcha extends Component
     {
         $req = $this->_encodeQS($data);
         $response = file_get_contents($path . $req);
+
         return $response;
     }
 
@@ -87,25 +85,25 @@ class Captcha extends Component
      * Calls the reCAPTCHA siteverify API to verify whether the user passes
      * CAPTCHA test.
      *
-     * @param string $remoteIp   IP address of end user.
-     * @param string $response   response string from recaptcha verification.
+     * @param string $remoteIp IP address of end user.
+     * @param string $response response string from recaptcha verification.
      *
      * @return ReCaptchaResponse
      */
     public function verify()
     {
-        $response = $this->request->getPost('g-recaptcha-response', 'trim');
+        $response = $_POST['g-recaptcha-response'];
         // Discard empty solution submissions
         if ($response == null || strlen($response) == 0) {
             false;
         }
         $getResponse = $this->_submitHttpGet(
-        self::$siteVerifyUrl, [
-            'secret' => $this->privateKey,
-            'remoteip' => $this->request->getClientAddress(),
-            'v' => self::$version,
-            'response' => $response
-        ]
+            self::$siteVerifyUrl, [
+                'secret'   => $this->privateKey,
+                'remoteip' => $_SERVER['REMOTE_ADDR'],
+                'v'        => self::$version,
+                'response' => $response,
+            ]
         );
         $answers = json_decode($getResponse, true);
         if (trim($answers ['success']) == true) {

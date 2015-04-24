@@ -12,10 +12,10 @@
 
 namespace CodingBeard\Forms;
 
-use models\Formdatas;
-use models\Formentrys;
-use models\Formfields;
-use models\Looseforms;
+use Formdatas;
+use Formentrys;
+use Formfields;
+use Qukforms;
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\User\Component;
 use Phalcon\Mvc\View;
@@ -96,6 +96,12 @@ class FormBuilder extends Component
     public $js = [];
 
     /**
+     * Array of clones of self which are stages in a multi-part form
+     * @var array
+     */
+    public $stages = [];
+
+    /**
      * Renders a .volt file with supplied variables
      * @param string $file
      * @param array $variables
@@ -112,6 +118,7 @@ class FormBuilder extends Component
         $view->setRenderLevel(View::LEVEL_ACTION_VIEW);
         $view->render('templates', $file);
         $view->finish();
+
         return $view->getContent();
     }
 
@@ -134,6 +141,7 @@ class FormBuilder extends Component
             $this->js[] = $matches[1];
             $content = preg_replace('#\<script type=\"text/javascript\">(.*?)\</script\>#si', '', $content);
         }
+
         return $content;
     }
 
@@ -155,6 +163,7 @@ class FormBuilder extends Component
                 $this->fields[] = $repeat;
             }
         }
+
         return $this;
     }
 
@@ -168,7 +177,37 @@ class FormBuilder extends Component
     {
         $fieldName = '\Forms\Fields\\' . ucfirst($fieldName);
         $field = new $fieldName($properties);
+
         return $this->renderField($field);
+    }
+
+    /**
+     * Add another stage to this form
+     * @param FormBuilder $form
+     */
+    public function addStage(self $form)
+    {
+        $this->stages[] = $form;
+    }
+
+    /**
+     * @param int $stage
+     * @return bool
+     */
+    public function setStage($stage)
+    {
+        if (isset($this->stages[$stage])) {
+            foreach ($this->stages[$stage] as $property => $value) {
+                if ($property == 'stages') {
+                    continue;
+                }
+                $this->$property = $value;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -176,35 +215,44 @@ class FormBuilder extends Component
      */
     public function render()
     {
-        $fields = [];
         foreach ($this->fields as $field) {
-            if ($this->request->isPost()) {
-                if ($field->template == 'checkboxgroup') {
-                    foreach ($field->options as $option) {
-                        if ($this->request->getPost($option->key)) {
+            if ($field->template == 'checkboxgroup') {
+                foreach ($field->options as $option) {
+                    if (preg_match("#^(.+)\[(.*)\]$#is", $option->key, $matches)) {
+                        if ($this->request->hasPost($matches[1])) {
+                            $field->setDefault($option->key, $this->request->getPost($matches[1])[$matches[2]]);
+                        }
+                    }
+                    else {
+                        if ($this->request->hasPost($option->key)) {
                             $field->setDefault($option->key, $this->request->getPost($option->key));
                         }
                     }
                 }
+            }
+            else {
+                if (preg_match("#^(.+)\[(.*)\]$#is", $field->key, $matches)) {
+                    if ($this->request->hasPost($matches[1])) {
+                        $field->setDefault($this->request->getPost($matches[1])[$matches[2]]);
+                    }
+                }
                 else {
-                    if ($this->request->getPost($field->key)) {
+                    if ($this->request->hasPost($field->key)) {
                         $field->setDefault($this->request->getPost($field->key));
                     }
                 }
             }
-            $fields[] = $field;
         }
         $variables = [
-            'securityToken' => $this->auth->getSecurityField(),
-            'title' => $this->title,
-            'subtitle' => $this->subtitle,
+            'title'       => $this->title,
+            'subtitle'    => $this->subtitle,
             'description' => $this->description,
-            'outerRatio' => $this->outerRatio,
-            'innerRatio' => $this->innerRatio,
+            'outerRatio'  => $this->outerRatio,
+            'innerRatio'  => $this->innerRatio,
             'submitButton' => $this->submitButton,
             'cancelButton' => $this->cancelButton,
-            'cancelHref' => $this->cancelHref,
-            'fields' => $fields
+            'cancelHref'  => $this->cancelHref,
+            'fields'      => $this->fields,
         ];
         $this->html = $this->renderFile('base', $variables);
 
@@ -222,6 +270,7 @@ class FormBuilder extends Component
         if (!$this->html) {
             $this->render();
         }
+
         return $this->html;
     }
 
@@ -235,6 +284,7 @@ class FormBuilder extends Component
         foreach ($this->js as $js) {
             $string .= $js . PHP_EOL;
         }
+
         return $string;
     }
 
@@ -245,11 +295,14 @@ class FormBuilder extends Component
     public function validate()
     {
         if (!$this->request->isPost())
-            return;
-
-        if (!$this->auth->checkToken()) {
-            $field->errorMessage = 'Invalid Anti-CRSF token.';
             return false;
+
+        if ($this->auth) {
+            if (!$this->auth->checkToken($_POST)) {
+                die('Invalid Anti-CRSF token.');
+
+                return false;
+            }
         }
 
         $result = true;
@@ -260,10 +313,12 @@ class FormBuilder extends Component
             }
             if ($field->template == 'captcha') {
                 if (!$this->captcha->verify()) {
+                    $result = false;
                     $field->errorMessage = 'Invalid Captcha.';
                 }
             }
         }
+
         return $result;
     }
 
@@ -271,7 +326,7 @@ class FormBuilder extends Component
      * Adds post data to a supplied model, a translation array can be supplied for post key -> model key
      * @param Model $model
      * @param array $translation
-     * @returns Phalcon\Mvc\Model $model
+     * @returns \Phalcon\Mvc\Model $model
      */
     public function addToModel($model, $translation = false)
     {
@@ -287,7 +342,7 @@ class FormBuilder extends Component
             foreach ($this->fields as $field) {
                 $key = $field->key;
                 if (in_array($key, $model->columnMap())) {
-                    if (in_array($field->template, ['checkbox', 'switchbox'])) {
+                    if (in_array($field->template, ['checkbox', 'switchbox',])) {
                         $value = ($this->request->getPost($key, 'trim') == 'on') ? 1 : 0;
                     }
                     else {
@@ -300,35 +355,63 @@ class FormBuilder extends Component
                 }
             }
         }
+
         return $model;
     }
 
     /**
-     * Saves form data to a loose data format needs models: Looseforms, Formfields, Formentrys, Formdatas
+     * Saves form data to a loose data format needs models: Qukforms, Formfields, Formentrys, Formdatas
      *
      * @param string $name
      * @param int $user_id
-     * @return Looseforms
+     * @return Qukforms
      */
-    public function saveData($name, $user_id)
+    public function saveData($name, $user_id, $permissions = [])
     {
-        $form = Looseforms::findFirstByName($name);
+        $form = Qukforms::findFirstByName($name);
         if (!$form) {
-            $form = new Looseforms();
+            $form = new Qukforms();
             $form->name = $name;
             $form->user_id = $user_id;
+            $form->permissions = $permissions;
             $form->private = 1;
             $form->save();
 
-            foreach ($this->fields as $field) {
-                if ($field->template == 'captcha')
-                    continue;
+            if (count($this->stages)) {
+                foreach ($this->stages as $key => $stage) {
 
-                $fieldModel = new Formfields();
-                $fieldModel->fieldKey = $field->key;
-                $fieldModel->fieldName = $field->label;
-                $fieldModel->form_id = $form->id;
-                $fieldModel->save();
+                    $fieldModel = new Formfields();
+                    $fieldModel->fieldKey = 'stage' . $key;
+                    $fieldModel->fieldName = 'Stage ' . $key;
+                    $fieldModel->form_id = $form->id;
+                    $fieldModel->save();
+
+                    foreach ($stage->fields as $field) {
+                        if ($field->template == 'captcha' || $field->template == 'freetext')
+                            continue;
+
+                        $fieldModel = new Formfields();
+                        $fieldModel->fieldKey = $field->key;
+                        $fieldModel->fieldName = $field->label;
+                        if (strlen($field->sublabel)) {
+                            $fieldModel->fieldName .= ' [' . strip_tags($field->sublabel) . ']';
+                        }
+                        $fieldModel->form_id = $form->id;
+                        $fieldModel->save();
+                    }
+                }
+            }
+            else {
+                foreach ($this->fields as $field) {
+                    if ($field->template == 'captcha' || $field->template == 'freetext')
+                        continue;
+
+                    $fieldModel = new Formfields();
+                    $fieldModel->fieldKey = $field->key;
+                    $fieldModel->fieldName = $field->label;
+                    $fieldModel->form_id = $form->id;
+                    $fieldModel->save();
+                }
             }
         }
 
@@ -338,18 +421,66 @@ class FormBuilder extends Component
         $entry->form_id = $form->id;
         $entry->save();
 
-        foreach ($this->fields as $field) {
-            $formdata = new Formdatas();
-            $formdata->formentry_id = $entry->id;
-            $field_id = Formfields::findFirstByFieldKey($field->key)->id;
-            if ($field_id) {
-                $formdata->field_id = $field_id;
-                $formdata->value = $this->request->getPost($field->key, 'trim');
-                $formdata->save();
+        if (count($this->stages)) {
+            foreach ($this->stages as $key => $stage) {
+
+                $formdata = new Formdatas();
+                $formdata->formentry_id = $entry->id;
+                $field_id = Formfields::findFirstByFieldKey('stage' . $key)->id;
+                if ($field_id) {
+                    $formdata->field_id = $field_id;
+                    $formdata->value = $stage->title;
+                    $formdata->save();
+                }
+
+                foreach ($stage->fields as $field) {
+                    $formdata = new Formdatas();
+                    $formdata->formentry_id = $entry->id;
+                    $field_id = Formfields::findFirstByFieldKey($field->key)->id;
+                    if ($field_id) {
+                        $formdata->field_id = $field_id;
+                        if ($field->template == 'checkbox' || $field->template == 'switchbox') {
+                            if ($_POST[$key][$field->key] == 'on') {
+                                $value = 'Yes';
+                            }
+                            else {
+                                $value = 'No';
+                            }
+                        }
+                        elseif ($field->template == 'checkboxgroup') {
+                            $value = $_POST[$key][$field->key];
+                            if (is_array($value)) {
+                                array_walk($value, function (&$value, $key) {
+                                    if ($value == 'on') {
+                                        $value = $key;
+                                    }
+                                });
+                                $value = implode(', ', $value);
+                            }
+                        }
+                        else {
+                            $value = $_POST[$key][$field->key];
+                        }
+                        $formdata->value = $value;
+                        $formdata->save();
+                    }
+                }
+            }
+        }
+        else {
+            foreach ($this->fields as $field) {
+                $formdata = new Formdatas();
+                $formdata->formentry_id = $entry->id;
+                $field_id = Formfields::findFirstByFieldKey($field->key)->id;
+                if ($field_id) {
+                    $formdata->field_id = $field_id;
+                    $formdata->value = $this->request->getPost($field->key, 'trim');
+                    $formdata->save();
+                }
             }
         }
 
-        return $form;
+        return $entry;
     }
 
 }

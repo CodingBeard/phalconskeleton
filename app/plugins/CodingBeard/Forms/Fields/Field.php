@@ -3,7 +3,7 @@
 /**
  * Forms Field Base
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -59,6 +59,8 @@ class Field extends FormBuilder
      */
     public $exists = false;
 
+    public $indent = 0;
+
     /**
      * Whether this field is a repeated field
      * @var bool
@@ -69,7 +71,17 @@ class Field extends FormBuilder
     {
         foreach ($properties as $key => $value) {
             if (is_callable($value) && $value instanceof \Closure) {
-                $value = $value();
+                if (isset($properties['arguments'])) {
+                    if (is_array($properties['arguments'])) {
+                        $value = call_user_func_array($value, $properties['arguments']);
+                    }
+                    else {
+                        $value = $value();
+                    }
+                }
+                else {
+                    $value = $value();
+                }
             }
             $this->$key = $value;
         }
@@ -91,18 +103,21 @@ class Field extends FormBuilder
         if ($this->required) {
             if (isset($POST[$this->key]) && !strlen(trim($POST[$this->key]))) {
                 $this->errorMessage = 'Field is required';
+
                 return false;
             }
         }
         if ($this->pattern) {
             if (!preg_match("#{$this->pattern}#is", $POST[$this->key])) {
                 $this->errorMessage = 'Does not match rules';
+
                 return false;
             }
         }
         if ($this->isRepeat) {
             if ($POST[$this->key] != $POST[substr($this->key, 6)]) {
                 $this->errorMessage = 'Field must match "' . substr($this->label, 7) . '"';
+
                 return false;
             }
         }
@@ -110,7 +125,7 @@ class Field extends FormBuilder
             $model = $this->unique['model'];
             $found = $model::findFirst([
                 $this->unique['field'] . ' = :a:',
-                'bind' => ['a' => $POST[$this->key]]
+                'bind' => ['a' => $POST[$this->key],],
             ]);
             if ($found) {
                 if (isset($this->unique['message'])) {
@@ -119,6 +134,7 @@ class Field extends FormBuilder
                 else {
                     $this->errorMessage = 'An entry with this value exists';
                 }
+
                 return false;
             }
         }
@@ -126,7 +142,7 @@ class Field extends FormBuilder
             $model = $this->exists['model'];
             $found = $model::findFirst([
                 $this->exists['field'] . ' = :a:',
-                'bind' => ['a' => $POST[$this->key]]
+                'bind' => ['a' => $POST[$this->key],],
             ]);
             if (!$found) {
                 if (isset($this->exists['message'])) {
@@ -135,9 +151,11 @@ class Field extends FormBuilder
                 else {
                     $this->errorMessage = 'This must match an existing entry';
                 }
+
                 return false;
             }
         }
+
         return true;
     }
 
@@ -146,7 +164,7 @@ class Field extends FormBuilder
      */
     public function setDefault()
     {
-        
+
     }
 
 }

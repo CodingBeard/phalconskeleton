@@ -3,7 +3,7 @@
 /**
  * Sortable
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -97,7 +97,7 @@ class Sortable extends Field
         }
         foreach ($this->options as $rowkey => $row) {
             foreach ($row as $fieldkey => $field) {
-                
+
                 /**
                  * First set of fields, set up defaults
                  */
@@ -116,7 +116,7 @@ class Sortable extends Field
                 $this->options[$rowkey][$fieldkey] = $field;
             }
         }
-        
+
         /**
          * Generate html for a blank row
          */
@@ -147,14 +147,14 @@ class Sortable extends Field
                  * they aren't selected, E.G. checkboxes.
                  */
                 $field = $this->options[$rowKey][$fieldKey];
-                
+
                 /**
                  * Create a 'fake' POST array to hand to the individual validator
                  * so when it tries to access the array post field we set in the
                  * constructor E.G. $_POST['name[0][key]']; it will find it correctly.
                  */
-                $vanillaPost = [$row[$fieldKey]->key => $POST[$this->key][$rowKey][$fieldName]];
-                
+                $vanillaPost = [$row[$fieldKey]->key => $POST[$this->key][$rowKey][$fieldName],];
+
                 /**
                  * Validate the field
                  */
@@ -163,6 +163,7 @@ class Sortable extends Field
                 }
             }
         }
+
         return $valid;
     }
 
@@ -190,8 +191,8 @@ class Sortable extends Field
             }
         }
         $this->options = $options;
-        
-        
+
+
         /**
          * Same logic we used in the second part of the constructor
          */

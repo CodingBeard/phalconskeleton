@@ -3,7 +3,7 @@
 /**
  * Radio
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -93,7 +93,7 @@ class Radio extends Field
             $this->inline = 'inline';
         }
         foreach ($this->options as $key => $option) {
-            $this->options[$key] = (object) $option;
+            $this->options[$key] = (object)$option;
         }
         foreach ($this->options as $key => $option) {
             if ($option->default) {
