@@ -19,3 +19,4 @@ public/js/main.min.js
 cli/test.php
 cli/pids/*.pid
 cli/cache/*.php
+PhalconStubs

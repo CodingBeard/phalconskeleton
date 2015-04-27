@@ -39,7 +39,7 @@ class PagesController extends ControllerBase
     {
         $this->tag->appendTitle("New Page");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'New Page';
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/pages';
@@ -91,7 +91,7 @@ class PagesController extends ControllerBase
         if (!$page) {
             $this->auth->redirect('admin/pages', 'error', 'Invalid Page ID.');
         }
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Edit Page: ' . $page->name;
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/pages';
@@ -152,7 +152,7 @@ class PagesController extends ControllerBase
             $this->auth->redirect('admin/pages', 'error', 'Invalid Page ID.');
         }
         $this->view->page = $page;
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = '';
         $form->submitButton = 'Add to ID: <span class="selected-section">0</span>';
         $form->cancelHref = 'admin/pages';
@@ -252,7 +252,7 @@ class PagesController extends ControllerBase
         }
         $this->view->contents = $content;
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Edit Content: #' . $content->id;
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/pages/manage/' . $content->pages->id;

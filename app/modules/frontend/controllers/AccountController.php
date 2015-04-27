@@ -31,7 +31,7 @@ class AccountController extends ControllerBase
     {
         $this->tag->appendTitle("Register");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Register';
         $form->description = 'Create an account';
         $form->submitButton = 'Create';
@@ -125,7 +125,7 @@ class AccountController extends ControllerBase
                 return $this->auth->redirect('account/change-pass', 'success', 'Please set a new password.');
             }
         }
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Reset Password';
         $form->description = 'We will send you an email so you can reset your password';
         $form->cancelHref = '/';
@@ -161,7 +161,7 @@ class AccountController extends ControllerBase
     {
         $this->tag->appendTitle("Change Password");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Change Password';
         $form->cancelHref = 'account';
 
@@ -215,7 +215,7 @@ class AccountController extends ControllerBase
     {
         $this->tag->appendTitle("Change Email");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Change Email';
         $form->cancelHref = 'account';
 
@@ -291,7 +291,7 @@ class AccountController extends ControllerBase
     {
         $this->tag->appendTitle("Update Account");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Update Account';
         $form->submitButton = 'Update';
         $form->cancelHref = 'account';

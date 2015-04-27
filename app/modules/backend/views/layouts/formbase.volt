@@ -20,14 +20,14 @@
     <div id="flash-container">
       {{ flashSession.output() }}
     </div>
-    {{ form.getHtml() }}
+    {{ forms.getHtml() }}
   </div>
 {% endblock %}
 
 {% block javascripts %}
   <script type="text/javascript">
     $(function () {
-      {{ form.getJs() }}
+      {{ forms.getJs() }}
     });
   </script>
 {% endblock %}

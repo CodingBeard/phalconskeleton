@@ -38,7 +38,7 @@ class NavbarsController extends ControllerBase
     {
         $this->tag->appendTitle("New Navbar");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'New Navbar';
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/navbars';
@@ -71,7 +71,7 @@ class NavbarsController extends ControllerBase
             $this->auth->redirect('admin/navbars', 'error', 'Invalid Navbar ID.');
         }
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Edit Navbar';
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/navbars';
@@ -104,7 +104,7 @@ class NavbarsController extends ControllerBase
         if (!$navbar) {
             $this->auth->redirect('admin/navbars', 'error', 'Invalid navbar ID.');
         }
-        $form = $this->form;
+        $form = $this->forms;
         $form->outerRatio = 0;
         $form->innerRatio = 12;
         $form->title = 'Manage Navbar: ' . $navbar->name;

@@ -27,7 +27,7 @@ class SessionController extends ControllerBase
     {
         $this->tag->appendTitle("Login");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Login';
         $form->cancelButton = 'register';
         $form->cancelHref = 'register';

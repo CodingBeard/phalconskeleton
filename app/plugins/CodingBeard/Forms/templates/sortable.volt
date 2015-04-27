@@ -33,7 +33,7 @@ copyright (c) 2015, Tim Marshall
         <tr>
           {% for field in row %}
             <td>
-              {{ form.renderField(field) }}
+              {{ forms.renderField(field) }}
             </td>
           {% endfor %}
           <td><a class="btn btn-small red remove-row" href="#">Delete</a></td>

@@ -101,7 +101,7 @@
   <div class="row">
     <div class="col s12">
       <h5>Selected ID: <span class="selected-section">0</span></h5>
-      {{ form.getHtml() }}
+      {{ forms.getHtml() }}
     </div>
   </div>
 {% endblock %}
@@ -109,7 +109,7 @@
 {% block javascripts %}
   <script type="text/javascript">
     $(function () {
-      {{ form.getJs() }}
+      {{ forms.getJs() }}
 
       $('.move').each(function () {
         if ($(this).parents('.card-panel').length === 1) {

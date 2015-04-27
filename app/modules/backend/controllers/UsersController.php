@@ -43,7 +43,7 @@ class UsersController extends ControllerBase
             $this->auth->redirect('admin/users', 'error', 'Invalid User ID.');
         }
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Edit User: ' . $user->getName();
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/users';
@@ -124,7 +124,7 @@ class UsersController extends ControllerBase
     {
         $this->tag->appendTitle("New Role");
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'New Role';
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/users/roles';
@@ -169,7 +169,7 @@ class UsersController extends ControllerBase
             $this->auth->redirect('admin/users/roles', 'error', 'Invalid User ID.');
         }
 
-        $form = $this->form;
+        $form = $this->forms;
         $form->title = 'Edit Role: ' . $role->name;
         $form->submitButton = 'Save';
         $form->cancelHref = 'admin/users/roles';
