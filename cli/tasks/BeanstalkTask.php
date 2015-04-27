@@ -36,6 +36,12 @@ class BeanstalkTask extends \Phalcon\CLI\Task
 
             $details = $job->getBody();
 
+            if ($details['key'] != $this->config->beanstalk->key) {
+                $job->release();
+                sleep(1);
+                continue;
+            }
+
             /**
              * If fatal error or execption, remove job and log error
              */

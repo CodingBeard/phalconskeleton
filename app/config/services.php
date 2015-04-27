@@ -222,7 +222,7 @@ $di->set('auth', function () {
     return new Auth();
 }, true);
 
-$di->set('form', function () use ($di) {
+$di->set('forms', function () use ($di) {
     return new FormBuilder($di);
 }, true);
 
