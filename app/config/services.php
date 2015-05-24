@@ -35,7 +35,7 @@ use Tartan\Mandrill;
  * @copyright (c) 2015, Tim Marshall
  * @license New BSD License
  */
-if (!$di) {
+if (!isset($di)) {
     $di = new Di();
 
     $di->setDefault(new FactoryDefault());

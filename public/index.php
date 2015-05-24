@@ -28,7 +28,7 @@ try {
 
     include __DIR__ . "/../vendor/autoload.php";
 
-    ErrorHandler::registerShutdown($config->application->showErrors);
+    ErrorHandler::setErrorHandler($config->application->showErrors);
 
     include __DIR__ . "/../app/config/services.php";
 
@@ -47,3 +47,4 @@ try {
 } catch (Exception $e) {
     ErrorHandler::handleException($e, $config->application->showErrors);
 }
+ErrorHandler::printErrors($config->application->showErrors);
