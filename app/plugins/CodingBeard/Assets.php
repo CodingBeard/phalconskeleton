@@ -4,24 +4,25 @@
  * Assets manager
  *
  * Config file example:
- * 'assets' => [
- * 'frontend' => [
- * 'minify' => false,
- * 'sourcePath' => __DIR__ . '/../assets/',
- * 'revisionPath' => __DIR__ . '/../modules/frontend/assetRevision',
- * 'cssPath' => 'css/main.min.css',
- * 'cssPaths' => [
- * 'css/normalize.css',
- * 'css/style.css',
- * ],
- * 'jsPath' => 'js/main.min.js',
- * 'jsPaths' => [
- * 'js/jquery-1.11.1.min.js',
- * 'js/main.js',
- * ],
- * ],
- * ],
- *
+ *<code>
+ * ['assets'       => [
+ *      'frontend' => [
+ *          'minify'     => false,
+ *          'sourcePath' => __DIR__ . '/../modules/frontend/assets/',
+ *          'cssPath'    => 'css/main.min.css',
+ *          'cssPaths'   => [
+ *              'css/materialize.css',
+ *              'css/normalize.css',
+ *              'css/style.css',
+ *          ],
+ *          'jsPath'     => 'js/main.min.js',
+ *          'jsPaths'    => [
+ *              'js/jquery-1.11.1.min.js',
+ *              'js/materialize.js',
+ *              'js/main.js',
+ *          ],
+ * ]]
+ *</code>
  * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
@@ -102,12 +103,16 @@ class Assets extends Plugin
     {
         $css = $this->assets->collection('css');
         foreach ($this->cssPaths as $cssPath) {
-            $css->addCss($this->sourcePath . $cssPath);
+            if (is_file($this->sourcePath . $cssPath)) {
+                $css->addCss($this->sourcePath . $cssPath);
+            }
         }
 
         $js = $this->assets->collection('js');
         foreach ($this->jsPaths as $jsPath) {
-            $js->addJs($this->sourcePath . $jsPath);
+            if (is_file($this->sourcePath . $jsPath)) {
+                $js->addJs($this->sourcePath . $jsPath);
+            }
         }
     }
 
@@ -117,27 +122,38 @@ class Assets extends Plugin
      */
     public function afterExecuteRoute()
     {
-
         $cssNeedsRefreshing = $jsNeedsRefreshing = false;
 
-        $cssLastModified = filemtime($this->config->application->publicDir . $this->cssPath);
-        foreach ($this->assets->get('css')->getResources() as $resource) {
-            if ($resource->getLocal()) {
-                if (($lastmod = filemtime($resource->getPath())) > $cssLastModified) {
-                    $cssNeedsRefreshing = true;
-                    $cssLastModified = $lastmod;
+        if (is_file($this->config->application->publicDir . $this->cssPath)) {
+            $cssLastModified = filemtime($this->config->application->publicDir . $this->cssPath);
+            foreach ($this->assets->get('css')->getResources() as $resource) {
+                if ($resource->getLocal()) {
+                    if (($lastmod = filemtime($resource->getPath())) > $cssLastModified) {
+                        $cssNeedsRefreshing = true;
+                        $cssLastModified = $lastmod;
+                    }
                 }
             }
         }
+        else {
+            $cssNeedsRefreshing = true;
+            $cssLastModified = time();
+        }
 
-        $jsLastModified = filemtime($this->config->application->publicDir . $this->jsPath);
-        foreach ($this->assets->get('js')->getResources() as $resource) {
-            if ($resource->getLocal()) {
-                if (($lastmod = filemtime($resource->getPath())) > $jsLastModified) {
-                    $jsNeedsRefreshing = true;
-                    $jsLastModified = $lastmod;
+        if (is_file($this->config->application->publicDir . $this->jsPath)) {
+            $jsLastModified = filemtime($this->config->application->publicDir . $this->jsPath);
+            foreach ($this->assets->get('js')->getResources() as $resource) {
+                if ($resource->getLocal()) {
+                    if (($lastmod = filemtime($resource->getPath())) > $jsLastModified) {
+                        $jsNeedsRefreshing = true;
+                        $jsLastModified = $lastmod;
+                    }
                 }
             }
+        }
+        else {
+            $jsNeedsRefreshing = true;
+            $jsLastModified = time();
         }
 
         if ($this->minify) {
