@@ -19,7 +19,7 @@ try {
 
     $config = include __DIR__ . "/../app/config/config.php";
 
-    $routes = include __DIR__ . "/../app/config/routes.php";
+    $router = include __DIR__ . "/../app/config/routes.php";
 
     $loader = new Loader();
     $loader->registerDirs($config->loader->dirs->toArray());

@@ -46,8 +46,6 @@ if (!isset($di)) {
  */
 $di->set('config', $config);
 
-$module = $router->getModuleName();
-
 $di->set('module', function () use ($module) {
     return $module;
 });

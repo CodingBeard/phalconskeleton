@@ -3,7 +3,7 @@
 /**
  * Custom routes file
  *
- * @category 
+ * @category
  * @package phalconskeleton
  * @author Tim Marshall <Tim@CodingBeard.com>
  * @copyright (c) 2015, Tim Marshall
@@ -26,35 +26,41 @@ $routes = [
     'logout' => 'frontend::session::logout',
 ];
 
+$module = "frontend";
 
 $router = new \Phalcon\Mvc\Router(false);
-$router->setDefaultModule("frontend");
+$router->setDefaultModule($module);
 
 /**
  * Add variable routing for multiple modules and custom url prefixes
+ * And work out what module we're on. $module is used in the services
  */
-foreach ($config->modules->uriPrefixes as $module => $prefix) {
+foreach ($config->modules->uriPrefixes as $moduleName => $prefix) {
     $router->add("{$prefix}(/)?", [
-        'module' => $module,
+        'module' => $moduleName,
         'controller' => 'index',
         'action' => 'index'
     ]);
     $router->add("{$prefix}/:controller(/)?", [
-        'module' => $module,
+        'module' => $moduleName,
         'controller' => 1,
         'action' => 'index'
     ]);
     $router->add("{$prefix}/:controller/:action(/)?", [
-        'module' => $module,
+        'module' => $moduleName,
         'controller' => 1,
         'action' => 2
     ]);
     $router->add("{$prefix}/:controller/:action/:params(/)?", [
-        'module' => $module,
+        'module' => $moduleName,
         'controller' => 1,
         'action' => 2,
         'params' => 3
     ]);
+
+    if (stripos($_SERVER['REQUEST_URI'], $prefix) === 0) {
+        $module = $moduleName;
+    }
 }
 
 /**
@@ -73,7 +79,5 @@ foreach ($routes as $uri => $route) {
         'params' => 1
     ]);
 }
-
-$router->handle($_SERVER['REQUEST_URI']);
 
 return $router;
